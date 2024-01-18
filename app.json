@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "react-native-2023",
+    "slug": "react-native-2023",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.REDigitalize.reactnative2023"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "MyGoogleApp",
+    "extra": {
+      "eas": {
+        "projectId": "0a2704d1-ab88-4561-b1ef-d7a996e49c96"
+      }
+    }
+  }
+}
