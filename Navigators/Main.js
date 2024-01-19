@@ -24,6 +24,9 @@ import UserChart from "../Screens/Admin/UserChart"
 import RequestChart from "../Screens/Admin/RequestChart"
 
 import Choose from "../Screens/User/Choose"
+import Contact from "../Screens/Contact"
+
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -51,116 +54,121 @@ const Main = () => {
     <Stack.Navigator>
       <Stack.Screen name="Admin" component={Admin} />
       <Stack.Screen name="AnnouncementForm" component={AnnouncementForm}
-                   />
+      />
       <Stack.Screen name="UserChart" component={UserChart}
-                   />
+      />
       <Stack.Screen name="RequestChart" component={RequestChart}
-                   />
+      />
       {/* Add more screens if needed */}
     </Stack.Navigator>
   );
 
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen
-        name="Home"
-        component={TabNavigator}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="home" size={size} color="maroon" />
-          ),
-          headerTitle: () => (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-              <Image
-                source={require("../assets/tup.jpg")}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Image
-                source={require("../assets/res.jpg")}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text style={styles.companyName}>R&E-Services</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Drawer.Navigator>
+        <Drawer.Screen
+          name="Home"
+          component={TabNavigator}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="home" size={size} color="maroon" />
+            ),
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                <Image
+                  source={require("../assets/tup.jpg")}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Image
+                  source={require("../assets/res.jpg")}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.companyName}>R&E-Services</Text>
 
-              <View style={styles.bellContainer}>
-                <TouchableOpacity onPress={handleBellPress} style={styles.bellIconContainer}>
-                  <Image
-                    source={require("../assets/notification_bell.png")}
-                    style={styles.bellIcon}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
+                {context.stateUser.isAuthenticated ? (<View style={styles.bellContainer}>
+                  <TouchableOpacity onPress={handleBellPress} style={styles.bellIconContainer}>
+                    <Image
+                      source={require("../assets/notification_bell.png")}
+                      style={styles.bellIcon}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                </View>) : null}
+
               </View>
-            </View>
-          ),
-        }}
-      />
+            ),
+          }}
+        />
 
-      <Drawer.Screen
-        name="Login"
-        component={UserNavigator}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="sign-in" size={size} color="maroon" />
-          ),
-        }}
-      />
+        {context.stateUser.isAuthenticated ? null : (
+          <Drawer.Screen
+            name="Login"
+            component={UserNavigator}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="sign-in" size={size} color="maroon" />
+              ),
+            }}
+          />
+        )}
 
-      <Drawer.Screen
-        name="Create Account"
-        component={Choose}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="user-plus" size={size} color="maroon" />
-          ),
-        }}
-      />
+        <Drawer.Screen
+          name="Create Account"
+          component={Choose}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="user-plus" size={size} color="maroon" />
+            ),
+          }}
+        />
 
-      <Drawer.Screen
-        name="About Us"
-        component={Choose}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="info-circle" size={size} color="maroon" />
-          ),
-        }}
-      />
+        <Drawer.Screen
+          name="About Us"
+          component={Contact}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="info-circle" size={size} color="maroon" />
+            ),
+          }}
+        />
 
-      <Drawer.Screen
-        name="Contact Us"
-        component={Choose}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="envelope" size={size} color="maroon" />
-          ),
-        }}
-      />
+        <Drawer.Screen
+          name="Contact Us"
+          component={Contact}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="envelope" size={size} color="maroon" />
+            ),
+          }}
+        />
 
-      {context.stateUser.isAuthenticated ? (<Drawer.Screen
-        name="Upload a file"
-        component={Addfile}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="save" size={size} color={color} />
-          ),
-        }}
-      />) : null}
-      
-      
+        {context.stateUser.isAuthenticated ? (<Drawer.Screen
+          name="Upload a file"
+          component={Addfile}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="save" size={size} color={color} />
+            ),
+          }}
+        />) : null}
 
-      {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
-      <Drawer.Screen
-        name="Admin"
-        component={AdminStack}
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="cog" size={size} color={color} />
-          ),
-        }}
-      /> ) : null}
-      
-    </Drawer.Navigator>
+
+
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+          <Drawer.Screen
+            name="Admin"
+            component={AdminStack}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="cog" size={size} color={color} />
+              ),
+            }}
+          />) : null}
+
+      </Drawer.Navigator>
+    </SafeAreaView>
   );
 };
 
@@ -179,40 +187,40 @@ const TabNavigator = ({ isLoggedIn }) => {
     >
 
       {context.stateUser.isAuthenticated ? (
-      <Tab.Screen
-        name="Home"
-        component={HomeNavigator}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <Icon name="home" style={{ position: "relative" }} color={color} size={25} />
-          ),
-        }}
-      />
+        <Tab.Screen
+          name="Home"
+          component={HomeNavigator}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color }) => (
+              <Icon name="home" style={{ position: "relative" }} color={color} size={25} />
+            ),
+          }}
+        />
       ) : null}
 
-{context.stateUser.isAuthenticated ? (
-      <Tab.Screen
-        name="Cart"
-        component={CartNavigator}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <>
-              <Icon
-                name="certificate"
-                style={{ position: "relative" }}
-                color={color}
-                size={25}
-              />
-              <CartIcon />
-            </>
-          ),
-        }}
-      />
+      {context.stateUser.isAuthenticated ? (
+        <Tab.Screen
+          name="Cart"
+          component={CartNavigator}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color }) => (
+              <>
+                <Icon
+                  name="certificate"
+                  style={{ position: "relative" }}
+                  color={color}
+                  size={25}
+                />
+                <CartIcon />
+              </>
+            ),
+          }}
+        />
       ) : null}
 
-    <Tab.Screen
+      <Tab.Screen
         name="Announcement"
         component={Announcement}
         options={{
@@ -222,7 +230,7 @@ const TabNavigator = ({ isLoggedIn }) => {
           ),
         }}
       />
-      
+
       <Tab.Screen
         name="User"
         component={UserNavigator}
@@ -233,7 +241,7 @@ const TabNavigator = ({ isLoggedIn }) => {
           ),
         }}
       />
-      
+
     </Tab.Navigator>
   );
 };
@@ -253,7 +261,7 @@ const styles = StyleSheet.create({
   bellContainer: {
     position: 'absolute',
     width: 50,
-    left: 275,
+    left: 245,
     borderLeftWidth: 2,
     borderLeftColor: 'maroon',
   },

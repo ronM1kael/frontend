@@ -10,6 +10,9 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 import expo.modules.ReactActivityDelegateWrapper;
 
+import com.melfx.reactnative2023.BuildConfig;
+import com.melfx.reactnative2023.R;
+
 public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {

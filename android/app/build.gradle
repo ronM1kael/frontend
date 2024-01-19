@@ -81,9 +81,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.reactnative2023"
+    namespace "com.melfx.reactnative2023"
     defaultConfig {
-        applicationId "com.reactnative2023"
+        applicationId "com.melfx.reactnative2023"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
