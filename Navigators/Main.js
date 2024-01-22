@@ -25,6 +25,9 @@ import RequestChart from "../Screens/Admin/RequestChart"
 
 import Choose from "../Screens/User/Choose"
 import Contact from "../Screens/Contact"
+import Dashboard from "../Screens/Admin/Dashboard";
+
+import ListDepartment from "../Screens/Admin/Department/ListDepartment"
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -102,6 +105,36 @@ const Main = () => {
           }}
         />
 
+        <Drawer.Screen
+          name="Dashboard"
+          component={Dashboard}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="dashboard" size={size} color="maroon" />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="Administration"
+          component={Dashboard}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="users" size={size} color="maroon" />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="Departments"
+          component={ListDepartment}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="building" size={size} color="maroon" />
+            ),
+          }}
+        />
+
         {context.stateUser.isAuthenticated ? null : (
           <Drawer.Screen
             name="Login"
@@ -114,35 +147,18 @@ const Main = () => {
           />
         )}
 
-        <Drawer.Screen
-          name="Create Account"
-          component={Choose}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="user-plus" size={size} color="maroon" />
-            ),
-          }}
-        />
 
-        <Drawer.Screen
-          name="About Us"
-          component={Contact}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="info-circle" size={size} color="maroon" />
-            ),
-          }}
-        />
-
-        <Drawer.Screen
-          name="Contact Us"
-          component={Contact}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="envelope" size={size} color="maroon" />
-            ),
-          }}
-        />
+        {context.stateUser.isAuthenticated ? null : (
+          <Drawer.Screen
+            name="Create Account"
+            component={Choose}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="user-plus" size={size} color="maroon" />
+              ),
+            }}
+          />
+        )}
 
         {context.stateUser.isAuthenticated ? (<Drawer.Screen
           name="Upload a file"
@@ -166,6 +182,26 @@ const Main = () => {
               ),
             }}
           />) : null}
+
+        <Drawer.Screen
+          name="About Us"
+          component={Contact}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="info-circle" size={size} color="maroon" />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="Contact Us"
+          component={Contact}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="envelope" size={size} color="maroon" />
+            ),
+          }}
+        />
 
       </Drawer.Navigator>
     </SafeAreaView>
