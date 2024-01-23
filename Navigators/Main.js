@@ -29,6 +29,8 @@ import Dashboard from "../Screens/Admin/Dashboard";
 
 import ListDepartment from "../Screens/Admin/Department/ListDepartment"
 
+import EventCalendar from "../Screens/Admin/Calendar/EventCalendar"
+
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
@@ -131,6 +133,26 @@ const Main = () => {
           options={{
             drawerIcon: ({ color, size }) => (
               <Icon name="building" size={size} color="maroon" />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="Announcements"
+          component={AnnouncementForm}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="bullhorn" size={size} color="maroon" />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="Events"
+          component={EventCalendar}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="calendar" size={size} color="maroon" />
             ),
           }}
         />

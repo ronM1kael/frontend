@@ -138,7 +138,6 @@ const onRefresh = useCallback(async () => {
           text1: "Announcement added successfully",
         });
         onRefresh();
-        navigation.navigate('Home');
         // Reset states or navigate to a success screen
       } else {
         console.error('Failed to add announcement');
