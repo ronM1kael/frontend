@@ -107,55 +107,65 @@ const Main = () => {
           }}
         />
 
-        <Drawer.Screen
-          name="Dashboard"
-          component={Dashboard}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="dashboard" size={size} color="maroon" />
-            ),
-          }}
-        />
+          {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+          <Drawer.Screen
+            name="Dashboard"
+            component={Dashboard}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="dashboard" size={size} color="maroon" />
+              ),
+            }}
+          />
+          ) : null}
 
-        <Drawer.Screen
-          name="Administration"
-          component={Dashboard}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="users" size={size} color="maroon" />
-            ),
-          }}
-        />
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+          <Drawer.Screen
+            name="Administration"
+            component={Dashboard}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="users" size={size} color="maroon" />
+              ),
+            }}
+          />
+        ) : null}
 
-        <Drawer.Screen
-          name="Departments"
-          component={ListDepartment}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="building" size={size} color="maroon" />
-            ),
-          }}
-        />
+{context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? ( 
+          <Drawer.Screen
+            name="Departments"
+            component={ListDepartment}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="building" size={size} color="maroon" />
+              ),
+            }}
+          />
+        ) : null}
 
-        <Drawer.Screen
-          name="Announcements"
-          component={AnnouncementForm}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="bullhorn" size={size} color="maroon" />
-            ),
-          }}
-        />
+{context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+          <Drawer.Screen
+            name="Announcements"
+            component={AnnouncementForm}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="bullhorn" size={size} color="maroon" />
+              ),
+            }}
+          />
+        ) : null}
 
-        <Drawer.Screen
-          name="Events"
-          component={EventCalendar}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="calendar" size={size} color="maroon" />
-            ),
-          }}
-        />
+    {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+          <Drawer.Screen
+            name="Events"
+            component={EventCalendar}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="calendar" size={size} color="maroon" />
+              ),
+            }}
+          />
+        ) : null}
 
         {context.stateUser.isAuthenticated ? null : (
           <Drawer.Screen
@@ -182,19 +192,20 @@ const Main = () => {
           />
         )}
 
-        {context.stateUser.isAuthenticated ? (<Drawer.Screen
+        {context.stateUser.isAuthenticated ?
+         (<Drawer.Screen
           name="Upload a file"
           component={Addfile}
           options={{
             drawerIcon: ({ color, size }) => (
-              <Icon name="save" size={size} color={color} />
+              <Icon name="save" size={size} color="maroon" />
             ),
           }}
         />) : null}
 
 
 
-        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+        {/* {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
           <Drawer.Screen
             name="Admin"
             component={AdminStack}
@@ -203,7 +214,7 @@ const Main = () => {
                 <Icon name="cog" size={size} color={color} />
               ),
             }}
-          />) : null}
+          />) : null} */}
 
         <Drawer.Screen
           name="About Us"

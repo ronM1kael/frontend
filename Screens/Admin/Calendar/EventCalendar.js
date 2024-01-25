@@ -1,135 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, TextInput, Alert } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { View, Text, Button } from 'react-native';
+import CreateEventForm from './CreateEventForm';
 import axios from 'axios';
-
 import baseURL from "../../../assets/common/baseurl";
 
-const App = () => {
-  const [events, setEvents] = useState([]);
+const CalendarScreen = () => {
   const [showCreateEventForm, setShowCreateEventForm] = useState(false);
-  const [eventTitle, setEventTitle] = useState('');
-  const [eventStart, setEventStart] = useState('');
-  const [eventEnd, setEventEnd] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    // Fetch events from your backend when the component mounts
     fetchEvents();
   }, []);
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(`${baseURL}mobileevents`);
-      const eventsData = Array.isArray(response.data) ? response.data : response.data.events;
-
-      setEvents(eventsData);
-      setLoading(false);
+      const response = await axios.get(`${baseURL}events`);
+      console.log('Events response:', response.data); // Add this line
+      setEvents(response.data || []);
     } catch (error) {
       console.error('Error fetching events:', error);
-      setError('Error fetching events. Please try again.');
-      setLoading(false);
     }
   };
 
-  const handleCreateEvent = async () => {
+  const createEvent = async (eventData) => {
     try {
-      await axios.post(`${baseURL}mobileevents/create`, {
-        title: eventTitle,
-        start: eventStart,
-        end: eventEnd,
-      });
+      await axios.post(`${baseURL}events/create`, eventData);
+      fetchEvents();
       setShowCreateEventForm(false);
-      await fetchEvents();
-      Alert.alert('Success', 'Event created successfully');
     } catch (error) {
       console.error('Error creating event:', error);
-      setError('Error creating event. Please try again.');
-      Alert.alert('Error', 'Error creating event. Please try again.');
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text>{error}</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <Button title="Create Event" onPress={() => setShowCreateEventForm(!showCreateEventForm)} />
+    <View>
+      <Button title="Create Event" onPress={() => setShowCreateEventForm(true)} />
+
       {showCreateEventForm && (
-        <View style={styles.createEventForm}>
-          <TextInput
-            style={styles.input}
-            placeholder="Event Title"
-            value={eventTitle}
-            onChangeText={(text) => setEventTitle(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Event Start"
-            value={eventStart}
-            onChangeText={(text) => setEventStart(text)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Event End"
-            value={eventEnd}
-            onChangeText={(text) => setEventEnd(text)}
-          />
-          <Button title="Create Event" onPress={handleCreateEvent} />
-        </View>
+        <CreateEventForm onSubmit={createEvent} onCancel={() => setShowCreateEventForm(false)} />
       )}
-      <Calendar
-        markedDates={{
-          // Mark the dates with events (you may need to format the dates accordingly)
-          '2024-01-01': { marked: true, dotColor: 'red' },
-          '2024-01-02': { marked: true, dotColor: 'red' },
-          // Add more marked dates based on your events data
-        }}
-        onDayPress={(day) => console.log('Selected day:', day)}
-      />
-      {/* Display your events in a list or any other desired format */}
-      {events && events.map((event) => (
-        <View key={event.id}>
-          <Text>{event.title}</Text>
-          <Text>{event.start}</Text>
-          <Text>{event.end}</Text>
-          {/* Add more event details if needed */}
-        </View>
-      ))}
+
+      <View>
+        {/* Render your calendar with events */}
+        {events.length > 0 ? (
+          events.map((event) => {
+            console.log('Event:', event); // Add this line
+            return (
+              <View key={event.id}>
+                <Text>{event.title}</Text>
+                {/* Render other event details */}
+              </View>
+            );
+          })
+        ) : (
+          <Text>No events available</Text>
+        )}
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  createEventForm: {
-    marginTop: 20,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-});
-
-export default App;
+export default CalendarScreen;

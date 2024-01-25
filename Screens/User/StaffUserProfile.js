@@ -86,7 +86,15 @@ const StaffUserProfile = () => {
               onPress={() => handleLogout()}>Logout</Text>
       </TouchableOpacity>
       <View style={styles.infoContainer}>
-        <Text style={styles.infoLabel}>TUP-ID:</Text>
+        <Text style={styles.infoLabel}>FIRST NAME:</Text>
+        <Text style={styles.infoValue}>{staff ? staff.fname : ""}</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>LAST NAME:</Text>
+        <Text style={styles.infoValue}>{staff ? staff.lname : ""}</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoLabel}>STAFF-ID:</Text>
         <Text style={styles.infoValue}>{staff ? staff.tup_id : ""}</Text>
       </View>
       <View style={styles.infoContainer}>
