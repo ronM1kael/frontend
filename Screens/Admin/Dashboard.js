@@ -1,103 +1,165 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import axios from 'axios';
 
 import baseURL from "../../assets/common/baseurl";
 
-const DashboardScreen = () => {
-  const [data, setData] = useState({
-    usersCount: 0,
-    studentCount: 0,
-    staffCount: 0,
-    facultyCount: 0,
-    applicationCount: 0,
-    pendingCount: 0,
-    passedCount: 0,
-    returnedCount: 0,
-  });
+const Dashboard = () => {
+  const [usersCount, setUsersCount] = useState(0);
+  const [studentCount, setStudentCount] = useState(0);
+  const [staffCount, setStaffCount] = useState(0);
+  const [facultyCount, setFacultyCount] = useState(0);
+  const [filter, setFilter] = useState('all'); // Added filter state
 
-  const [userFilter, setUserFilter] = useState('all');
-  const [applicationFilter, setApplicationFilter] = useState('applications');
+  const [applicationCount, setApplicationsCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [passedCount, setPassedCount] = useState(0);
+  const [returnedCount, setReturnedCount] = useState(0);
+  const [filterapplication, setFilterApplication] = useState('all'); // Added filter state
 
+  // Fetch data from your backend using Axios
   useEffect(() => {
-    fetchData();
-  }, [userFilter, applicationFilter]);
+    // Replace 'your-api-endpoint/dashboardmobile' with your actual API endpoint
+    axios.get(`${baseURL}dashboardmobile`)
+      .then((response) => {
+        const data = response.data;
+        setUsersCount(data.usersCount);
+        setStudentCount(data.studentCount);
+        setStaffCount(data.staffCount);
+        setFacultyCount(data.facultyCount);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`${baseURL}dashboardmobile`, {
-        params: {
-          userFilter,
-          applicationFilter,
-        },
-      });
-      setData(response.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+        setApplicationsCount(data.applicationCount);
+        setPendingCount(data.pendingCount);
+        setPassedCount(data.passedCount);
+        setReturnedCount(data.returnedCount);
+        // Add more state variables based on your data structure
+      })
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []);
+
+  const displayUserCount = () => {
+    let count;
+
+    switch (filter) {
+      case 'all':
+        count = usersCount;
+        break;
+      case 'student':
+        count = studentCount;
+        break;
+      case 'staff':
+        count = staffCount;
+        break;
+      case 'faculty':
+        count = facultyCount;
+        break;
+      default:
+        count = 0;
+    }
+
+    // Update the user count
+    // You may want to use state for updating counts in a real-world scenario
+    alert(`User Count: ${count}, Filter: ${filter}`);
+  };
+
+  const displayApplicationCount = () => {
+    let countapplication;
+
+    switch (filterapplication) {
+      case 'all':
+        countapplication = applicationCount;
+        break;
+      case 'pending':
+        countapplication = pendingCount;
+        break;
+      case 'passed':
+        countapplication = passedCount;
+        break;
+      case 'returned':
+        countapplication = returnedCount;
+        break;
+      default:
+        countapplication = 0;
+    }
+
+    // Update the user count
+    // You may want to use state for updating counts in a real-world scenario
+    alert(`Application Count: ${countapplication}, Filter: ${filterapplication}`);
+  };
+
+  // Function to change the filter
+  const changeFilter = () => {
+    switch (filter) {
+      case 'all':
+        setFilter('student');
+        break;
+      case 'student':
+        setFilter('staff');
+        break;
+      case 'staff':
+        setFilter('faculty');
+        break;
+      case 'faculty':
+        setFilter('all');
+        break;
+      default:
+        setFilter('all');
     }
   };
 
-  const InfoCard = ({ title, count, backgroundColor, renderFilterOptions, filterState, setFilterState }) => (
-    <View style={styles.infoCard}>
-      <TouchableOpacity style={[styles.filterButton, { backgroundColor: 'white' }]} onPress={() => renderFilterOptions(setFilterState)}>
-        <Text>{`Filter: ${filterState}`}</Text>
-      </TouchableOpacity>
-      <Text style={styles.cardTitle}>{title} | {count}</Text>
-      {/* ... other data specific to the info card */}
-    </View>
-  );
-
-  const renderFilterOptions = (filterState, setFilterState, filterOptions) => {
-    return (
-      <View style={styles.filterOptionsContainer}>
-        {filterOptions.map((option) => (
-          <TouchableOpacity
-            key={option.value}
-            style={styles.filterOption}
-            onPress={() => setFilterState(option.value)}
-          >
-            <Text>{option.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
+  const changeApplicationFilter = () => {
+    switch (filterapplication) {
+      case 'all':
+        setFilterApplication('pending');
+        break;
+      case 'pending':
+        setFilterApplication('passed');
+        break;
+      case 'passed':
+        setFilterApplication('returned');
+        break;
+      case 'returned':
+        setFilterApplication('all');
+        break;
+      default:
+        setFilterApplication('all');
+    }
   };
 
-  const userFilterOptions = [
-    { label: 'All', value: 'all' },
-    { label: 'Student', value: 'student' },
-    { label: 'Staff', value: 'staff' },
-    { label: 'Faculty Member', value: 'faculty' },
-  ];
-
-  const applicationFilterOptions = [
-    { label: 'All', value: 'applications' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Passed', value: 'passed' },
-    { label: 'Returned', value: 'returned' },
-  ];
-
   return (
-    <SafeAreaView style={styles.safeAreaView}>
-      <View style={styles.container}>
-        <View style={styles.mainContainer}>
-          <InfoCard
-            title="Users"
-            count={data.usersCount}
-            backgroundColor="maroon"
-            renderFilterOptions={() => renderFilterOptions(userFilter, setUserFilter, userFilterOptions)}
-            filterState={userFilter}
-            setFilterState={setUserFilter}
-          />
-          <InfoCard
-            title="Applications"
-            count={data.applicationCount}
-            backgroundColor="maroon"
-            renderFilterOptions={() => renderFilterOptions(applicationFilter, setApplicationFilter, applicationFilterOptions)}
-            filterState={applicationFilter}
-            setFilterState={setApplicationFilter}
-          />
-          <InfoCard title="Researchs" count={data.usersCount} backgroundColor="maroon" />
+    <SafeAreaView style={styles.container}>
+      <Image source={{ uri: 'https://www.bootdey.com/image/280x280/ffb3ff/000000' }} style={styles.backgroundImage} />
+      <View style={styles.card}>
+        <View style={styles.item}>
+          <View style={styles.itemContent}>
+            <Text style={styles.itemName}>User Role:</Text>
+            <Text style={styles.itemPrice}>{filter.charAt(0).toUpperCase() + filter.slice(1)}</Text>
+          </View>
+        </View>
+        <View style={styles.buttons}>
+          <TouchableOpacity style={styles.button} title="Change Filter" onPress={changeFilter}>
+            <Text style={styles.buttonText}>Change Role</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={displayUserCount}>
+            <Text style={styles.buttonText}>Display User Count</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.card}>
+        <View style={styles.item}>
+          <View style={styles.itemContent}>
+            <Text style={styles.itemName}>Application Status:</Text>
+            <Text style={styles.itemPrice}>{filterapplication.charAt(0).toUpperCase() + filterapplication.slice(1)}</Text>
+          </View>
+        </View>
+        <View style={styles.buttons}>
+          <TouchableOpacity style={styles.button} title="Change Filter" onPress={changeApplicationFilter}>
+            <Text style={styles.buttonText}>Change Status</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={displayApplicationCount}>
+            <Text style={styles.buttonText}>Display Application Count</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -105,47 +167,73 @@ const DashboardScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  safeAreaView: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
   },
-  mainContainer: {
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    resizeMode: 'cover',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 50,
+    marginBottom: 20,
+    color: '#fff',
+    marginHorizontal: 20,
+  },
+  card: {
+    marginHorizontal: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 2,
+    marginTop: 20,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  itemImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 20,
+  },
+  itemContent: {
     flex: 1,
-    flexDirection: 'column', // Change to 'column' for a column layout
   },
-  infoCard: {
-    height: 150, // Set a fixed height for all cards
-    backgroundColor: 'maroon', // Default color, will be overridden by props
-    padding: 16,
-    borderRadius: 8,
-    margin: 8,
-  },
-  filterButton: {
-    marginBottom: 8,
-    padding: 8,
-    backgroundColor: 'white',
-    borderRadius: 4,
-  },
-  filterOptionsContainer: {
-    backgroundColor: 'white',
-    borderRadius: 4,
-    padding: 8,
-    marginTop: 8,
-  },
-  filterOption: {
-    padding: 8,
-  },
-  cardTitle: {
-    color: 'white',
+  itemName: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
   },
-  // Add more styles as needed
+  itemPrice: {
+    fontSize: 16,
+    color: '#999',
+  },
+  buttons: {
+    flexDirection: 'row',
+  },
+  button: {
+    backgroundColor: '#FFC107',
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
-export default DashboardScreen;
+export default Dashboard;
