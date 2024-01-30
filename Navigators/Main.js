@@ -26,6 +26,7 @@ import RequestChart from "../Screens/Admin/RequestChart"
 import Choose from "../Screens/User/Choose"
 import Contact from "../Screens/Contact"
 import Dashboard from "../Screens/Admin/Dashboard";
+import Administration from "../Screens/Admin/Administration/Administration"
 
 import ListDepartment from "../Screens/Admin/Department/ListDepartment"
 
@@ -122,7 +123,7 @@ const Main = () => {
         {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
           <Drawer.Screen
             name="Administration"
-            component={Dashboard}
+            component={Administration}
             options={{
               drawerIcon: ({ color, size }) => (
                 <Icon name="users" size={size} color="maroon" />

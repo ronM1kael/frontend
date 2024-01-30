@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import axios from 'axios';
 
 import baseURL from "../../assets/common/baseurl";
+
+import { LineChart, BarChart, PieChart, StackedBarChart } from 'react-native-chart-kit';
 
 const Dashboard = () => {
   const [usersCount, setUsersCount] = useState(0);
@@ -11,11 +13,26 @@ const Dashboard = () => {
   const [facultyCount, setFacultyCount] = useState(0);
   const [filter, setFilter] = useState('all'); // Added filter state
 
-  const [applicationCount, setApplicationsCount] = useState(0);
+  const [applicationCount, setApplicationCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [passedCount, setPassedCount] = useState(0);
   const [returnedCount, setReturnedCount] = useState(0);
   const [filterapplication, setFilterApplication] = useState('all'); // Added filter state
+
+  const [researchCount, setResearchCount] = useState(0);
+  const [eaadResearchCount, setEAADResearchCount] = useState(0);
+  const [maadResearchCount, setMAADResearchCount] = useState(0);
+  const [basdResearchCount, setBASDResearchCount] = useState(0);
+  const [caadResearchCount, setCAADResearchCount] = useState('all');
+  const [filterresearch, setFilterResearch] = useState('all'); // Added filter state
+
+  const [rolesChartData, setRolesChartData] = useState([]);
+  const [applicationsStatusChartData, setApplicationsStatusChartData] = useState([]);
+  const [thesisTypeChartData, setThesisTypeChartData] = useState([]);
+  const [courseChartData, setCourseChartData] = useState([]);
+  const [totalCourses, setTotalCourses] = useState(0);
+  const [researchDepartmentChartData, setResearchDepartmentChartData] = useState([]);
+  const [researchCourseChartData, setResearchCourseChartData] = useState([]);
 
   // Fetch data from your backend using Axios
   useEffect(() => {
@@ -28,10 +45,25 @@ const Dashboard = () => {
         setStaffCount(data.staffCount);
         setFacultyCount(data.facultyCount);
 
-        setApplicationsCount(data.applicationCount);
+        setApplicationCount(data.applicationCount);
         setPendingCount(data.pendingCount);
         setPassedCount(data.passedCount);
         setReturnedCount(data.returnedCount);
+
+        setResearchCount(data.researchCount);
+        setEAADResearchCount(data.eaadResearchCount);
+        setMAADResearchCount(data.maadResearchCount);
+        setBASDResearchCount(data.basdResearchCount);
+        setCAADResearchCount(data.caadResearchCount);
+
+        setUsersCount(data.usersCount);
+        setRolesChartData(data.rolesCount);
+        setApplicationsStatusChartData(data.applicationsCount);
+        setThesisTypeChartData(data.thesisTypeCount);
+        setCourseChartData(data.courseCount);
+        setTotalCourses(data.totalCourses);
+        setResearchDepartmentChartData(data.researchDepartmentCount);
+        setResearchCourseChartData(data.researchCourseCount);
         // Add more state variables based on your data structure
       })
       .catch((error) => console.error('Error fetching data:', error));
@@ -87,6 +119,34 @@ const Dashboard = () => {
     alert(`Application Count: ${countapplication}, Filter: ${filterapplication}`);
   };
 
+  const displayResearchCount = () => {
+    let countresearch;
+
+    switch (filterresearch) {
+      case 'all':
+        countresearch = researchCount;
+        break;
+      case 'eaad':
+        countresearch = eaadResearchCount;
+        break;
+      case 'caad':
+        countresearch = caadResearchCount;
+        break;
+      case 'maad':
+        countresearch = maadResearchCount;
+        break;
+      case 'basd':
+        countresearch = basdResearchCount;
+        break;
+      default:
+        countresearch = 0;
+    }
+
+    // Update the user count
+    // You may want to use state for updating counts in a real-world scenario
+    alert(`Research Count: ${countresearch}, Filter: ${filterresearch}`);
+  };
+
   // Function to change the filter
   const changeFilter = () => {
     switch (filter) {
@@ -126,8 +186,223 @@ const Dashboard = () => {
     }
   };
 
+  const changeResearchFilter = () => {
+    switch (filterresearch) {
+      case 'all':
+        setFilterResearch('eaad');
+        break;
+      case 'eaad':
+        setFilterResearch('caad');
+        break;
+      case 'caad':
+        setFilterResearch('maad');
+        break;
+      case 'maad':
+        setFilterResearch('basd');
+        break;
+      case 'basd':
+        setFilterResearch('all');
+        break;
+      default:
+        setFilterResearch('all');
+    }
+  };
+
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const RolesLineChart = () => {
+    if (rolesChartData.length === 0) {
+      return null; // or a loading indicator
+    }
+  
+    const chartData = {
+      labels: rolesChartData.map((item) => item.role),
+      datasets: [
+        {
+          data: rolesChartData.map((item) => item.count),
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+          strokeWidth: 2,
+        },
+      ],
+    };
+  
+    return (
+      <LineChart
+        data={chartData}
+        width={300}
+        height={200}
+        chartConfig={{
+          backgroundGradientFrom: '#1E2923',
+          backgroundGradientTo: '#08130D',
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        }}
+        bezier
+        style={{ marginVertical: 8, borderRadius: 16 }}
+      />
+    );
+  };
+
+  const ApplicationsStatusBarChart = () => {
+    if (applicationsStatusChartData.length === 0) {
+      return null; // or a loading indicator
+    }
+  
+    const chartData = {
+      labels: applicationsStatusChartData.map((item) => item.status),
+      datasets: [
+        {
+          data: applicationsStatusChartData.map((item) => item.count),
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        },
+      ],
+    };
+  
+    return (
+      <BarChart
+        data={chartData}
+        width={300}
+        height={200}
+        chartConfig={{
+          backgroundGradientFrom: '#1E2923',
+          backgroundGradientTo: '#08130D',
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+          barPercentage: 0.5,
+        }}
+        style={{ marginVertical: 8, borderRadius: 16 }}
+      />
+    );
+  };
+
+  const ThesisTypePieChart = () => {
+    if (thesisTypeChartData.length === 0) {
+      return null; // or a loading indicator
+    }
+  
+    const chartData = thesisTypeChartData.map((item) => ({
+      name: item.thesis_type,
+      count: item.count,
+      color: getRandomColor(),
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+    }));
+  
+    return (
+      <PieChart
+        data={chartData}
+        width={300}
+        height={200}
+        chartConfig={{
+          backgroundGradientFrom: '#1E2923',
+          backgroundGradientTo: '#08130D',
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        }}
+        accessor="count"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        absolute
+      />
+    );
+  };
+
+  const CourseChart = () => {
+    if (courseChartData.length === 0) {
+      return null; // or a loading indicator
+    }
+  
+    const chartData = {
+      labels: courseChartData.map((item) => item.course),
+      legend: courseChartData.map((item) => item.course),
+      data: courseChartData.map((item) => [item.count]),
+      barColors: courseChartData.map(() => getRandomColor()), // Define getRandomColor function
+    };
+  
+    return (
+      <StackedBarChart
+        data={chartData}
+        width={300}
+        height={200}
+        chartConfig={{
+          backgroundGradientFrom: '#1E2923',
+          backgroundGradientTo: '#08130D',
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        }}
+        style={{ marginVertical: 8, borderRadius: 16 }}
+      />
+    );
+  };
+
+  const ResearchDepartmentBarChart = () => {
+    if (researchDepartmentChartData.length === 0) {
+      return null; // or a loading indicator
+    }
+
+    const chartData = {
+      labels: researchDepartmentChartData.map((item) => item.department),
+      datasets: [
+        {
+          data: researchDepartmentChartData.map((item) => item.count),
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        },
+      ],
+    };
+
+    return (
+      <BarChart
+        data={chartData}
+        width={300}
+        height={200}
+        chartConfig={{
+          backgroundGradientFrom: '#1E2923',
+          backgroundGradientTo: '#08130D',
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+          barPercentage: 0.5,
+        }}
+        style={{ marginVertical: 8, borderRadius: 16 }}
+      />
+    );
+  };
+
+  const ResearchCourseLineChart = () => {
+    if (researchCourseChartData.length === 0) {
+      return null; // or a loading indicator
+    }
+
+    const chartData = {
+      labels: researchCourseChartData.map((item) => item.course),
+      datasets: [
+        {
+          data: researchCourseChartData.map((item) => item.count),
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+          strokeWidth: 2,
+        },
+      ],
+    };
+
+    return (
+      <LineChart
+        data={chartData}
+        width={300}
+        height={200}
+        chartConfig={{
+          backgroundGradientFrom: '#1E2923',
+          backgroundGradientTo: '#08130D',
+          color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        }}
+        bezier
+        style={{ marginVertical: 8, borderRadius: 16 }}
+      />
+    );
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <Image source={{ uri: 'https://www.bootdey.com/image/280x280/ffb3ff/000000' }} style={styles.backgroundImage} />
       <View style={styles.card}>
         <View style={styles.item}>
@@ -162,7 +437,31 @@ const Dashboard = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+
+      <View style={styles.card}>
+        <View style={styles.item}>
+          <View style={styles.itemContent}>
+            <Text style={styles.itemName}>Research Department:</Text>
+            <Text style={styles.itemPrice}>{filterresearch.charAt(0).toUpperCase() + filterresearch.slice(1)}</Text>
+          </View>
+        </View>
+        <View style={styles.buttons}>
+          <TouchableOpacity style={styles.button} title="Change Filter" onPress={changeResearchFilter}>
+            <Text style={styles.buttonText}>Change Department</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={displayResearchCount}>
+            <Text style={styles.buttonText}>Display Research Count</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <RolesLineChart />
+      <ApplicationsStatusBarChart />
+      <ThesisTypePieChart />
+      <CourseChart />
+      <ResearchDepartmentBarChart />
+      <ResearchCourseLineChart />
+    </ScrollView>
   );
 };
 
