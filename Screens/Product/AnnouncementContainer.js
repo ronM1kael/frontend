@@ -1,3 +1,4 @@
+// Import the useState hook from React
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
@@ -22,6 +23,7 @@ const AnnouncementList = () => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track user login status
 
   const context = useContext(AuthGlobal);
 
@@ -31,13 +33,14 @@ const AnnouncementList = () => {
         const response = await axios.get(`${baseURL}mobileshowannouncement`);
         console.log('Fetched data:', response.data);
         setAnnouncements(Object.values(response.data.announcements));
+        setIsLoggedIn(!!context.stateUser.isAuthenticated); // Set login status
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [context.stateUser.isAuthenticated]);
 
   const handlePress = async (announcement) => {
     setSelectedAnnouncement(announcement);
@@ -150,6 +153,37 @@ const AnnouncementList = () => {
         keyExtractor={(item, index) => index.toString()}
       />
 
+{/* <FlatList
+      data={announcements}
+      renderItem={({ item: announcement, users }) => (
+        <TouchableOpacity onPress={() => handlePress(announcement)}>
+        <View style={styles.post}>
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.name}>{users[0].fname}{users[0].mname}{users[0].lname}</Text>
+              <Text style={styles.date}>{announcement[0].created_at}</Text>
+            </View>
+          </View>
+          <Text style={styles.productName}>{announcement[0].title}</Text>
+          <Text style={styles.description}>{announcement[0].content}</Text>
+          <ScrollView horizontal style={styles.imagesContent}>
+                {announcement.map((imageData, index) => (
+                  <View key={`${imageData.id}_${index}`}>
+                    <Image
+                      style={styles.productImage}
+                      source={{ uri: `${baseURL2}/images/${imageData.img_path}` }}
+                      onLoad={() => console.log('Image loaded')}
+                      onError={(error) => handleImageError(error, imageData)}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+        </View>
+        </TouchableOpacity>
+      )}
+      keyExtractor={(item, index) => index.toString()}
+    /> */}
+
       {selectedAnnouncement && (
         <Modal
           animationType="slide"
@@ -187,16 +221,22 @@ const AnnouncementList = () => {
                 </View>
               )}
 
-              <View style={styles.commentFormContainer}>
-                <TextInput
-                  placeholder="Write a comment"
-                  value={newComment}
-                  onChangeText={(text) => setNewComment(text)}
-                />
-                <TouchableOpacity onPress={handleAddComment} style={styles.addCommentButton}>
-                  <Text>Add Comment</Text>
-                </TouchableOpacity>
-              </View>
+              {!isLoggedIn && ( // Conditionally render based on login status
+                <Text>Please log in to add a comment</Text>
+              )}
+
+              {isLoggedIn && ( // Conditionally render based on login status
+                <View style={styles.commentFormContainer}>
+                  <TextInput
+                    placeholder="Write a comment"
+                    value={newComment}
+                    onChangeText={(text) => setNewComment(text)}
+                  />
+                  <TouchableOpacity onPress={handleAddComment} style={styles.addCommentButton}>
+                    <Text>Add Comment</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </ScrollView>
             <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Close</Text>
