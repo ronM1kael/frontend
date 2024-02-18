@@ -40,7 +40,7 @@ const DropdownForm = (props) => {
   const navigation = useNavigation();
 
   const route = useRoute();
-  
+
   const { research_id } = route.params;
 
   console.log(research_id);
@@ -75,11 +75,11 @@ const DropdownForm = (props) => {
 
     let request = {
       research_id,
-      advisors_turnitin_precheck: precheck,
-      initial_simmilarity_percentage,
+      // advisors_turnitin_precheck: precheck,
+      // initial_simmilarity_percentage,
       requestor_type: type,
       thesis_type: thesistype,
-      submission_frequency: frequency,
+      // submission_frequency: frequency,
     }
     console.log("request", request)
     navigation.navigate("Researchers", { request: request })
@@ -105,7 +105,7 @@ const DropdownForm = (props) => {
 
           <View style={styles.card}>
 
-            <View style={styles.inputContainer}>
+            {/* <View style={styles.inputContainer}>
 
               <Text style={styles.label}>
                 Is there an initial run of a similarity test (Turnitin) by your research adviser?
@@ -162,14 +162,7 @@ const DropdownForm = (props) => {
                   />
                 </View>
               </>
-            )}
-
-            {showDropdown_advisors_turnitin_precheck && selectedSubmission_advisors_turnitin_precheck && (
-              // Render content based on the selected submission, e.g., additional fields or components
-              <View>
-                {/* Add your additional content here */}
-              </View>
-            )}
+            )} */}
 
             <View style={styles.inputContainer}>
 

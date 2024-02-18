@@ -108,7 +108,7 @@ const Main = () => {
           }}
         />
 
-          {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
           <Drawer.Screen
             name="Dashboard"
             component={Dashboard}
@@ -118,7 +118,7 @@ const Main = () => {
               ),
             }}
           />
-          ) : null}
+        ) : null}
 
         {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
           <Drawer.Screen
@@ -132,7 +132,7 @@ const Main = () => {
           />
         ) : null}
 
-{context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? ( 
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
           <Drawer.Screen
             name="Departments"
             component={ListDepartment}
@@ -144,7 +144,7 @@ const Main = () => {
           />
         ) : null}
 
-{context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
           <Drawer.Screen
             name="Announcements"
             component={AnnouncementForm}
@@ -156,7 +156,7 @@ const Main = () => {
           />
         ) : null}
 
-    {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
           <Drawer.Screen
             name="Events"
             component={EventCalendar}
@@ -193,16 +193,44 @@ const Main = () => {
           />
         )}
 
-        {context.stateUser.isAuthenticated ?
-         (<Drawer.Screen
-          name="Upload a file"
-          component={Addfile}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="save" size={size} color="maroon" />
-            ),
-          }}
-        />) : null}
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
+          <Drawer.Screen
+            name="Title Checker"
+            component={Addfile}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
+                  <Icon name="check-circle" size={size * 0.8} color="maroon" />
+                </View>
+              ),
+            }}
+          />
+        ) : null}
+
+
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
+          <Drawer.Screen
+            name="My Files"
+            component={Addfile}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="save" size={size} color="maroon" />
+              ),
+            }}
+          />) : null}
+
+
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
+          <Drawer.Screen
+            name="Application Status"
+            component={Addfile}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="certificate" size={size} color="maroon" />
+              ),
+            }}
+          />
+        ) : null}
 
 
 

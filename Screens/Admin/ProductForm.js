@@ -50,6 +50,7 @@ const CertificationForm = (props) => {
       if (contexts.stateUser.isAuthenticated === true) {
         setSelectedFile(null);
         setResearchTitle('');
+        setAbstract('');
         setError(null);
         // Fetch files for the new authenticated user
         fetchFilesForUser(); // A function that retrieves files for the authenticated user
@@ -57,6 +58,7 @@ const CertificationForm = (props) => {
         // Reset state for non-authenticated user
         setSelectedFile(null);
         setResearchTitle('');
+        setAbstract('');
         setError(null);
         setFiles([]);
       }
@@ -66,6 +68,7 @@ const CertificationForm = (props) => {
   const [files, setFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [researchTitle, setResearchTitle] = useState('');
+  const [abstract, setAbstract] = useState('');
   const [error, setError] = useState(null);
   const navigation = useNavigation();
 
@@ -82,20 +85,6 @@ const CertificationForm = (props) => {
       setRefreshing(false);
     }, 2000);
   }, []);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(`${baseURL}get_files`);
-  //       setFiles(response.data);
-  //       console.log("Files:", response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching files:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -247,6 +236,7 @@ const CertificationForm = (props) => {
 
       const formData = new FormData();
       formData.append("research_title", researchTitle);
+      formData.append("abstract", abstract);
       formData.append("research_file", {
         uri: selectedFile.uri,
         name: selectedFile.name,
@@ -302,8 +292,44 @@ const CertificationForm = (props) => {
       <View style={styles.formContainer}>
         <Text style={styles.title}>Upload a File</Text>
         <View style={styles.card}>
+
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Research Title</Text>
+            <TouchableOpacity
+              style={styles.buttons}
+              onPress={pickDocument}
+            >
+              <Text style={styles.buttonTexts}>Choose File</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Application Title</Text>
+            <View
+              style={{
+                width: "100%",
+                height: 100,
+                borderColor: "#800000",
+                borderWidth: 1,
+                borderRadius: 8,
+                alignItems: "center",
+                justifyContent: "center",
+                paddingLeft: 22,
+              }}
+            >
+
+              <TextInput
+                style={styles.input}
+                value={researchTitle}
+                onChangeText={(text) => setResearchTitle(text)}
+                multiline={true}
+                numberOfLines={4}
+              />
+
+            </View>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Application Abstract</Text>
             <View
               style={{
                 width: "100%",
@@ -317,29 +343,15 @@ const CertificationForm = (props) => {
               }}
             >
               <TextInput
-                placeholder="Input Research Title"
-                placeholderTextColor="#999"
-                value={researchTitle}
-                onChangeText={(text) => setResearchTitle(text)}
-                style={{
-                  width: "105%",
-                }}
+                style={styles.input}
+                value={abstract}
+                onChangeText={(text) => setAbstract(text)}
+                multiline={true}
+                numberOfLines={4}
               />
             </View>
-            <TextInput
-              placeholder="File Name"
-              value={selectedFile ? selectedFile.name : ""}
-              editable={false}
-            />
           </View>
-          <View style={styles.inputContainer}>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={pickDocument}
-            >
-              <Text style={styles.buttonTexts}>Choose File</Text>
-            </TouchableOpacity>
-          </View>
+
           {error ? <Text style={styles.error}>{error}</Text> : null}
           <TouchableOpacity
             style={styles.button}
@@ -433,6 +445,12 @@ const styles = {
   error: {
     color: "red",
     marginBottom: 10,
+  },
+  input: {
+    paddingRight: 10,
+    lineHeight: 23,
+    flex: 2,
+    textAlignVertical: 'top'
   },
 };
 

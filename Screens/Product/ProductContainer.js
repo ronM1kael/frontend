@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Modal,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -20,14 +21,16 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { addToCartAction } from '../../Context/Actions/cartActions';
 
-const PropertyContainer = ({ isLoggedIn }) => {
+import { WebView } from 'react-native-webview';
+import baseURL2 from '../../assets/common/baseurlnew';
 
+const PropertyContainer = ({ isLoggedIn }) => {
   const [searchText, setSearchText] = useState('');
   const [data, setData] = useState([]);
+  const [showPDF, setShowPDF] = useState(false);
+  const [pdfFileName, setPdfFileName] = useState('');
   const context = useContext(AuthGlobal);
-
   const dispatch = useDispatch();
-
   const cartItems = useSelector(state => state.cartItems);
 
   const addToCart = (selectedFile) => {
@@ -49,12 +52,8 @@ const PropertyContainer = ({ isLoggedIn }) => {
 
   useFocusEffect(
     useCallback(() => {
-      if (context.stateUser.isAuthenticated === true) {
-        fetchData();
-      } else {
-        fetchData('');
-      }
-    }, [context.stateUser.isAuthenticated, fetchData])
+      fetchData();
+    }, [])
   );
 
   const fetchData = async () => {
@@ -62,23 +61,14 @@ const PropertyContainer = ({ isLoggedIn }) => {
       const jwtToken = await AsyncStorage.getItem('jwt');
       const userProfile = context.stateUser.userProfile;
 
-      if (
-        !jwtToken ||
-        !context.stateUser.isAuthenticated ||
-        !userProfile ||
-        !userProfile.id
-      ) {
+      if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
         console.error('Invalid authentication state');
-        // Handle the error appropriately, e.g., navigate to an error screen.
         return;
       }
 
-      const response = await fetch(
-        `${baseURL}myfiles/${userProfile.id}`,
-        {
-          headers: { Authorization: `Bearer ${jwtToken}` },
-        }
-      );
+      const response = await fetch(`${baseURL}myfiles/${userProfile.id}`, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
 
       const result = await response.json();
       console.log('Fetched Data:', result);
@@ -92,26 +82,36 @@ const PropertyContainer = ({ isLoggedIn }) => {
     setSearchText(text);
   };
 
-  const [showPDF, setShowPDF] = useState(false);
-  const [pdfFileName, setPdfFileName] = useState('');
+  const Viewpdf = async (fileName) => {
+    try {
+      const response = await fetch(`${baseURL}mobileshowpdf/${fileName}`);
+      const data = await response.json();
+      const base64Content = data.base64Content;
+      const uri = `${baseURL2}/uploads/pdf/${fileName}`;
+      setPdfFileName(uri);
+      setShowPDF(true);
+      console.log(uri);
+    } catch (error) {
+      console.error('Error fetching PDF:', error);
+    }
+  };
 
-  const Viewpdf = () => {
-    console.log('lalabas pdf');
+  const handleClosePDF = () => {
+    setShowPDF(false);
+    setPdfFileName('');
   };
 
   const renderItem = ({ item }) => (
-    
     <>
-      <TouchableWithoutFeedback
+      <TouchableOpacity
         onPress={() => {
-          Viewpdf();
+          Viewpdf(item.research_file); // Assuming each item has a fileName property
         }}
       >
         <View style={styles.card}>
           <Image
             source={{
-              uri:
-                'https://media.idownloadblog.com/wp-content/uploads/2021/10/Red-PDF-app-icon-on-gray-background.png',
+              uri: 'https://media.idownloadblog.com/wp-content/uploads/2021/10/Red-PDF-app-icon-on-gray-background.png',
             }}
             style={styles.image}
           />
@@ -123,7 +123,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
             <TouchableOpacity
               style={[
                 styles.addButton,
-                isCartEmpty ? null : styles.disabledButton, // Apply disabledButton style if the cart is not empty
+                isCartEmpty ? null : styles.disabledButton,
               ]}
               onPress={() => handlePress(item)}
               disabled={!isCartEmpty}
@@ -134,8 +134,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableWithoutFeedback>
-      {showPDF && Viewpdf()}
+      </TouchableOpacity>
     </>
   );
 
@@ -146,11 +145,9 @@ const PropertyContainer = ({ isLoggedIn }) => {
     );
   });
 
-  // Conditionally render based on login state
   return (
     <>
       <View style={{ height: 250 }}>
-        {/* Assuming Banner component is properly implemented */}
         <Banner />
       </View>
       {context.stateUser.isAuthenticated ? (
@@ -169,6 +166,14 @@ const PropertyContainer = ({ isLoggedIn }) => {
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
           />
+          <Modal visible={showPDF} transparent={false}>
+            <View style={{ flex: 1 }}>
+              <TouchableOpacity onPress={handleClosePDF}>
+                <Text>Close PDF</Text>
+              </TouchableOpacity>
+              <WebView source={{ uri: pdfFileName }} />
+            </View>
+          </Modal>
         </View>
       ) : null}
     </>
@@ -177,7 +182,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
 
 const styles = StyleSheet.create({
   disabledButton: {
-    backgroundColor: 'grey', // Change the style for a disabled button
+    backgroundColor: 'grey',
   },
   container: {
     flex: 1,
@@ -232,8 +237,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: '#dcdcdc',
-    justifyContent: 'space-between', // Aligns items to the left and right
-    alignItems: 'center', // Aligns items vertically
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   footerContent: {
     flexDirection: 'row',
