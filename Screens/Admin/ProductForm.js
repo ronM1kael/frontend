@@ -302,6 +302,8 @@ const CertificationForm = (props) => {
             </TouchableOpacity>
           </View>
 
+          <Text style={styles.note}>Note: The uploaded PDF file should not exceed 10MB in size.</Text>
+
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Application Title</Text>
             <View
@@ -451,6 +453,11 @@ const styles = {
     lineHeight: 23,
     flex: 2,
     textAlignVertical: 'top'
+  },
+  note: {
+    fontSize: 12,
+    color: "#666", // You can adjust the color according to your preference
+    marginTop: 5, // Adjust the margin top as per your design preference
   },
 };
 

@@ -34,6 +34,8 @@ import EventCalendar from "../Screens/Admin/Calendar/EventCalendar"
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import ApplicationStatus from "../Screens/Certification/ApplicationStatus"
+
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -223,7 +225,7 @@ const Main = () => {
         {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
           <Drawer.Screen
             name="Application Status"
-            component={Addfile}
+            component={ApplicationStatus}
             options={{
               drawerIcon: ({ color, size }) => (
                 <Icon name="certificate" size={size} color="maroon" />
