@@ -31,7 +31,6 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 
-import baseURLfinal from '../../assets/common/baseurlnewnew';
 import mime from 'mime';
 
 const PropertyContainer = ({ isLoggedIn }) => {

@@ -35,6 +35,7 @@ import EventCalendar from "../Screens/Admin/Calendar/EventCalendar"
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import ApplicationStatus from "../Screens/Certification/ApplicationStatus"
+import TitleChecker from "../Screens/User/Student/TitleChecker"
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -198,7 +199,7 @@ const Main = () => {
         {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
           <Drawer.Screen
             name="Title Checker"
-            component={Addfile}
+            component={TitleChecker}
             options={{
               drawerIcon: ({ color, size }) => (
                 <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
