@@ -146,7 +146,7 @@ const App = () => {
                             </Text>
                             <Text style={styles.label}>
                                 <Text style={{ fontWeight: 'bold' }}>Certificate: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.certificate}</Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.certificate_file}</Text>
                             </Text>
                             <Text style={styles.cardTitle}></Text>
                             <Text style={[styles.cardTitle, { textAlign: 'center' }]}>Researchers Details</Text>

@@ -175,12 +175,12 @@ const PropertyContainer = ({ isLoggedIn }) => {
   const handleConfirmation = async () => {
     try {
       const jwtToken = await AsyncStorage.getItem('jwt');
-  
+
       if (!selectedFile) {
         console.log("No file selected");
         return;
       }
-  
+
       const formData = new FormData();
       formData.append("research_file", {
         uri: selectedFile.assets[0].uri,
@@ -188,7 +188,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
         type: selectedFile.assets[0].mimeType,
       });
       formData.append("research_id", item.id);
-  
+
       const response = await axios.post(`${baseURL}mobilereApply`, formData, {
         headers: {
           Accept: "application/json",
@@ -196,7 +196,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-  
+
       console.log("File uploaded successfully", response.data);
       Toast.show({
         topOffset: 60,
@@ -218,7 +218,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
       });
     }
   };
-  
+
 
   const requestCameraRollPermission = async () => {
     try {
@@ -481,7 +481,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingTop: 60,
   },
   searchInputContainer: {
     paddingHorizontal: 20,

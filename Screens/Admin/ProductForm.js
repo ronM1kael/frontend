@@ -309,7 +309,7 @@ const CertificationForm = (props) => {
             <View
               style={{
                 width: "100%",
-                height: 100,
+                height: 80,
                 borderColor: "#800000",
                 borderWidth: 1,
                 borderRadius: 8,
@@ -335,7 +335,7 @@ const CertificationForm = (props) => {
             <View
               style={{
                 width: "100%",
-                height: 100,
+                height: 80,
                 borderColor: "#800000",
                 borderWidth: 1,
                 borderRadius: 8,
@@ -455,9 +455,9 @@ const styles = {
     textAlignVertical: 'top'
   },
   note: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#666", // You can adjust the color according to your preference
-    marginTop: 5, // Adjust the margin top as per your design preference
+    // marginTop: 1, // Adjust the margin top as per your design preference
   },
 };
 

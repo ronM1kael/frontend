@@ -274,7 +274,6 @@ const Main = () => {
 };
 
 const TabNavigator = ({ isLoggedIn }) => {
-
   const context = useContext(AuthGlobal);
 
   return (
@@ -286,6 +285,18 @@ const TabNavigator = ({ isLoggedIn }) => {
         showLabel: false,
       }}
     >
+      {context.stateUser.isAuthenticated && context.stateUser.userProfile.role !== 'Student' ? (
+        <Tab.Screen
+          name="Announcement"
+          component={Announcement}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color }) => (
+              <Icon name="bullhorn" style={{ position: "relative" }} color={color} size={25} />
+            ),
+          }}
+        />
+      ) : null}
 
       {context.stateUser.isAuthenticated ? (
         <Tab.Screen
@@ -322,17 +333,6 @@ const TabNavigator = ({ isLoggedIn }) => {
       ) : null}
 
       <Tab.Screen
-        name="Announcement"
-        component={Announcement}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <Icon name="bullhorn" style={{ position: "relative" }} color={color} size={25} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
         name="User"
         component={UserNavigator}
         options={{
@@ -346,6 +346,7 @@ const TabNavigator = ({ isLoggedIn }) => {
     </Tab.Navigator>
   );
 };
+
 
 const styles = StyleSheet.create({
   logo: {

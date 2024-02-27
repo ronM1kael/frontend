@@ -46,10 +46,10 @@ const YourComponent = () => {
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.title}>Title Checker</Text>
+        <Text style={[styles.title, { textAlign: 'center' }]}>Title Checker</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter research title"
+          placeholder="Enter Research Title"
           value={researchTitle}
           onChangeText={setResearchTitle}
         />
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#800000', // Maroon color
+    // color: '#800000', // Maroon color
   },
   input: {
     height: 40,
