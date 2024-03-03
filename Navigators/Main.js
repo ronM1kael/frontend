@@ -37,6 +37,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import ApplicationStatus from "../Screens/Certification/ApplicationStatus"
 import TitleChecker from "../Screens/User/Student/TitleChecker"
 
+import StudentApplication from "../Screens/User/Faculty/StudentApplication"
+
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -206,6 +208,17 @@ const Main = () => {
                   <Icon name="check-circle" size={size * 0.8} color="maroon" />
                 </View>
               ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+  
+                </View>
+              ),
             }}
           />
         ) : null}
@@ -219,6 +232,17 @@ const Main = () => {
               drawerIcon: ({ color, size }) => (
                 <Icon name="save" size={size} color="maroon" />
               ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+  
+                </View>
+              ),
             }}
           />) : null}
 
@@ -230,6 +254,17 @@ const Main = () => {
             options={{
               drawerIcon: ({ color, size }) => (
                 <Icon name="certificate" size={size} color="maroon" />
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+
+                </View>
               ),
             }}
           />
@@ -247,6 +282,16 @@ const Main = () => {
               ),
             }}
           />) : null} */}
+
+        <Drawer.Screen
+          name="Student Application"
+          component={StudentApplication}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="info-circle" size={size} color="maroon" />
+            ),
+          }}
+        />
 
         <Drawer.Screen
           name="About Us"
@@ -285,18 +330,6 @@ const TabNavigator = ({ isLoggedIn }) => {
         showLabel: false,
       }}
     >
-      {context.stateUser.isAuthenticated && context.stateUser.userProfile.role !== 'Student' ? (
-        <Tab.Screen
-          name="Announcement"
-          component={Announcement}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({ color }) => (
-              <Icon name="bullhorn" style={{ position: "relative" }} color={color} size={25} />
-            ),
-          }}
-        />
-      ) : null}
 
       {context.stateUser.isAuthenticated ? (
         <Tab.Screen
@@ -306,6 +339,19 @@ const TabNavigator = ({ isLoggedIn }) => {
             headerShown: false,
             tabBarIcon: ({ color }) => (
               <Icon name="home" style={{ position: "relative" }} color={color} size={25} />
+            ),
+          }}
+        />
+      ) : null}
+
+      {context.stateUser.isAuthenticated && context.stateUser.userProfile.role !== 'Student' ? (
+        <Tab.Screen
+          name="Announcement"
+          component={Announcement}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ color }) => (
+              <Icon name="bullhorn" style={{ position: "relative" }} color={color} size={25} />
             ),
           }}
         />

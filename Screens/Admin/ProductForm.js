@@ -7,7 +7,8 @@ import {
   Alert,
   Image,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  SafeAreaView
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -73,6 +74,12 @@ const CertificationForm = (props) => {
   const navigation = useNavigation();
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const [showForm, setShowForm] = useState(false); // State to manage form visibility
+
+  const toggleForm = () => {
+    setShowForm(!showForm);
+  };
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -282,7 +289,7 @@ const CertificationForm = (props) => {
   }, [context.stateUser.isAuthenticated, context.stateUser.userProfile]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Image
         source={{
           uri: "https://www.bootdey.com/image/280x280/800000/800000",
@@ -290,84 +297,94 @@ const CertificationForm = (props) => {
         style={styles.background}
       />
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Upload a File</Text>
-        <View style={styles.card}>
+        <Text style={styles.title}>My Applications</Text>
+        {showForm && (
+          <View style={styles.formContainer}>
+            <View style={styles.card}>
 
-          <View style={styles.inputContainer}>
-            <TouchableOpacity
-              style={styles.buttons}
-              onPress={pickDocument}
-            >
-              <Text style={styles.buttonTexts}>Choose File</Text>
-            </TouchableOpacity>
-          </View>
+              <View style={styles.inputContainer}>
+                <TouchableOpacity
+                  style={styles.buttons}
+                  onPress={pickDocument}
+                >
+                  <Text style={styles.buttonTexts}>Choose File</Text>
+                </TouchableOpacity>
+              </View>
 
-          <Text style={styles.note}>Note: The uploaded PDF file should not exceed 10MB in size.</Text>
+              <Text style={styles.note}>Note: The uploaded PDF file should not exceed 10MB in size.</Text>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Application Title</Text>
-            <View
-              style={{
-                width: "100%",
-                height: 80,
-                borderColor: "#800000",
-                borderWidth: 1,
-                borderRadius: 8,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: 22,
-              }}
-            >
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Application Title</Text>
+                <View
+                  style={{
+                    width: "100%",
+                    height: 80,
+                    borderColor: "#800000",
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    style={styles.input}
+                    value={researchTitle}
+                    onChangeText={(text) => setResearchTitle(text)}
+                    multiline={true}
+                    numberOfLines={4}
+                  />
 
-              <TextInput
-                style={styles.input}
-                value={researchTitle}
-                onChangeText={(text) => setResearchTitle(text)}
-                multiline={true}
-                numberOfLines={4}
-              />
+                </View>
+              </View>
 
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Application Abstract</Text>
+                <View
+                  style={{
+                    width: "100%",
+                    height: 80,
+                    borderColor: "#800000",
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingLeft: 22,
+                  }}
+                >
+                  <TextInput
+                    style={styles.input}
+                    value={abstract}
+                    onChangeText={(text) => setAbstract(text)}
+                    multiline={true}
+                    numberOfLines={4}
+                  />
+                </View>
+              </View>
+
+              {error ? <Text style={styles.error}>{error}</Text> : null}
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleConfirmation}
+              >
+                <Text style={styles.buttonText}>Confirm</Text>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Application Abstract</Text>
-            <View
-              style={{
-                width: "100%",
-                height: 80,
-                borderColor: "#800000",
-                borderWidth: 1,
-                borderRadius: 8,
-                alignItems: "center",
-                justifyContent: "center",
-                paddingLeft: 22,
-              }}
-            >
-              <TextInput
-                style={styles.input}
-                value={abstract}
-                onChangeText={(text) => setAbstract(text)}
-                multiline={true}
-                numberOfLines={4}
-              />
-            </View>
-          </View>
-
-          {error ? <Text style={styles.error}>{error}</Text> : null}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleConfirmation}
-          >
-            <Text style={styles.buttonText}>Confirm</Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
 
+      <TouchableOpacity
+        style={styles.uploadButton}
+        onPress={toggleForm}
+      >
+        <Text style={styles.uploadButtonText}>{showForm ? "Close" : "Upload Application"}</Text>
+      </TouchableOpacity>
+
       <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <View style={{ borderWidth: 2, borderColor: 'maroon', margin: 10 }}>
+        <View style={{ borderWidth: 2, borderColor: 'maroon', margin: 5 }}>
           <Text style={{ textAlign: 'center', color: 'maroon', fontSize: 24, padding: 10 }}>
-            File List
+            Application List
           </Text>
         </View>
         <FlatList
@@ -379,7 +396,7 @@ const CertificationForm = (props) => {
           keyExtractor={(item) => item.id}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -399,19 +416,18 @@ const styles = {
   title: {
     fontSize: 24,
     color: "#fff",
-    marginBottom: 20,
-    marginTop: 20,
+    marginTop: 10,
   },
   card: {
-    width: "80%",
+    width: "100%",
     backgroundColor: "#fff",
     borderRadius: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
-    padding: 20,
-    marginBottom: 20,
+    padding: 10,
+    marginBottom: 5,
   },
   inputContainer: {
     marginBottom: 20,
@@ -421,12 +437,17 @@ const styles = {
     color: "#333",
   },
   button: {
-    width: "100%",
+    width: "40%",
     height: 40,
-    backgroundColor: "maroon",
+    backgroundColor: "maroon", // White background
+    borderColor: "maroon", // Maroon border
+    borderWidth: 2, // Border width
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 4,
+    alignSelf: "center",
+    marginTop: 20,
+    marginBottom: 10,
   },
   buttonText: {
     color: "#fff",
@@ -458,6 +479,23 @@ const styles = {
     fontSize: 11,
     color: "#666", // You can adjust the color according to your preference
     // marginTop: 1, // Adjust the margin top as per your design preference
+  },
+  uploadButton: {
+    width: "40%",
+    height: 40,
+    backgroundColor: "white", // White background
+    borderColor: "maroon", // Maroon border
+    borderWidth: 2, // Border width
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 4,
+    alignSelf: "center",
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  uploadButtonText: {
+    color: "maroon", // Maroon text
+    fontSize: 16,
   },
 };
 

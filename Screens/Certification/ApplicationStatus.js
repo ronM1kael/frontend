@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, ActivityIndicator, TextInput, FlatList, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, ActivityIndicator, TextInput, FlatList, Image, TouchableWithoutFeedback, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseURL from '../../assets/common/baseurl';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
@@ -47,6 +47,7 @@ const App = () => {
                 headers: { Authorization: `Bearer ${jwtToken}` },
             });
             const data = await response.json();
+            console.log(data);
             setSelectedData(data);
             setModalVisible(true);
             setLoading(false);
@@ -62,11 +63,14 @@ const App = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.pageTitle}>Applications Status</Text>
+        <SafeAreaView style={styles.container}>
+            <Text style={[styles.pageTitle, { textAlign: 'center', color: 'maroon' }]}>
+                Applications Status
+            </Text>
             <TextInput
                 style={styles.searchInput}
                 placeholder="Search..."
+                placeholderTextColor="maroon"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
             />
@@ -79,12 +83,15 @@ const App = () => {
                         <TouchableOpacity onPress={() => openModal(item.id)} style={[styles.card, { borderColor: item.titleColor }]}>
                             <Text style={[styles.cardTitle, { color: item.titleColor }]}>{item.research_title}</Text>
                             <View style={styles.icon}>
-                                <Text>({item.status})</Text>
+                                <Text>({item.submission_frequency})</Text>
                             </View>
                             <Image
                                 source={{ uri: 'https://media.idownloadblog.com/wp-content/uploads/2021/10/Red-PDF-app-icon-on-gray-background.png' }}
                                 style={styles.image}
                             />
+                            <View style={{ backgroundColor: item.status === 'Passed' ? 'green' : item.status === 'Returned' ? 'red' : 'transparent', padding: 10, borderRadius: 5, }}>
+                                <Text style={{ color: 'white', textAlign: 'center' }}>{item.status}</Text>
+                            </View>
                             <TouchableOpacity style={styles.button} onPress={() => openModal(item.id)}>
                                 <Text style={styles.buttonText}>View Details</Text>
                             </TouchableOpacity>
@@ -119,12 +126,20 @@ const App = () => {
                                 <Text style={{ textDecorationLine: 'underline' }}>{selectedData.thesis_type}</Text>
                             </Text>
                             <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Adviser Name: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.adviser_name}</Text>
+                                <Text style={{ fontWeight: 'bold' }}>Technical Adviser: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.TechnicalAdviserName}</Text>
                             </Text>
                             <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Adviser Email: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.adviser_email}</Text>
+                                <Text style={{ fontWeight: 'bold' }}>Technical Adviser Email: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.technicalAdviserEmail}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>Subject Adviser: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.SubjectAdviserName}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>Subject Adviser Email </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.subjectAdviserEmail}</Text>
                             </Text>
                             <Text style={styles.label}>
                                 <Text style={{ fontWeight: 'bold' }}>Research Specialist: </Text>
@@ -145,12 +160,40 @@ const App = () => {
                                 <Text style={{ textDecorationLine: 'underline' }}>{selectedData.simmilarity_percentage_results}%</Text>
                             </Text>
                             <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Certificate: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.certificate_file}</Text>
+                                <Text style={{ fontWeight: 'bold' }}>Remarks: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.remarks}</Text>
                             </Text>
                             <Text style={styles.cardTitle}></Text>
                             <Text style={[styles.cardTitle, { textAlign: 'center' }]}>Researchers Details</Text>
                             <Text style={styles.cardTitle}></Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>Requestor Name: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.requestor_name}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>Requestor Type: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.requestor_type}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>Student ID: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.tup_id}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>TUP Email: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.email_address}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>Gender: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.sex}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>Course: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.course}</Text>
+                            </Text>
+                            <Text style={styles.label}>
+                                <Text style={{ fontWeight: 'bold' }}>College: </Text>
+                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.college}</Text>
+                            </Text>
                             {selectedData.researchers_name1 && (
                                 <>
                                     <Text style={styles.label}>
@@ -223,7 +266,7 @@ const App = () => {
                 </View>
             </Modal>
 
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -241,7 +284,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: '#A9A9A9',
+        borderColor: 'maroon',
         marginBottom: 20,
         paddingHorizontal: 10,
     },

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, Modal, StyleSheet, SafeAreaView } from 'react-native';
 import baseURL from '../../../assets/common/baseurl';
+
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const YourComponent = () => {
   const [researchTitle, setResearchTitle] = useState('');
@@ -44,44 +46,55 @@ const YourComponent = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View>
-        <Text style={[styles.title, { textAlign: 'center' }]}>Title Checker</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Research Title"
-          value={researchTitle}
-          onChangeText={setResearchTitle}
-        />
-        <Button title="Search" onPress={searchResearch} color="#800000" />
-      </View>
-      {error ? (
-        <Text style={[styles.listItem, { color: '#800000' }]}>{error}</Text>
-      ) : researchCount === 0 ? (
-        <Text style={[styles.listItem, { color: '#800000' }]}>Nothing matched your title.</Text>
-      ) : (
-        <FlatList
-          style={styles.list}
-          data={researchList}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.listItem}>
-              <TouchableOpacity onPress={() => openResearchModal(item.id)}>
-                <Text style={styles.researchTitle}>{item.research_title}</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-      )}
-      <Modal visible={modalVisible} animationType="slide">
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Research Details</Text>
-          <Text>Research Title: {selectedResearch?.research_title}</Text>
-          <Text>Research Abstract: {selectedResearch?.abstract}</Text>
-          <Button title="Close" onPress={() => setModalVisible(false)} color="#800000" />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View>
+          <Text style={[styles.title, { textAlign: 'center', color: 'maroon' }]}>Title Checker</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              // placeholder="Enter Research Title"
+              value={researchTitle}
+              onChangeText={setResearchTitle}
+            />
+            <TouchableOpacity style={styles.searchIcon} onPress={searchResearch}>
+              <Icon name="search" size={20} color="#800000" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </Modal>
-    </View>
+        {error ? (
+          <Text style={[styles.listItem, { color: '#800000' }]}>{error}</Text>
+        ) : researchCount === 0 ? (
+          <Text style={[styles.listItem, { color: '#800000' }]}>Nothing matched your title.</Text>
+        ) : (
+          <ScrollView style={styles.list}>
+            {researchList.map((item) => (
+              <TouchableOpacity key={item.id} onPress={() => openResearchModal(item.id)}>
+                <View style={styles.listItem}>
+                  <Text style={styles.researchTitle}>{item.research_title}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+        <Modal visible={modalVisible} animationType="slide">
+          <View style={[styles.modalContainer, { marginLeft: 20, marginRight: 20 }]}>
+            <Text style={styles.modalTitle}>Research Details</Text>
+            <View>
+              <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Research Title:</Text>
+              <Text style={{ marginBottom: 16 }}>
+                {selectedResearch?.research_title}
+              </Text>
+              <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Research Abstract:</Text>
+              <Text style={{ marginBottom: 16 }}>
+                {selectedResearch?.abstract}
+              </Text>
+            </View>
+            <Button title="Close" onPress={() => setModalVisible(false)} color="#800000" />
+          </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -95,7 +108,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    // color: '#800000', // Maroon color
   },
   input: {
     height: 40,
@@ -128,6 +140,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#800000', // Maroon color
   },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  searchIcon: {
+    position: 'absolute',
+    right: 10,
+  },  
 });
 
 export default YourComponent;
