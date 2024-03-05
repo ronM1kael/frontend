@@ -198,9 +198,9 @@ const Main = () => {
           />
         )}
 
-        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
+        {context.stateUser.isAuthenticated && (context.stateUser.userProfile.role === 'Student' || context.stateUser.userProfile.role === 'Faculty') ? (
           <Drawer.Screen
-            name="Title Checker"
+            name={context.stateUser.userProfile.role === 'Student' ? "Title Checker" : "Researches"}
             component={TitleChecker}
             options={{
               drawerIcon: ({ color, size }) => (
@@ -216,7 +216,7 @@ const Main = () => {
                     resizeMode="contain"
                   />
                   <Text style={styles.companyName}>R&E-Services</Text>
-  
+
                 </View>
               ),
             }}
@@ -224,7 +224,7 @@ const Main = () => {
         ) : null}
 
 
-        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
+        {context.stateUser.isAuthenticated && (context.stateUser.userProfile.role === 'Student' || context.stateUser.userProfile.role === 'Faculty') ? (
           <Drawer.Screen
             name="My Files"
             component={Addfile}
@@ -240,14 +240,15 @@ const Main = () => {
                     resizeMode="contain"
                   />
                   <Text style={styles.companyName}>R&E-Services</Text>
-  
                 </View>
               ),
             }}
-          />) : null}
+          />
+        ) : null}
 
 
-        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
+
+          {context.stateUser.isAuthenticated && (context.stateUser.userProfile.role === 'Student' || context.stateUser.userProfile.role === 'Faculty') ? (
           <Drawer.Screen
             name="Application Status"
             component={ApplicationStatus}
@@ -283,15 +284,28 @@ const Main = () => {
             }}
           />) : null} */}
 
-        <Drawer.Screen
-          name="Student Application"
-          component={StudentApplication}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="info-circle" size={size} color="maroon" />
-            ),
-          }}
-        />
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
+          <Drawer.Screen
+            name="Student Application"
+            component={StudentApplication}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="info-circle" size={size} color="maroon" />
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+
+                </View>
+              ),
+            }}
+          />
+        ) : null}
 
         <Drawer.Screen
           name="About Us"

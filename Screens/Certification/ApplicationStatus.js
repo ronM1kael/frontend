@@ -89,7 +89,7 @@ const App = () => {
                                 source={{ uri: 'https://media.idownloadblog.com/wp-content/uploads/2021/10/Red-PDF-app-icon-on-gray-background.png' }}
                                 style={styles.image}
                             />
-                            <View style={{ backgroundColor: item.status === 'Passed' ? 'green' : item.status === 'Returned' ? 'red' : 'transparent', padding: 10, borderRadius: 5, }}>
+                            <View style={{ backgroundColor: item.status === 'Passed' ? 'green' : item.status === 'Returned' ? 'red' : 'yellow', padding: 10, borderRadius: 5, }}>
                                 <Text style={{ color: 'white', textAlign: 'center' }}>{item.status}</Text>
                             </View>
                             <TouchableOpacity style={styles.button} onPress={() => openModal(item.id)}>

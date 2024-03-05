@@ -36,6 +36,7 @@ import mime from 'mime';
 const PropertyContainer = ({ isLoggedIn }) => {
   const [searchText, setSearchText] = useState('');
   const [data, setData] = useState([]);
+  const [facultydata, setFacultyData] = useState([]);
   const [item, setItem] = useState([]);
 
   const [showPDF, setShowPDF] = useState(false);
@@ -132,7 +133,15 @@ const PropertyContainer = ({ isLoggedIn }) => {
 
       const result = await response.json();
       console.log('Fetched Data:', result);
-      setData(result.myfiles);
+
+      if (userProfile.role === 'Student') {
+        setData(result.myfiles);
+        console.log('Student Data:', result.myfiles);
+      } else if (userProfile.role === 'Faculty') {
+        setFacultyData(result.facultymyfiles);
+        console.log('Faculty Data:', result.facultymyfiles);
+      }
+
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -399,12 +408,21 @@ const PropertyContainer = ({ isLoggedIn }) => {
               value={searchText}
             />
           </View>
-          <FlatList
-            contentContainerStyle={styles.propertyListContainer}
-            data={filteredData}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-          />
+          {context.stateUser.userProfile.role === 'Student' ? (
+            <FlatList
+              contentContainerStyle={styles.propertyListContainer}
+              data={filteredData}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          ) : context.stateUser.userProfile.role === 'Faculty' ? (
+            <FlatList
+              contentContainerStyle={styles.propertyListContainer}
+              data={facultydata} // Use facultydata instead of filteredData for faculty
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          ) : null}
           <Modal visible={showPDF} transparent={false}>
             <View style={{ flex: 1 }}>
               <TouchableOpacity onPress={handleClosePDF}>
@@ -471,6 +489,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
 
         </View>
       ) : null}
+
     </>
   );
 };

@@ -39,12 +39,19 @@ const CertificationForm = (props) => {
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
 
-      setFiles(response.data.files); // Assuming response.data.files contains the files array
-      console.log('Files:', response.data.files);
+      if (userProfile.role === 'Student') {
+        setFiles(response.data.files);
+        console.log('Student Files:', response.data.files);
+      } else if (userProfile.role === 'Faculty') {
+        setFacultyFiles(response.data.facultyfiles);
+        console.log('Faculty Files:', response.data.facultyfiles);
+      }
+
     } catch (error) {
       console.error('Error fetching files:', error);
     }
   };
+
 
   useFocusEffect(
     useCallback(() => {
@@ -62,11 +69,13 @@ const CertificationForm = (props) => {
         setAbstract('');
         setError(null);
         setFiles([]);
+        setFacultyFiles([]);
       }
     }, [contexts.stateUser.isAuthenticated])
   );
 
   const [files, setFiles] = useState([]);
+  const [facultyfiles, setFacultyFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [researchTitle, setResearchTitle] = useState('');
   const [abstract, setAbstract] = useState('');
@@ -88,6 +97,7 @@ const CertificationForm = (props) => {
         .get(`${baseURL}get_files`)
         .then((res) => {
           setFiles(res.data);
+          setFacultyFiles(res.data);
         });
       setRefreshing(false);
     }, 2000);
@@ -108,8 +118,14 @@ const CertificationForm = (props) => {
           headers: { Authorization: `Bearer ${jwtToken}` },
         });
 
-        setFiles(response.data.files); // Assuming response.data.files contains the files array
-        console.log('Files:', response.data.files);
+        if (userProfile.role === 'Student') {
+          setFiles(response.data.files);
+          console.log('Student Files:', response.data.files);
+        } else if (userProfile.role === 'Faculty') {
+          setFacultyFiles(response.data.facultyfiles);
+          console.log('Faculty Files:', response.data.facultyfiles);
+        }
+
       } catch (error) {
         console.error('Error fetching files:', error);
       }
@@ -118,10 +134,12 @@ const CertificationForm = (props) => {
     fetchData();
   }, []);
 
+
   const deleteFile = async (fileId) => {
     try {
       await axios.delete(`${baseURL}delete_file/${fileId}`);
       setFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
+      setFacultyFiles((prevFiles) => prevFiles.filter((file) => file.id !== fileId));
       Toast.show({
         type: "success",
         text1: "File deleted successfully",
@@ -388,12 +406,12 @@ const CertificationForm = (props) => {
           </Text>
         </View>
         <FlatList
-          data={files}
+          data={contexts.stateUser.userProfile.role === 'Student' ? files : facultyfiles}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           renderItem={({ item, index }) => (
             <ListItem key={index} item={item} index={index} deleteFile={deleteFile} />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()} // Ensure key is a string
         />
       </View>
     </SafeAreaView>

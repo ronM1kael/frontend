@@ -78,20 +78,120 @@ const YourComponent = () => {
           </ScrollView>
         )}
         <Modal visible={modalVisible} animationType="slide">
-          <View style={[styles.modalContainer, { marginLeft: 20, marginRight: 20 }]}>
-            <Text style={styles.modalTitle}>Research Details</Text>
-            <View>
-              <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Research Title:</Text>
-              <Text style={{ marginBottom: 16 }}>
-                {selectedResearch?.research_title}
-              </Text>
-              <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Research Abstract:</Text>
-              <Text style={{ marginBottom: 16 }}>
-                {selectedResearch?.abstract}
-              </Text>
-            </View>
-            <Button title="Close" onPress={() => setModalVisible(false)} color="#800000" />
-          </View>
+          {selectedResearch && (
+            <ScrollView>
+              <View style={[styles.modalContainer, { marginLeft: 20, marginRight: 20 }]}>
+                <View>
+                  <Text style={[styles.modalTitle, { marginTop: 30 }]}>Research Title:</Text>
+                  <Text style={{ marginBottom: 30, color: 'maroon', fontStyle: 'italic' }}>
+                    "{selectedResearch?.research_title}"
+                  </Text>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Abstract:</Text>
+                  <Text style={{ marginBottom: 16 }}>
+                    {selectedResearch?.abstract}
+                  </Text>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Department:</Text>
+                  <Text style={{ marginBottom: 16 }}>
+                    {selectedResearch?.department}
+                  </Text>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Course:</Text>
+                  <Text style={{ marginBottom: 16 }}>
+                    {selectedResearch?.course}
+                  </Text>
+                  <Text style={[styles.modalTitle, { marginBottom: 30 }]}>Research Details</Text>
+                  {selectedResearch.faculty_adviser1 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 1:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.faculty_adviser1}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.faculty_adviser2 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 2:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.faculty_adviser2}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.faculty_adviser3 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 3:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.faculty_adviser3}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.faculty_adviser4 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 4:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.faculty_adviser4}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.researcher1 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 1:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.researcher1}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.researcher2 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 2:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.researcher2}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.researcher3 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 3:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.researcher3}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.researcher4 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 4:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.researcher4}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.researcher5 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 5:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.researcher5}
+                      </Text>
+                    </>
+                  )}
+                  {selectedResearch.researcher6 && (
+                    <>
+                      <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 6:</Text>
+                      <Text style={{ marginBottom: 16 }}>
+                        {selectedResearch?.researcher6}
+                      </Text>
+                    </>
+                  )}
+                  <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Time Frame:</Text>
+                  <Text style={{ marginBottom: 16 }}>
+                    {selectedResearch?.time_frame}
+                  </Text>
+                  <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Date Completion:</Text>
+                  <Text style={{ marginBottom: 16 }}>
+                    {selectedResearch?.date_completion}
+                  </Text>
+                </View>
+                <Button title="Close" onPress={() => setModalVisible(false)} color="#800000" />
+              </View>
+            </ScrollView>
+          )}
         </Modal>
       </View>
     </SafeAreaView>
@@ -155,7 +255,7 @@ const styles = StyleSheet.create({
   searchIcon: {
     position: 'absolute',
     right: 10,
-  },  
+  },
 });
 
 export default YourComponent;
