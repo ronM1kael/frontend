@@ -39,6 +39,8 @@ import TitleChecker from "../Screens/User/Student/TitleChecker"
 
 import StudentApplication from "../Screens/User/Faculty/StudentApplication"
 
+import AnnouncemmentNavigator from "../Navigators/AnnouncementNavigator"
+
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -248,7 +250,7 @@ const Main = () => {
 
 
 
-          {context.stateUser.isAuthenticated && (context.stateUser.userProfile.role === 'Student' || context.stateUser.userProfile.role === 'Faculty') ? (
+        {context.stateUser.isAuthenticated && (context.stateUser.userProfile.role === 'Student' || context.stateUser.userProfile.role === 'Faculty') ? (
           <Drawer.Screen
             name="Application Status"
             component={ApplicationStatus}
@@ -347,8 +349,8 @@ const TabNavigator = ({ isLoggedIn }) => {
 
       {context.stateUser.isAuthenticated ? (
         <Tab.Screen
-          name="Home"
-          component={HomeNavigator}
+          name="Announcement"
+          component={AnnouncemmentNavigator}
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
@@ -358,14 +360,14 @@ const TabNavigator = ({ isLoggedIn }) => {
         />
       ) : null}
 
-      {context.stateUser.isAuthenticated && context.stateUser.userProfile.role !== 'Student' ? (
+      {context.stateUser.isAuthenticated ? (
         <Tab.Screen
-          name="Announcement"
-          component={Announcement}
+          name="Home"
+          component={HomeNavigator}
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Icon name="bullhorn" style={{ position: "relative" }} color={color} size={25} />
+              <Icon name="file-text" style={{ position: "relative" }} color={color} size={25} />
             ),
           }}
         />

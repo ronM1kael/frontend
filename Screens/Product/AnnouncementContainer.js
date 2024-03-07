@@ -30,7 +30,18 @@ const AnnouncementList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${baseURL}mobileshowannouncement`);
+
+        const jwtToken = await AsyncStorage.getItem('jwt');
+        const userProfile = context.stateUser.userProfile;
+        if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
+          console.error('Invalid authentication state');
+          return;
+        }
+
+        const response = await axios.get(`${baseURL}mobilehomepage/${userProfile.id}`, {
+          headers: { Authorization: `Bearer ${jwtToken}` },
+        });
+
         console.log('Fetched data:', response.data);
         setAnnouncements(Object.values(response.data.announcements));
         setIsLoggedIn(!!context.stateUser.isAuthenticated); // Set login status
@@ -133,6 +144,22 @@ const AnnouncementList = () => {
         renderItem={({ item: announcement }) => (
           <TouchableOpacity onPress={() => handlePress(announcement)}>
             <View style={styles.card}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+  <Image
+    source={{ uri: `${baseURL2}/images/${announcement[0].avatar}` }} // Replace './path/to/your/image/icon.png' with the actual path to your image icon
+    style={{ width: 20, height: 20, marginRight: 5 }}
+    onLoad={() => console.log('Image loaded')}
+    onError={(error) => handleImageError(error, announcement)}
+     // Adjust width, height, and margin as needed
+  />
+  <Text style={styles.productName}>
+    {announcement[0].fname} {announcement[0].mname} {announcement[0].lname}
+  </Text>
+</View>
+<Text style={styles.productContent}>
+  ({announcement[0].role}) {announcement[0].created_time}
+</Text>
+
               <ScrollView horizontal style={styles.imagesContent}>
                 {announcement.map((imageData, index) => (
                   <View key={`${imageData.id}_${index}`}>
@@ -145,8 +172,6 @@ const AnnouncementList = () => {
                   </View>
                 ))}
               </ScrollView>
-              <Text style={styles.productName}>{announcement[0].title}</Text>
-              <Text style={styles.productContent}>{announcement[0].content}</Text>
             </View>
           </TouchableOpacity>
         )}
