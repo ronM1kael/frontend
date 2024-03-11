@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, Modal, StyleSheet, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
+
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import baseURL from '../../../assets/common/baseurl';
 
 import Icon from "react-native-vector-icons/FontAwesome";
+
+import Toast from "react-native-toast-message";
+import AuthGlobal from '../../../Context/Store/AuthGlobal';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from "axios";
 
 const YourComponent = () => {
   const [researchTitle, setResearchTitle] = useState('');
@@ -12,7 +19,22 @@ const YourComponent = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState('');
 
-  const [requestModalVisible, setRequestModalVisible] = useState(false);
+  // const [requestModalVisible, setRequestModalVisible] = useState(false);
+
+  const [accessModalVisible, setAccessModalVisible] = useState(false);
+  const [pendingModalVisible, setPendingModalVisible] = useState(false);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+
+  const [endModalVisible, setEndModalVisible] = useState(false);
+
+  const context = useContext(AuthGlobal);
+  const navigation = useNavigation();
+
+  const [purpose, setPurpose] = useState('');
+
+  const [selectedResearchId, setSelectedResearchId] = useState(null); // Add state for selected research id
+
+  const [showInputContainer, setShowInputContainer] = useState(false);
 
   useEffect(() => {
     fetchResearchList();
@@ -37,19 +59,94 @@ const YourComponent = () => {
 
   const openResearchModal = async (id) => {
     try {
-      const response = await fetch(`${baseURL}mobile/show-research-info/${id}`);
+      const response = await fetch(`${baseURL}mobile/student/send-request-access/${id}`);
       const data = await response.json();
-      setSelectedResearch(data);
-      setModalVisible(true);
+
+      const endAccessDate = new Date(data.end_access_date);
+      const currentDate = new Date();
+
+      // Set hours, minutes, seconds, and milliseconds to zero
+      endAccessDate.setHours(0, 0, 0, 0);
+      currentDate.setHours(0, 0, 0, 0);
+
+      console.log(data);
+      if (data.status == null) {
+        setAccessModalVisible(true);
+        setSelectedResearchId(id); // Store the id in state
+      } else if (data.status === 'Access Approved') {
+        if (endAccessDate.getTime() > currentDate.getTime()) {
+          setSelectedResearch(data);
+          setModalVisible(true);
+        } else {
+          setEndModalVisible(true);
+        }
+      } else if (data.status === 'Rejected') {
+        setRejectModalVisible(true);
+      } else {
+        setPendingModalVisible(true);
+      }
+      setError('');
     } catch (error) {
       console.error('Error fetching research info:', error);
       setError('Error fetching research info');
     }
   };
 
-  const openRequestModal = () => {
-    setRequestModalVisible(true);
+  const handleConfirmation = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem('jwt');
+      const userProfile = context.stateUser.userProfile;
+
+      if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
+        setError("User authentication or profile information is missing");
+        return;
+      }
+
+      const userId = userProfile.id;
+      const role = userProfile.role;
+
+      const response = await axios.post(`${baseURL}student/send-request-access`, {
+        research_id: selectedResearchId, // Use the selectedResearchId here
+        purpose: purpose,
+        requestor_id: userId,
+        requestor_type: role
+      });
+
+      if (response.data.success) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Request was successfully sent',
+          visibilityTime: 3000,
+          autoHide: true
+        });
+        setAccessModalVisible(false);
+        setRejectModalVisible(false);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to send request',
+          visibilityTime: 3000,
+          autoHide: true
+        });
+      }
+    } catch (error) {
+      console.error('Error sending request:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to send request',
+        visibilityTime: 3000,
+        autoHide: true
+      });
+    }
   };
+
+
+  // const openRequestModal = () => {
+  //   setRequestModalVisible(true);
+  // };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -77,24 +174,88 @@ const YourComponent = () => {
           // Inside the return statement of YourComponent
           <ScrollView style={styles.list}>
             {researchList.map((item) => (
-              <TouchableWithoutFeedback key={item.id} onPress={() => openResearchModal(item.id)}>
+              <TouchableOpacity key={item.id} onPress={() => openResearchModal(item.id)}>
                 <View style={styles.listItem}>
                   <View style={styles.itemContent}>
                     <Text style={styles.researchTitle}>{item.research_title}</Text>
-                    <TouchableOpacity style={styles.requestButton} onPress={openRequestModal}>
+                    {/* <TouchableOpacity style={styles.requestButton} onPress={openRequestModal}>
                       <Icon name="lock" size={20} color="#fff" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                 </View>
-              </TouchableWithoutFeedback>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         )}
 
+        {/* PERMISSION */}
+        <Modal visible={accessModalVisible} animationType="slide" transparent={true}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, borderColor: 'maroon', borderWidth: 2 }}>
+              <TouchableOpacity onPress={() => setAccessModalVisible(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
+                <Icon name="close" size={20} />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: 'maroon' }}>Research Information</Text>
+              <View style={{ alignItems: 'center', marginBottom: 20 }}>
+                <Icon name="lock" size={80} color="maroon" />
+              </View>
+              <Text style={{ marginBottom: 20 }}>To gain access to the information, you need to send a permission request.</Text>
+
+              <TouchableOpacity
+                onPress={() => setShowInputContainer(prevState => !prevState)}
+                style={{
+                  backgroundColor: 'white',
+                  borderColor: 'maroon',
+                  borderWidth: 1,
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderRadius: 5,
+                  width: 200, // Adjust width as needed
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginLeft: 55
+                }}
+              >
+                <Text style={{ color: 'maroon', fontWeight: 'bold' }}>
+                  {showInputContainer ? 'Close' : 'Request Access'}
+                </Text>
+              </TouchableOpacity>
+
+              {showInputContainer && (
+                <View style={{ marginTop: 10, width: "95%", height: 100, borderColor: "#800000", borderWidth: 1, borderRadius: 8, flexDirection: 'row', alignItems: "center", justifyContent: "center", paddingHorizontal: 10 }}>
+                  <TextInput style={styles.inputs} multiline={true} numberOfLines={4} onChangeText={(text) => setPurpose(text)} />
+                  <TouchableOpacity onPress={handleConfirmation} style={{ marginLeft: 10 }}>
+                    <View style={{ backgroundColor: 'maroon', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 5 }}>
+                      <Text style={{ color: 'white' }}>Send Request</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </View>
+        </Modal>
+
+        {/* IF status=pending */}
+        <Modal visible={pendingModalVisible} animationType="slide" transparent={true}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, borderColor: 'maroon', borderWidth: 2 }}>
+              <TouchableOpacity onPress={() => setPendingModalVisible(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
+                <Icon name="close" size={20} />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: 'maroon' }}>Request Information</Text>
+              <View style={{ alignItems: 'center', marginBottom: 20 }}>
+                <Icon name="hourglass" size={80} color="maroon" />
+              </View>
+              <Text style={{ marginBottom: 20 }}>Request processing, Please wait.</Text>
+            </View>
+          </View>
+        </Modal>
+
+        {/* IF status=Access Approved */}
         <Modal visible={modalVisible} animationType="slide" transparent={true}>
           {selectedResearch && (
             <ScrollView>
-              <View style={[styles.modalContainer, { marginTop: 50, marginHorizontal: 20 }]}>
+              <View style={[styles.modalContainer, { marginTop: 50, marginHorizontal: 20, borderRadius: 10, borderColor: 'maroon', borderWidth: 2 }]}>
                 <View style={styles.modalContents}>
                   <TouchableOpacity
                     onPress={() => setModalVisible(false)}
@@ -114,21 +275,21 @@ const YourComponent = () => {
 
                   <View style={{ flexDirection: 'row' }}>
                     <Text style={{ fontWeight: 'bold' }}>Abstract:</Text>
-                    <Text style={{ marginBottom: -80, marginLeft: 70, flex: 1 }}>
+                    <Text style={{ marginBottom: 30, marginLeft: 70, flex: 1 }}>
                       {selectedResearch?.abstract}
                     </Text>
                   </View>
 
                   <View style={{ flexDirection: 'row' }}>
                     <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Department:</Text>
-                    <Text style={{ marginBottom: 16, marginLeft: 50 }}>
+                    <Text style={{ marginBottom: 30, marginLeft: 49 }}>
                       {selectedResearch?.department}
                     </Text>
                   </View>
 
                   <View style={{ flexDirection: 'row' }}>
                     <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Course:</Text>
-                    <Text style={{ marginBottom: 30, marginLeft: 80 }}>
+                    <Text style={{ marginBottom: 30, marginLeft: 82 }}>
                       {selectedResearch?.course}
                     </Text>
                   </View>
@@ -137,7 +298,7 @@ const YourComponent = () => {
                   {selectedResearch.faculty_adviser1 && (
                     <>
                       <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 1:</Text>
+                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty 1:</Text>
                         <Text style={{ marginBottom: 16, marginLeft: 20 }}>
                           {selectedResearch?.faculty_adviser1}
                         </Text>
@@ -147,7 +308,7 @@ const YourComponent = () => {
                   {selectedResearch.faculty_adviser2 && (
                     <>
                       <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 2:</Text>
+                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty 2:</Text>
                         <Text style={{ marginBottom: 16, marginLeft: 20 }}>
                           {selectedResearch?.faculty_adviser2}
                         </Text>
@@ -157,7 +318,7 @@ const YourComponent = () => {
                   {selectedResearch.faculty_adviser3 && (
                     <>
                       <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 3:</Text>
+                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty 3:</Text>
                         <Text style={{ marginBottom: 16, marginLeft: 20 }}>
                           {selectedResearch?.faculty_adviser3}
                         </Text>
@@ -167,7 +328,7 @@ const YourComponent = () => {
                   {selectedResearch.faculty_adviser4 && (
                     <>
                       <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty Adviser 4:</Text>
+                        <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Faculty 4:</Text>
                         <Text style={{ marginBottom: 16, marginLeft: 20 }}>
                           {selectedResearch?.faculty_adviser4}
                         </Text>
@@ -178,7 +339,7 @@ const YourComponent = () => {
                     <>
                       <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 1:</Text>
-                        <Text style={{ marginBottom: 16, marginLeft: 46 }}>
+                        <Text style={{ marginBottom: 16, marginLeft: 35 }}>
                           {selectedResearch?.researcher1}
                         </Text>
                       </View>
@@ -188,7 +349,7 @@ const YourComponent = () => {
                     <>
                       <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 2:</Text>
-                        <Text style={{ marginBottom: 16, marginLeft: 46 }}>
+                        <Text style={{ marginBottom: 16, marginLeft: 35 }}>
                           {selectedResearch?.researcher2}
                         </Text>
                       </View>
@@ -198,7 +359,7 @@ const YourComponent = () => {
                     <>
                       <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 3:</Text>
-                        <Text style={{ marginBottom: 16, marginLeft: 46 }}>
+                        <Text style={{ marginBottom: 16, marginLeft: 35 }}>
                           {selectedResearch?.researcher3}
                         </Text>
                       </View>
@@ -208,7 +369,7 @@ const YourComponent = () => {
                     <>
                       <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 4:</Text>
-                        <Text style={{ marginBottom: 16, marginLeft: 46 }}>
+                        <Text style={{ marginBottom: 16, marginLeft: 35 }}>
                           {selectedResearch?.researcher4}
                         </Text>
                       </View>
@@ -218,7 +379,7 @@ const YourComponent = () => {
                     <>
                       <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 5:</Text>
-                        <Text style={{ marginBottom: 16, marginLeft: 46 }}>
+                        <Text style={{ marginBottom: 16, marginLeft: 35 }}>
                           {selectedResearch?.researcher5}
                         </Text>
                       </View>
@@ -228,7 +389,7 @@ const YourComponent = () => {
                     <>
                       <View style={{ flexDirection: 'row' }}>
                         <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Researcher 6:</Text>
-                        <Text style={{ marginBottom: 16, marginLeft: 46 }}>
+                        <Text style={{ marginBottom: 16, marginLeft: 35 }}>
                           {selectedResearch?.researcher6}
                         </Text>
                       </View>
@@ -246,60 +407,158 @@ const YourComponent = () => {
                       {selectedResearch?.date_completion}
                     </Text>
                   </View>
+
+                  <Text style={{ marginTop: 30, color: 'maroon', fontStyle: 'italic', marginLeft: 30 }}>
+                    This information remains valid until {selectedResearch?.end_access_date}
+                  </Text>
+
                 </View>
               </View>
             </ScrollView>
           )}
         </Modal>
 
-        <Modal visible={requestModalVisible} animationType="slide" transparent={true}>
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={styles.modalContent}>
-                <TouchableOpacity
-                  onPress={() => setRequestModalVisible(false)}
-                  style={{
-                    alignSelf: "flex-end",
-                    position: "absolute",
-                    top: 5,
-                    right: 10,
-                  }}
-                >
-                  <Icon name="close" size={20} />
-                </TouchableOpacity>
-                <Text style={styles.modalTitle}>Request Access</Text>
-                <View style={styles.inputContainer}>
+        {/* IF status=Reject */}
+        <Modal visible={rejectModalVisible} animationType="slide" transparent={true}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, borderColor: 'maroon', borderWidth: 2 }}>
+              <TouchableOpacity onPress={() => setRejectModalVisible(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
+                <Icon name="close" size={20} />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: 'maroon' }}>Research Information</Text>
+              <View style={{ alignItems: 'center', marginBottom: 20 }}>
+                <Icon name="shield" size={80} color="maroon" />
+              </View>
+              <Text style={{ marginBottom: 20 }}>The access you have requested has been denied.</Text>
+
+              <TouchableOpacity
+                onPress={() => setShowInputContainer(prevState => !prevState)}
+                style={{
+                  backgroundColor: 'white',
+                  borderColor: 'maroon',
+                  borderWidth: 1,
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderRadius: 5,
+                  width: 200, // Adjust width as needed
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginLeft: 55
+                }}
+              >
+                <Text style={{ color: 'maroon', fontWeight: 'bold' }}>
+                  {showInputContainer ? 'Close' : 'Reapply for Permission'}
+                </Text>
+              </TouchableOpacity>
+
+              {showInputContainer && (
+                <View style={[styles.inputContainer, { justifyContent: 'center', marginTop: 10 }]}>
                   <View
                     style={{
-                      width: "95%",
+                      width: "90%",
                       height: 100,
                       borderColor: "#800000",
                       borderWidth: 1,
                       borderRadius: 8,
-                      flexDirection: 'row', // Added to enable horizontal layout
+                      flexDirection: 'row',
                       alignItems: "center",
                       justifyContent: "center",
-                      paddingHorizontal: 10, // Adjusted padding for spacing
+                      paddingHorizontal: 10,
                     }}
                   >
                     <TextInput
                       style={styles.inputs}
-                      // value={abstract}
-                      // onChangeText={(text) => setAbstract(text)}
                       multiline={true}
                       numberOfLines={4}
+                      onChangeText={setPurpose}
+                      value={purpose}
                     />
-                    <TouchableOpacity style={{ marginLeft: 10 }}>
+                    <TouchableOpacity
+                      onPress={handleConfirmation}
+                      style={{ marginLeft: 10 }}
+                    >
                       <View style={{ backgroundColor: 'maroon', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 5 }}>
                         <Text style={{ color: 'white' }}>Send Request</Text>
                       </View>
                     </TouchableOpacity>
                   </View>
                 </View>
-              </View>
+              )}
             </View>
           </View>
         </Modal>
+
+        {/* IF end_access_date=date */}
+        <Modal visible={endModalVisible} animationType="slide" transparent={true}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10, borderColor: 'maroon', borderWidth: 2 }}>
+              <TouchableOpacity onPress={() => setEndModalVisible(false)} style={{ position: 'absolute', top: 10, right: 10 }}>
+                <Icon name="close" size={20} />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: 'maroon' }}>Research Information</Text>
+              <View style={{ alignItems: 'center', marginBottom: 20 }}>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                  <Icon name="exclamation-triangle" size={80} color="maroon" />
+                  <Text style={{ marginBottom: 20 }}>The access you had expired.</Text>
+                </View>
+              </View>
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity
+                  onPress={() => setShowInputContainer(prevState => !prevState)}
+                  style={{
+                    backgroundColor: 'white',
+                    borderColor: 'maroon',
+                    borderWidth: 1,
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 5,
+                    width: 200, // Adjust width as needed
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text style={{ color: 'maroon', fontWeight: 'bold' }}>
+                    {showInputContainer ? 'Close' : 'Reapply for Permission'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              {showInputContainer && (
+                <View style={[styles.inputContainer, { justifyContent: 'center', marginTop: 10 }]}>
+                  <View
+                    style={{
+                      width: "90%",
+                      height: 100,
+                      borderColor: "#800000",
+                      borderWidth: 1,
+                      borderRadius: 8,
+                      flexDirection: 'row',
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <TextInput
+                      style={styles.inputs}
+                      multiline={true}
+                      numberOfLines={4}
+                      onChangeText={setPurpose}
+                      value={purpose}
+                    />
+                    <TouchableOpacity
+                      onPress={handleConfirmation}
+                      style={{ marginLeft: 10 }}
+                    >
+                      <View style={{ backgroundColor: 'maroon', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 5 }}>
+                        <Text style={{ color: 'white' }}>Send Request</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+        </Modal>
+
       </View>
     </SafeAreaView>
   );
@@ -317,11 +576,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   input: {
+    flex: 1,
     height: 40,
-    marginBottom: 10,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#800000',
   },
   list: {
     marginTop: 10,
@@ -336,10 +595,31 @@ const styles = StyleSheet.create({
   researchTitle: {
     color: '#800000', // Maroon color
   },
-  modalContainer: {
+  modalView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'transparent', // semi-transparent black background
+  },
+  modalContent: {
+    backgroundColor: "white",
+    width: '80%', // Adjust width as needed
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalTitle: {
     fontSize: 20,
@@ -351,13 +631,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#800000',
   },
   searchIcon: {
     position: 'absolute',
@@ -378,74 +651,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: 'transparent', // transparent background
-  },
-  modalView: {
-    backgroundColor: "transparent", // transparent background
-    alignItems: "center",
-    elevation: 5
-  },
-  modalContent: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "left",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalContents: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "left",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  note: {
+    textAlign: 'center',
     marginBottom: 10,
-    color: '#800000', // Maroon color
-  },
-  modalText: {
-    marginBottom: 16,
+    marginTop: 10,
+    fontSize: 16,
+    color: '#333', // Adjust color as needed
   },
   inputs: {
     paddingRight: 10,
     lineHeight: 23,
     flex: 2,
     textAlignVertical: 'top'
+  },
+  modalContents: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 35,
+    alignItems: "left",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   },
 });
 

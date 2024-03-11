@@ -31,6 +31,9 @@ export const loginUser = async (email, password, navigation, dispatch) => {
       const user = {
         email: data.user.email,
         password: data.user.password,
+        fname: data.user.fname,
+        mname: data.user.mname,
+        lname: data.user.lname,
         id: data.user.id,
         role: data.user.role,
       };
@@ -92,7 +95,7 @@ export const logoutUser = (dispatch, navigation) => {
       text2: 'Goodbye!',
     });
     // Navigate to the Login screen
-    // navigation.navigate('Login');
+    navigation.navigate('Login');
   } catch (error) {
     console.error('Logout failed:', error);
     Toast.show({

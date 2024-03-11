@@ -1,4 +1,3 @@
-// Import the useState hook from React
 import React, { useEffect, useState, useContext } from 'react';
 import {
   View,
@@ -10,6 +9,7 @@ import {
   ScrollView,
   Modal,
   TextInput,
+  SafeAreaView
 } from 'react-native';
 import axios from 'axios';
 
@@ -24,13 +24,13 @@ const AnnouncementList = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track user login status
+  const [refresh, setRefresh] = useState(false); // State to force component refresh
 
   const context = useContext(AuthGlobal);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         const jwtToken = await AsyncStorage.getItem('jwt');
         const userProfile = context.stateUser.userProfile;
         if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
@@ -51,7 +51,7 @@ const AnnouncementList = () => {
     };
 
     fetchData();
-  }, [context.stateUser.isAuthenticated]);
+  }, [context.stateUser.isAuthenticated, refresh]); // Add refresh to the dependency array
 
   const handlePress = async (announcement) => {
     setSelectedAnnouncement(announcement);
@@ -81,47 +81,44 @@ const AnnouncementList = () => {
   const handleAddComment = async () => {
     try {
       const jwtToken = await AsyncStorage.getItem('jwt');
-      console.log('JWT Token:', jwtToken);
       const userProfile = context.stateUser.userProfile;
-  
+
       if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id || !selectedAnnouncement) {
-        setError("User authentication or profile information is missing, or no announcement is selected");
+        console.error("User authentication or profile information is missing, or no announcement is selected");
         return;
       }
-  
+
       const userId = userProfile.id;
-  
+      const fname = userProfile.fname;
+      const mname = userProfile.mname;
+      const lname = userProfile.lname;
+
       const formData = new FormData();
       formData.append('content', newComment);
-      
-      const announcementId = selectedAnnouncement[0]?.announcement_id;
-      if (!announcementId) {
-        setError('Announcement ID is undefined');
-        return;
-      }
-      
-      formData.append('announcement_id', announcementId);
+      formData.append('announcement_id', selectedAnnouncement[0]?.announcement_id);
       formData.append('user_id', userId);
-  
-      const requestUrl = `${baseURL}add/${announcementId}/comment`;
-      
-      const response = await axios.post(requestUrl, formData, {
+      formData.append('fname', fname);
+      formData.append('mname', mname);
+      formData.append('lname', lname);
+
+      const response = await axios.post(`${baseURL}add-comment/${selectedAnnouncement[0]?.announcement_id}`, formData, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-  
-      if (response.data.success) {
+
+      if (response.data.comment) {
         console.log('Comment added successfully');
         Toast.show({
           type: "success",
           text1: "Comment added successfully",
         });
-  
+
         setComments([...comments, response.data.comment]);
         setNewComment('');
+        resetState();
       } else {
         console.error('Failed to add comment');
         // Handle error state or display an error message to the user
@@ -137,29 +134,40 @@ const AnnouncementList = () => {
     }
   };
 
+  const resetState = () => {
+    setNewComment('');
+    setRefresh(prev => !prev); // Toggle the refresh state to force re-render
+    closeModal();
+  };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         data={announcements}
         renderItem={({ item: announcement }) => (
           <TouchableOpacity onPress={() => handlePress(announcement)}>
             <View style={styles.card}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-  <Image
-    source={{ uri: `${baseURL2}/images/${announcement[0].avatar}` }} // Replace './path/to/your/image/icon.png' with the actual path to your image icon
-    style={{ width: 20, height: 20, marginRight: 5 }}
-    onLoad={() => console.log('Image loaded')}
-    onError={(error) => handleImageError(error, announcement)}
-     // Adjust width, height, and margin as needed
-  />
-  <Text style={styles.productName}>
-    {announcement[0].fname} {announcement[0].mname} {announcement[0].lname}
-  </Text>
-</View>
-<Text style={styles.productContent}>
-  ({announcement[0].role}) {announcement[0].created_time}
-</Text>
-
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image
+                  source={{ uri: `https://tse4.mm.bing.net/th?id=OIP.sRdQAfzOzF_ZjC3dnAZVSQHaGw&pid=Api&P=0&h=180` }} // Replace './path/to/your/image/icon.png' with the actual path to your image icon
+                  style={{ width: 40, height: 40, marginLeft: 20, marginTop: 20 }}
+                  onLoad={() => console.log('Image loaded')}
+                  onError={(error) => handleImageError(error, announcement)}
+                // Adjust width, height, and margin as needed
+                />
+                <Text style={styles.productName}>
+                  {announcement[0].fname} {announcement[0].mname} {announcement[0].lname}
+                </Text>
+              </View>
+              <Text style={styles.productContent}>
+                ({announcement[0].role}) {announcement[0].created_time}
+              </Text>
+              <Text style={styles.title}>
+                {announcement[0].title}
+              </Text>
+              <Text style={styles.content}>
+                {announcement[0].content}
+              </Text>
               <ScrollView horizontal style={styles.imagesContent}>
                 {announcement.map((imageData, index) => (
                   <View key={`${imageData.id}_${index}`}>
@@ -177,38 +185,6 @@ const AnnouncementList = () => {
         )}
         keyExtractor={(item, index) => index.toString()}
       />
-
-{/* <FlatList
-      data={announcements}
-      renderItem={({ item: announcement, users }) => (
-        <TouchableOpacity onPress={() => handlePress(announcement)}>
-        <View style={styles.post}>
-          <View style={styles.header}>
-            <View>
-              <Text style={styles.name}>{users[0].fname}{users[0].mname}{users[0].lname}</Text>
-              <Text style={styles.date}>{announcement[0].created_at}</Text>
-            </View>
-          </View>
-          <Text style={styles.productName}>{announcement[0].title}</Text>
-          <Text style={styles.description}>{announcement[0].content}</Text>
-          <ScrollView horizontal style={styles.imagesContent}>
-                {announcement.map((imageData, index) => (
-                  <View key={`${imageData.id}_${index}`}>
-                    <Image
-                      style={styles.productImage}
-                      source={{ uri: `${baseURL2}/images/${imageData.img_path}` }}
-                      onLoad={() => console.log('Image loaded')}
-                      onError={(error) => handleImageError(error, imageData)}
-                    />
-                  </View>
-                ))}
-              </ScrollView>
-        </View>
-        </TouchableOpacity>
-      )}
-      keyExtractor={(item, index) => index.toString()}
-    /> */}
-
       {selectedAnnouncement && (
         <Modal
           animationType="slide"
@@ -269,14 +245,15 @@ const AnnouncementList = () => {
           </View>
         </Modal>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: 15,
+    backgroundColor: 'maroon',
   },
   card: {
     backgroundColor: '#fff',
@@ -301,11 +278,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 5,
+    marginLeft: 20
   },
   productContent: {
     fontSize: 16,
     color: '#888',
-    marginBottom: 10,
+    marginTop: -15,
+    marginBottom: 30,
+    marginLeft: 80
   },
   modalContainer: {
     flex: 1,
@@ -345,6 +325,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+  },
+  title: {
+    fontSize: 20, // Example font size
+    fontWeight: 'bold', // Example font weight
+    color: 'black', // Example color
+    marginBottom: 20,
+    marginLeft: 15
+  },
+  content: {
+    fontSize: 16, // Example font size for content
+    color: 'gray', // Example color for content
+    marginLeft: 15
   },
 });
 
