@@ -5,18 +5,23 @@ import baseURL from '../../assets/common/baseurl';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
 
 const App = () => {
+
+    const [stats, setStats] = useState([]);
     const [studentstats, setStudentStats] = useState([]);
+    const [facultystats, setFacultyStats] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const context = useContext(AuthGlobal);
 
+    const userProfilerole = context.stateUser.userProfile;
+
     useEffect(() => {
-        fetchStudentStats();
+        fetchData();
     }, []);
 
-    const fetchStudentStats = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             const jwtToken = await AsyncStorage.getItem('jwt');
@@ -27,14 +32,21 @@ const App = () => {
                 return;
             }
 
-            const response = await fetch(`${baseURL}mobileapplication_status/status/${userProfile.id}`, {
+            let url = '';
+            if (userProfile.role === 'Faculty' || userProfile.role === 'Staff') {
+                url = `${baseURL}mobileapplication_statusfaculty/status/${userProfile.id}`;
+            } else {
+                url = `${baseURL}mobileapplication_status/status/${userProfile.id}`;
+            }
+
+            const response = await fetch(url, {
                 headers: { Authorization: `Bearer ${jwtToken}` },
             });
             const data = await response.json();
-            setStudentStats(data.studentstats);
+            setStats(data.studentstats || data.facultystats);
             setLoading(false);
         } catch (error) {
-            console.error('Error fetching student stats:', error);
+            console.error('Error fetching stats:', error);
             setLoading(false);
         }
     };
@@ -42,8 +54,15 @@ const App = () => {
     const openModal = async (id) => {
         try {
             setLoading(true);
+            const userProfile = context.stateUser.userProfile;
             const jwtToken = await AsyncStorage.getItem('jwt');
-            const response = await fetch(`${baseURL}mobileshow_application/${id}`, {
+            let url = '';
+            if (userProfile.role === 'Faculty' || userProfile.role === 'Staff') {
+                url = `${baseURL}mobileshow_applicationfaculty/${id}`;
+            } else {
+                url = `${baseURL}mobileshow_application/${id}`;
+            }
+            const response = await fetch(url, {
                 headers: { Authorization: `Bearer ${jwtToken}` },
             });
             const data = await response.json();
@@ -78,7 +97,7 @@ const App = () => {
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
                 <FlatList
-                    data={studentstats.filter(searchFilter)}
+                    data={stats.filter(searchFilter)}
                     renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => openModal(item.id)} style={[styles.card, { borderColor: item.titleColor }]}>
                             <Text style={[styles.cardTitle, { color: item.titleColor }]}>{item.research_title}</Text>
@@ -125,22 +144,30 @@ const App = () => {
                                 <Text style={{ fontWeight: 'bold' }}>Thesis Type: </Text>
                                 <Text style={{ textDecorationLine: 'underline' }}>{selectedData.thesis_type}</Text>
                             </Text>
-                            <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Technical Adviser: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.TechnicalAdviserName}</Text>
-                            </Text>
-                            <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Technical Adviser Email: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.technicalAdviserEmail}</Text>
-                            </Text>
-                            <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Subject Adviser: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.SubjectAdviserName}</Text>
-                            </Text>
-                            <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Subject Adviser Email </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.subjectAdviserEmail}</Text>
-                            </Text>
+                            {userProfilerole.role === 'Student' && (
+                                <Text style={styles.label}>
+                                    <Text style={{ fontWeight: 'bold' }}>Technical Adviser: </Text>
+                                    <Text style={{ textDecorationLine: 'underline' }}>{selectedData.TechnicalAdviserName}</Text>
+                                </Text>
+                            )}
+                            {userProfilerole.role === 'Student' && (
+                                <Text style={styles.label}>
+                                    <Text style={{ fontWeight: 'bold' }}>Technical Adviser Email: </Text>
+                                    <Text style={{ textDecorationLine: 'underline' }}>{selectedData.technicalAdviserEmail}</Text>
+                                </Text>
+                            )}
+                            {userProfilerole.role === 'Student' && (
+                                <Text style={styles.label}>
+                                    <Text style={{ fontWeight: 'bold' }}>Subject Adviser: </Text>
+                                    <Text style={{ textDecorationLine: 'underline' }}>{selectedData.SubjectAdviserName}</Text>
+                                </Text>
+                            )}
+                            {userProfilerole.role === 'Student' && (
+                                <Text style={styles.label}>
+                                    <Text style={{ fontWeight: 'bold' }}>Subject Adviser Email: </Text>
+                                    <Text style={{ textDecorationLine: 'underline' }}>{selectedData.subjectAdviserEmail}</Text>
+                                </Text>
+                            )}
                             <Text style={styles.label}>
                                 <Text style={{ fontWeight: 'bold' }}>Research Specialist: </Text>
                                 <Text style={{ textDecorationLine: 'underline' }}>{selectedData.research_specialist}</Text>
@@ -151,7 +178,14 @@ const App = () => {
                             </Text>
                             <Text style={styles.label}>
                                 <Text style={{ fontWeight: 'bold' }}>Status: </Text>
-                                <Text style={{ textDecorationLine: 'underline', color: 'maroon', fontWeight: 'bold', fontSize: 20 }}>
+                                <Text
+                                    style={[
+                                        { textDecorationLine: 'underline', fontWeight: 'bold', fontSize: 20 },
+                                        selectedData.status === 'Passed' ? { color: 'green' } :
+                                            selectedData.status === 'Returned' ? { color: 'maroon' } :
+                                                { color: 'yellow' }
+                                    ]}
+                                >
                                     {selectedData.status}
                                 </Text>
                             </Text>
@@ -186,10 +220,12 @@ const App = () => {
                                 <Text style={{ fontWeight: 'bold' }}>Gender: </Text>
                                 <Text style={{ textDecorationLine: 'underline' }}>{selectedData.sex}</Text>
                             </Text>
-                            <Text style={styles.label}>
-                                <Text style={{ fontWeight: 'bold' }}>Course: </Text>
-                                <Text style={{ textDecorationLine: 'underline' }}>{selectedData.course}</Text>
-                            </Text>
+                            {userProfilerole.role === 'Student' && (
+                                <Text style={styles.label}>
+                                    <Text style={{ fontWeight: 'bold' }}>Course: </Text>
+                                    <Text style={{ textDecorationLine: 'underline' }}>{selectedData.course}</Text>
+                                </Text>
+                            )}
                             <Text style={styles.label}>
                                 <Text style={{ fontWeight: 'bold' }}>College: </Text>
                                 <Text style={{ textDecorationLine: 'underline' }}>{selectedData.college}</Text>

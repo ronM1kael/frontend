@@ -40,6 +40,10 @@ const ConfirmationForm = (props) => {
   const [isChecked, setIsChecked] = useState(false);
   const [error, setError] = useState();
 
+  const [college, setCollege] = useState([]);
+
+  const userProfilerole = context.stateUser.userProfile;
+
   useEffect(() => {
     fetchAdvisers();
   }, []);
@@ -54,70 +58,137 @@ const ConfirmationForm = (props) => {
     }
   };
 
-  const SendRequest = async () => {
-    try {
-      const jwtToken = await AsyncStorage.getItem('jwt');
-      const userProfile = context.stateUser.userProfile;
-      console.log(userProfile);
-      const check = isChecked === true ? 'Yes' : 'No';
+  let SendRequest;
   
-      if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
-        setError("User authentication or profile information is missing");
-        return;
+  if (userProfilerole.role === "Faculty" || userProfilerole.role === "Staff") {
+    SendRequest = async () => {
+      try {
+        const jwtToken = await AsyncStorage.getItem('jwt');
+        const userProfile = context.stateUser.userProfile;
+        console.log(userProfile);
+        const check = isChecked === true ? 'Yes' : 'No';
+  
+        if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
+          setError("User authentication or profile information is missing");
+          return;
+        }
+  
+        const userId = userProfile.id;
+  
+        const confirm = {
+          isChecked: check,
+        };
+  
+        const formData = new FormData();
+  
+        // Merge confirm with props.route.params.request
+        const requestData = { ...confirm, ...props.route.params.request };
+  
+        Object.keys(requestData).forEach((key) => {
+          formData.append(key, requestData[key]);
+        });
+  
+        formData.append("user_id", userId);
+        formData.append("college", college);
+  
+        const response = await axios.post(`${baseURL}mobilefacultyapply_certification/${userProfile.id}`, formData, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        });
+  
+        console.log("Request Sent Successfully", response.data);
+        Toast.show({
+          topOffset: 60,
+          type: "success",
+          text1: "Request Sent Successfully.",
+          text2: "The Response is in process",
+        });
+        setTimeout(() => {
+          dispatch(actions.clearCart())
+          navigation.navigate("Home");
+        }, 500);
+  
+      } catch (error) {
+        console.error('Error sending request:', error);
+        setError('Error sending request');
+        Toast.show({
+          position: 'bottom',
+          bottomOffset: 20,
+          type: "error",
+          text1: "Error uploading file.",
+          text2: "Please try again.",
+        });
       }
+    };
+  } else {
+    SendRequest = async () => {
+      try {
+        const jwtToken = await AsyncStorage.getItem('jwt');
+        const userProfile = context.stateUser.userProfile;
+        console.log(userProfile);
+        const check = isChecked === true ? 'Yes' : 'No';
   
-      const userId = userProfile.id;
+        if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
+          setError("User authentication or profile information is missing");
+          return;
+        }
   
-      const confirm = {
-        isChecked: check,
-      };
+        const userId = userProfile.id;
   
-      const formData = new FormData();
+        const confirm = {
+          isChecked: check,
+        };
   
-      // Merge confirm with props.route.params.request
-      const requestData = { ...confirm, ...props.route.params.request };
+        const formData = new FormData();
+  
+        // Merge confirm with props.route.params.request
+        const requestData = { ...confirm, ...props.route.params.request };
+  
+        Object.keys(requestData).forEach((key) => {
+          formData.append(key, requestData[key]);
+        });
+  
+        formData.append("user_id", userId);
+        formData.append("technicalAdviser_id", selectedAdviser);
+        formData.append("subjectAdviser_id", selectedSadviser);
+  
+        const response = await axios.post(`${baseURL}mobileapply_certification/${userProfile.id}`, formData, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        });
+  
+        console.log("Request Sent Successfully", response.data);
+        Toast.show({
+          topOffset: 60,
+          type: "success",
+          text1: "Request Sent Successfully.",
+          text2: "The Response is in process",
+        });
+        setTimeout(() => {
+          dispatch(actions.clearCart())
+          navigation.navigate("Home");
+        }, 500);
+  
+      } catch (error) {
+        console.error('Error sending request:', error);
+        setError('Error sending request');
+        Toast.show({
+          position: 'bottom',
+          bottomOffset: 20,
+          type: "error",
+          text1: "Error uploading file.",
+          text2: "Please try again.",
+        });
+      }
+    };
+  }
 
-      Object.keys(requestData).forEach((key) => {
-        formData.append(key, requestData[key]);
-      });
-  
-      formData.append("user_id", userId);
-      formData.append("technicalAdviser_id", selectedAdviser);
-      formData.append("subjectAdviser_id", selectedSadviser);
-
-      const response = await axios.post(`${baseURL}mobileapply_certification/${userProfile.id}`, formData, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-  
-      console.log("Request Sent Successfully", response.data);
-      Toast.show({
-        topOffset: 60,
-        type: "success",
-        text1: "Request Sent Successfully.",
-        text2: "The Response is in process",
-      });
-      setTimeout(() => {
-        dispatch(actions.clearCart())
-        navigation.navigate("Home");
-      }, 500);
-  
-    } catch (error) {
-      console.error('Error sending request:', error);
-      setError('Error sending request');
-      Toast.show({
-        position: 'bottom',
-        bottomOffset: 20,
-        type: "error",
-        text1: "Error uploading file.",
-        text2: "Please try again.",
-      });
-    }
-  };
-  
 
   return (
     <KeyboardAwareScrollView
@@ -133,45 +204,66 @@ const ConfirmationForm = (props) => {
         <View style={styles.formContainer}>
           <Text style={styles.title}>Requesting For Certification</Text>
           <View style={styles.card}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Technical Adviser</Text>
-              <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
-                <Select
-                  minWidth="90%"
-                  placeholder="Select Technical Adviser"
-                  selectedValue={selectedAdviser}
-                  onValueChange={(value) => setSelectedAdviser(value)}
-                >
-                  {advisers.map((adviser, index) => (
-                    <Select.Item
-                      key={index}
-                      label={`${adviser.lname}, ${adviser.fname} ${adviser.mname} (${adviser.department_name})`}
-                      value={adviser.id.toString()}
-                    />
-                  ))}
-                </Select>
-              </Box>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Subject Adviser</Text>
-              <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
-                <Select
-                  minWidth="90%"
-                  placeholder="Select Subject Adviser"
-                  selectedValue={selectedSadviser}
-                  onValueChange={(value) => setSelectedSadviser(value)}
-                >
-                  {advisers.map((adviser, index) => (
-                    <Select.Item
-                      key={index}
-                      label={`${adviser.lname}, ${adviser.fname} ${adviser.mname} (${adviser.department_name})`}
-                      value={adviser.id.toString()}
-                    />
-                  ))}
-                </Select>
-              </Box>
-            </View>
+            {userProfilerole.role === "Faculty" || userProfilerole.role === "Staff" ? (
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>College</Text>
+                <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
+                <TextInput
+                  style={{
+                    borderColor: 'maroon',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    padding: 3,
+                    minWidth: '100%',
+                  }}
+                  placeholder="Enter College"
+                  value={college}
+                  onChangeText={(text) => setCollege(text)}
+                />
+                </Box>
+              </View>
+            ) : (
+              <React.Fragment>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Technical Adviser</Text>
+                  <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
+                    <Select
+                      minWidth="90%"
+                      placeholder="Select Technical Adviser"
+                      selectedValue={selectedAdviser}
+                      onValueChange={(value) => setSelectedAdviser(value)}
+                    >
+                      {advisers.map((adviser, index) => (
+                        <Select.Item
+                          key={index}
+                          label={`${adviser.lname}, ${adviser.fname} ${adviser.mname} (${adviser.department_name})`}
+                          value={adviser.id.toString()}
+                        />
+                      ))}
+                    </Select>
+                  </Box>
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Subject Adviser</Text>
+                  <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
+                    <Select
+                      minWidth="90%"
+                      placeholder="Select Subject Adviser"
+                      selectedValue={selectedSadviser}
+                      onValueChange={(value) => setSelectedSadviser(value)}
+                    >
+                      {advisers.map((adviser, index) => (
+                        <Select.Item
+                          key={index}
+                          label={`${adviser.lname}, ${adviser.fname} ${adviser.mname} (${adviser.department_name})`}
+                          value={adviser.id.toString()}
+                        />
+                      ))}
+                    </Select>
+                  </Box>
+                </View>
+              </React.Fragment>
+            )}
 
             <View style={{ flexDirection: 'row', marginVertical: 6 }}>
               <Checkbox

@@ -12,6 +12,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { logoutUser } from "../../Context/Actions/Auth.actions"
 
+import * as actions from "../../Context/Actions/cartActions"
+
 const FacultyUserProfile = () => {
 
   const [faculty, setProfileData] = useState(null);

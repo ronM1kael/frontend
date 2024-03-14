@@ -40,6 +40,10 @@ import TitleChecker from "../Screens/User/Student/TitleChecker"
 import StudentApplication from "../Screens/User/Faculty/StudentApplication"
 
 import AnnouncemmentNavigator from "../Navigators/AnnouncementNavigator"
+import Researches from "../Screens/User/Faculty/Researches"
+
+import ResearchTemplatesScreen from "../Screens/User/Faculty/ResearchTemplates";
+import ExtensionTemplatesScreen from "../Screens/User/Faculty/ExtensionTemplates";
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -53,10 +57,57 @@ const Main = () => {
     FontAwesome: require('react-native-vector-icons/Fonts/FontAwesome.ttf'),
   });
 
+  const TemplatesScreen = () => (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Templates"
+        component={TemplatesDropdown}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Research Template"
+        component={ResearchTemplatesScreen}
+      />
+      <Stack.Screen
+        name="Extension Template"
+        component={ExtensionTemplatesScreen}
+      />
+    </Stack.Navigator>
+  );
+
   const handleBellPress = () => {
     console.log('Bell icon pressed!');
     // Add your logic for notification handling or other actions
   };
+
+  const TemplatesDropdown = ({ navigation }) => {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ paddingHorizontal: 15 }}>
+          <TouchableOpacity
+            style={[
+              styles.buttons,
+              styles.infoButtons,
+            ]}
+            onPress={() => navigation.navigate('Research Template')}
+          >
+            <Text style={styles.buttonTexts}>Research Template</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.buttons,
+              styles.dangerButtons,
+            ]}
+            onPress={() => navigation.navigate('Extension Template')}
+          >
+            <Text style={styles.buttonTexts}>Extension Template</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  };  
 
   if (!fontsLoaded) {
     // You can return a loading indicator or null while fonts are loading
@@ -200,9 +251,9 @@ const Main = () => {
           />
         )}
 
-        {context.stateUser.isAuthenticated && (context.stateUser.userProfile.role === 'Student' || context.stateUser.userProfile.role === 'Faculty') ? (
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Student' ? (
           <Drawer.Screen
-            name={context.stateUser.userProfile.role === 'Student' ? "Title Checker" : "Researches"}
+            name="Title Checker"
             component={TitleChecker}
             options={{
               drawerIcon: ({ color, size }) => (
@@ -218,17 +269,15 @@ const Main = () => {
                     resizeMode="contain"
                   />
                   <Text style={styles.companyName}>R&E-Services</Text>
-
                 </View>
               ),
             }}
           />
         ) : null}
 
-
         {context.stateUser.isAuthenticated && (context.stateUser.userProfile.role === 'Student' || context.stateUser.userProfile.role === 'Faculty') ? (
           <Drawer.Screen
-            name="My Files"
+            name="My Applications"
             component={Addfile}
             options={{
               drawerIcon: ({ color, size }) => (
@@ -256,7 +305,7 @@ const Main = () => {
             component={ApplicationStatus}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="certificate" size={size} color="maroon" />
+                <Icon name="list" size={size} color="maroon" />
               ),
               headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
@@ -273,26 +322,13 @@ const Main = () => {
           />
         ) : null}
 
-
-
-        {/* {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Admin' ? (
-          <Drawer.Screen
-            name="Admin"
-            component={AdminStack}
-            options={{
-              drawerIcon: ({ color, size }) => (
-                <Icon name="cog" size={size} color={color} />
-              ),
-            }}
-          />) : null} */}
-
         {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
           <Drawer.Screen
             name="Student Application"
             component={StudentApplication}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="info-circle" size={size} color="maroon" />
+                <Icon name="file-pdf-o" size={size} color="maroon" />
               ),
               headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
@@ -303,6 +339,54 @@ const Main = () => {
                   />
                   <Text style={styles.companyName}>R&E-Services</Text>
 
+                </View>
+              ),
+            }}
+          />
+        ) : null}
+
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
+          <Drawer.Screen
+            name="Researches"
+            component={Researches}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
+                  <Icon name="check-circle" size={size * 0.8} color="maroon" />
+                </View>
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+                </View>
+              ),
+            }}
+          />
+        ) : null}
+
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
+          <Drawer.Screen
+            name="Templates"
+            component={TemplatesScreen}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
+                  <Icon name="file-archive-o" size={size * 0.8} color="maroon" />
+                </View>
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
                 </View>
               ),
             }}
@@ -439,6 +523,36 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     tintColor: 'maroon',
+  },
+  buttons: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 200,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 0.2,
+    borderColor:'#eee',
+    borderBottomWidth: 8,
+    marginVertical: 10,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  infoButtons: {
+    backgroundColor: '#2196f3',
+    borderColor:'#0e3860',
+    shadowColor:'#1c5da6',
+  },
+  dangerButtons: {
+    backgroundColor: '#f44336',
+    borderColor:'#c4211d',
+    shadowColor:'#1c5da6',
+  },
+  buttonTexts: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
   },
 });
 

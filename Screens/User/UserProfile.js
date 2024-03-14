@@ -14,6 +14,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import COLORS from '../../Constants/color';
 
+import * as actions from "../../Context/Actions/cartActions"
+
 const ProfileScreen = () => {
   const [student, setProfileData] = useState(null);
   const [formData, setFormData] = useState({

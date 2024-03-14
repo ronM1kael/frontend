@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import {
   View,
   Text,
@@ -34,6 +34,8 @@ import Payment from "./Payment";
 
 // import { useRoute } from "@react-navigation/native"
 
+import AuthGlobal from "../../../Context/Store/AuthGlobal"
+
 
 const DropdownForm = (props) => {
 
@@ -56,6 +58,10 @@ const DropdownForm = (props) => {
   const [initial_simmilarity_percentage, setInitial_simmilarity_percentage] = useState(null);
 
   const [error, setError] = useState();
+
+  const context = useContext(AuthGlobal);
+
+  const userProfile = context.stateUser.userProfile;
 
   // console.log(props.route.params)
 
@@ -105,86 +111,38 @@ const DropdownForm = (props) => {
 
           <View style={styles.card}>
 
-            {/* <View style={styles.inputContainer}>
-
-              <Text style={styles.label}>
-                Is there an initial run of a similarity test (Turnitin) by your research adviser?
-              </Text>
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text>No</Text>
-              <RadioButton
-                value={false}
-                status={!showDropdown_advisors_turnitin_precheck ? 'checked' : 'unchecked'}
-                onPress={() => {
-                  setShowDropdown_advisors_turnitin_precheck(false);
-                  setSelectedSubmission_advisors_turnitin_precheck('1st Submission'); // Reset selected value
-                  setInitial_simmilarity_percentage(0); // Reset initial similarity percentage
-                }}
-              />
-
-              <Text>Yes</Text>
-              <RadioButton
-                value={true}
-                status={showDropdown_advisors_turnitin_precheck ? 'checked' : 'unchecked'}
-                onPress={() => {
-                  setShowDropdown_advisors_turnitin_precheck(true);
-                  setSelectedSubmission_advisors_turnitin_precheck(null); // Reset selected value
-                  setInitial_simmilarity_percentage(null); // Reset initial similarity percentage
-                }}
-              />
-            </View>
-
-            {showDropdown_advisors_turnitin_precheck && (
-              <>
-                <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
-                  <Select
-                    minWidth="90%"
-                    placeholder="Select Frequency Submission"
-                    placeholderTextColor="#999"
-                    selectedValue={selectedSubmission_advisors_turnitin_precheck}
-                    onValueChange={(value) => setSelectedSubmission_advisors_turnitin_precheck(value)}
-                  >
-                    <Select.Item label="2nd Submission" value="2nd Submission" />
-                    <Select.Item label="3rd Submission" value="3rd Submission" />
-                    <Select.Item label="4th Submission" value="4th Submission" />
-                    <Select.Item label="5th Submission" value="5th Submission" />
-                  </Select>
-                </Box>
-                <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Initial Similarity Percentage</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Input Initial Similarity Percentage"
-                    placeholderTextColor="#999"
-                    onChangeText={(text) => setInitial_simmilarity_percentage(text)}
-                    keyboardType="numeric"
-                  />
-                </View>
-              </>
-            )} */}
-
             <View style={styles.inputContainer}>
-
               <Text style={styles.label}>
                 Type of Thesis
               </Text>
-
-              <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }} >
-                <Select
-                  minWidth="90%"
-                  placeholder="Select Type of Thesis"
-                  selectedValue={selectedSubmission_thesis_type}
-                  onValueChange={(value) => setSelectedSubmission_thesis_type(value)}
-                >
-                  <Select.Item label="Undergraduate Thesis" value="Undergraduate Thesis" />
-                  <Select.Item label="Capstone" value="Capstone" />
-                  <Select.Item label="Special Project" value="Special Project" />
-                  <Select.Item label="Masters's Thesis" value="Masters's Thesis" />
-                  <Select.Item label="Doctoral Disertation" value="Doctoral Disertation" />
-                </Select>
+              <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
+                {/* Check if the user is Staff or Faculty */}
+                {(userProfile.role === 'Staff' || userProfile.role === 'Faculty') ? (
+                  // If the user is Staff or Faculty, render a predefined value
+                  <Select
+                    minWidth="90%"
+                    placeholder="Select Type of Thesis"
+                    selectedValue={selectedSubmission_thesis_type}
+                    onValueChange={(value) => setSelectedSubmission_thesis_type(value)}
+                  >
+                    <Select.Item label="Research Study" value="Research Study" />
+                  </Select>
+                ) : (
+                  // If the user is not Staff or Faculty, allow selection from options
+                  <Select
+                    minWidth="90%"
+                    placeholder="Select Type of Thesis"
+                    selectedValue={selectedSubmission_thesis_type}
+                    onValueChange={(value) => setSelectedSubmission_thesis_type(value)}
+                  >
+                    <Select.Item label="Undergraduate Thesis" value="Undergraduate Thesis" />
+                    <Select.Item label="Capstone" value="Capstone" />
+                    <Select.Item label="Special Project" value="Special Project" />
+                    <Select.Item label="Masters's Thesis" value="Masters's Thesis" />
+                    <Select.Item label="Doctoral Dissertation" value="Doctoral Dissertation" />
+                  </Select>
+                )}
               </Box>
-
               {selectedSubmission_thesis_type && (
                 // Render content based on the selected submission, e.g., additional fields or components
                 <View>
@@ -200,6 +158,17 @@ const DropdownForm = (props) => {
               </Text>
 
               <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }} >
+              {(userProfile.role === 'Staff' || userProfile.role === 'Faculty') ? (
+                  // If the user is Staff or Faculty, render a predefined value
+                  <Select
+                  minWidth="90%"
+                  placeholder="Select Requestor Type"
+                  selectedValue={selectedSubmission_requestor_type}
+                  onValueChange={(value) => setSelectedSubmission_requestor_type(value)}
+                >
+                  <Select.Item label="Faculty" value="Faculty" />
+                </Select>
+                ) : (
                 <Select
                   minWidth="90%"
                   placeholder="Select Requestor Type"
@@ -210,6 +179,7 @@ const DropdownForm = (props) => {
                   <Select.Item label="Undergraduate Student" value="Undergraduate Student" />
                   <Select.Item label="Faculty" value="Faculty" />
                 </Select>
+                )}
               </Box>
 
               {selectedSubmission_requestor_type && (

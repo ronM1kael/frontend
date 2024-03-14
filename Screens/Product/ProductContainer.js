@@ -33,6 +33,8 @@ import * as ImagePicker from "expo-image-picker";
 
 import mime from 'mime';
 
+import Icon from "react-native-vector-icons/FontAwesome";
+
 const PropertyContainer = ({ isLoggedIn }) => {
   const [searchText, setSearchText] = useState('');
   const [data, setData] = useState([]);
@@ -56,6 +58,8 @@ const PropertyContainer = ({ isLoggedIn }) => {
 
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
+
+  const userProfilerole = context.stateUser.userProfile;
 
 
   const handleReturnModal = (item) => {
@@ -91,6 +95,16 @@ const PropertyContainer = ({ isLoggedIn }) => {
       topOffset: 60,
       type: "success",
       text1: "The file is already passed the certification.",
+    });
+  }
+
+  const handlePending = () => {
+    // setPendingTechnical(true);
+
+    Toast.show({
+      topOffset: 60,
+      type: "error",
+      text1: "The file is currently undergoing  for certification.",
     });
   }
 
@@ -184,12 +198,12 @@ const PropertyContainer = ({ isLoggedIn }) => {
   const handleConfirmation = async () => {
     try {
       const jwtToken = await AsyncStorage.getItem('jwt');
-
+  
       if (!selectedFile) {
         console.log("No file selected");
         return;
       }
-
+  
       const formData = new FormData();
       formData.append("research_file", {
         uri: selectedFile.assets[0].uri,
@@ -197,15 +211,27 @@ const PropertyContainer = ({ isLoggedIn }) => {
         type: selectedFile.assets[0].mimeType,
       });
       formData.append("research_id", item.id);
-
-      const response = await axios.post(`${baseURL}mobilereApply`, formData, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-
+  
+      let response;
+  
+      if (userProfilerole.role === 'Faculty' || userProfilerole.role === 'Staff') {
+        response = await axios.post(`${baseURL}mobilereApplyfaculty`, formData, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        });
+      } else {
+        response = await axios.post(`${baseURL}mobilereApply`, formData, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        });
+      }
+  
       console.log("File uploaded successfully", response.data);
       Toast.show({
         topOffset: 60,
@@ -227,7 +253,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
       });
     }
   };
-
+  
 
   const requestCameraRollPermission = async () => {
     try {
@@ -340,6 +366,19 @@ const PropertyContainer = ({ isLoggedIn }) => {
                   Apply
                 </Text>
               </TouchableOpacity>
+            ) : item.file_status === "Pending" ? (
+              <TouchableOpacity
+                style={[
+                  styles.addButton, // Define styles for the new button
+                  isCartEmpty ? null : styles.disabledButton,
+                ]}
+                onPress={() => handlePending(item)} // Define the action for the new button
+                disabled={!isCartEmpty}
+              >
+                <Text style={styles.buttonText}>
+                  Apply
+                </Text>
+              </TouchableOpacity>
             ) : item.file_status === "Pending Subject Adviser Approval" ? (
               <TouchableOpacity
                 style={[
@@ -423,12 +462,23 @@ const PropertyContainer = ({ isLoggedIn }) => {
               keyExtractor={(item) => item.id.toString()}
             />
           ) : null}
-          <Modal visible={showPDF} transparent={false}>
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity onPress={handleClosePDF}>
-                <Text>Close PDF</Text>
-              </TouchableOpacity>
-              <WebView source={{ uri: pdfFileName }} />
+          <Modal
+            visible={showPDF}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={handleClosePDF}
+          >
+            <View style={styles.centeredView}>
+              <View style={[styles.modalView, { height: 200, justifyContent: 'center', alignItems: 'center' }]}>
+                <TouchableOpacity onPress={handleClosePDF} style={styles.closeButtons}>
+                  <Icon name="close" size={20} />
+                </TouchableOpacity>
+                <WebView source={{ uri: pdfFileName }} />
+                <View style={{ alignItems: 'center' }}>
+                  <Icon name="check-circle" size={100} color="green" />
+                  <Text style={[styles.successText, { marginLeft: 10 }]}>The file has been successfully downloaded.</Text>
+                </View>
+              </View>
             </View>
           </Modal>
 
@@ -643,7 +693,38 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  closeButtons: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  successText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: 'green',
+  },
 });
 
 export default PropertyContainer;
