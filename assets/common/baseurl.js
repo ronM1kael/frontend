@@ -18,11 +18,11 @@ export default baseURL;
 // let baseURL = '';
 
 // {Platform.OS == 'android'
-// ? baseURL = 'http://192.168.1.212:8000/api/'
-// : baseURL = 'http://192.168.1.212:8000/api/'
+// ? baseURL = 'http://192.168.1.214:8000/api/'
+// : baseURL = 'http://192.168.1.214:8000/api/'
 // }
 
-// export const baseURL2 = 'http://192.168.1.212:8000'
+// export const baseURL2 = 'http://192.168.1.214:8000'
 
 // export default baseURL;
 

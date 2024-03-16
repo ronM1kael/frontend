@@ -16,8 +16,8 @@ export default baseURL2;
 // let baseURL2 = '';
 
 // {Platform.OS == 'android'
-// ? baseURL2 = 'http://192.168.1.212:8000'
-// : baseURL2 = 'http://192.168.1.212:8000'
+// ? baseURL2 = 'http://192.168.1.214:8000'
+// : baseURL2 = 'http://192.168.1.214:8000'
 // }
 
 // export default baseURL2;
