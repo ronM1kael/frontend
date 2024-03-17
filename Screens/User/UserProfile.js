@@ -1,5 +1,5 @@
 import React, { useContext, useState, useCallback } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, SafeAreaView } from 'react-native'; // Import SafeAreaView
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, SafeAreaView } from 'react-native';
 import { useFocusEffect, useNavigation } from "@react-navigation/native"
 import axios from "axios"
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -36,9 +36,7 @@ const ProfileScreen = () => {
   const context = useContext(AuthGlobal);
   const navigation = useNavigation();
 
-  // Function to check authentication
   const checkAuthentication = async () => {
-    // Fetch JWT token from AsyncStorage
     const jwtToken = await AsyncStorage.getItem('jwt');
 
     if (!jwtToken || !context.stateUser.isAuthenticated) {
@@ -52,7 +50,6 @@ const ProfileScreen = () => {
           return;
         }
 
-        // Fetch user profile data from the server
         const response = await axios.get(
           `${baseURL}profile/${userProfile.id}`,
           {
@@ -66,7 +63,6 @@ const ProfileScreen = () => {
     }
   };
 
-  // Use focus effect to check authentication on component focus
   useFocusEffect(
     useCallback(() => {
       checkAuthentication();
@@ -77,12 +73,10 @@ const ProfileScreen = () => {
     }, [navigation])
   );
 
-  // Function to handle logout
   const handleLogout = async () => {
     logoutUser(context.dispatch, navigation)
   };
 
-  // Function to handle avatar change
   const handleChangeAvatar = async () => {
     try {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -100,26 +94,25 @@ const ProfileScreen = () => {
     }
   };
 
-  // Function to upload avatar
   const uploadAvatar = async (uri) => {
     try {
       const jwtToken = await AsyncStorage.getItem('jwt');
       const userProfile = context.stateUser.userProfile;
-  
+
       if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.email) {
         console.error("User authentication or profile information is missing");
         return;
       }
-  
+
       const formData = new FormData();
       formData.append('avatar', {
         uri,
         type: 'image/jpeg',
         name: 'avatar.jpg',
       });
-  
+
       const response = await axios.post(
-        `${baseURL}mobilechangeavatar/${userProfile.email}`, // Pass email instead of id
+        `${baseURL}mobilechangeavatar/${userProfile.email}`,
         formData,
         {
           headers: {
@@ -128,23 +121,30 @@ const ProfileScreen = () => {
           },
         }
       );
-  
+
       console.log(response.data.message);
-  
+
       checkAuthentication();
-  
+
       setProfileData(prevProfile => ({
         ...prevProfile,
         avatar: response.data.avatar
       }));
-  
+
+      // Show success message
+      Toast.show({
+        topOffset: 60,
+        type: "success",
+        text1: "Success",
+        text2: "Avatar uploaded successfully",
+      });
+
     } catch (error) {
       console.error('Error changing avatar:', error);
     }
   };
-  
 
-  // Function to handle input change
+
   const handleInputChange = (key, value) => {
     setFormData(prevData => ({
       ...prevData,
@@ -152,12 +152,10 @@ const ProfileScreen = () => {
     }));
   };
 
-  // Function to close the modal
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
 
-  // Function to handle profile edit
   const handleEditProfile = () => {
     setIsModalVisible(true);
     setFormData({
@@ -175,13 +173,11 @@ const ProfileScreen = () => {
     });
   };
 
-  // Function to format date for database
   const formatDateForDatabase = (date) => {
     const formattedDate = date.toISOString().split('T')[0];
     return formattedDate;
   };
 
-  // Function to handle date change
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || formData.birthdate;
     setFormData(prevData => ({
@@ -191,7 +187,6 @@ const ProfileScreen = () => {
     setIsDateTimePickerVisible(false);
   };
 
-  // Function to handle form submission
   const handleSubmit = async () => {
     try {
       const jwtToken = await AsyncStorage.getItem('jwt');
@@ -204,7 +199,6 @@ const ProfileScreen = () => {
 
       const email = userProfile.email;
 
-      // Create a new object to hold the updated profile data
       const updatedProfileData = {
         fname: formData.fname,
         lname: formData.lname,
@@ -218,7 +212,6 @@ const ProfileScreen = () => {
         birthdate: formatDateForDatabase(formData.birthdate || new Date()),
       };
 
-      // Send a PUT request to update the profile data
       const response = await axios.put(
         `${baseURL}studentedit/profile/${email}`,
         updatedProfileData,
@@ -230,14 +223,15 @@ const ProfileScreen = () => {
         }
       );
 
-      // Update the local profile data after a successful update
       setProfileData(response.data.student);
       setIsModalVisible(false);
+
+      // Show success message
       Toast.show({
         topOffset: 60,
         type: "success",
-        text1: "Student Profile",
-        text2: "Profile Updated Successfully",
+        text1: "Success",
+        text2: "Profile updated successfully",
       });
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -245,17 +239,17 @@ const ProfileScreen = () => {
   };
 
   const formatBirthdate = (birthdate) => {
-    if (!birthdate) return ''; // Handle case where birthdate is not available
+    if (!birthdate) return '';
 
     const date = new Date(birthdate);
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options); // Adjust locale as needed
+    return date.toLocaleDateString('en-US', options);
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <View style={[styles.avatarContainer, { backgroundColor: 'maroon' }]}>
+        <View style={[styles.avatarContainer, { backgroundColor: 'gray' }]}>
           <View style={{ marginVertical: 10 }}>
             <Image
               source={{
@@ -271,13 +265,12 @@ const ProfileScreen = () => {
           <View style={{ marginVertical: 10 }}>
             <Text style={[styles.name, styles.textWithShadow]}>{student ? `${student.fname} ${student.mname} ${student.lname}` : ''}</Text>
             <TouchableOpacity style={styles.logoutButton}>
-              <Icon name="sign-out" type="material" size={24} color="maroon" />
+              <Icon name="sign-out" size={24} color={'black'} />
               <Text style={styles.logoutButtonText} onPress={handleLogout}>Logout</Text>
             </TouchableOpacity>
           </View>
         </View>
         <ScrollView style={styles.content}>
-          {/* Profile Info */}
           {student && (
             <View style={styles.profileInfo}>
               <View style={styles.infoContainer}>
@@ -324,16 +317,13 @@ const ProfileScreen = () => {
                 <Text style={styles.infoLabel}>Birthdate:</Text>
                 <Text style={styles.infoValue}>{formatBirthdate(student.birthdate)}</Text>
               </View>
-              {/* Add other profile info here */}
             </View>
           )}
-          {/* Edit Profile Button */}
           <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-            <Icon name="edit" type="material" size={24} color="white" />
+            <Icon name="edit" size={24} color="white" />
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         </ScrollView>
-        {/* Modal for editing profile */}
         <Modal
           visible={isModalVisible}
           animationType="slide"
@@ -342,10 +332,11 @@ const ProfileScreen = () => {
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
+              <TouchableOpacity style={styles.closeButton} onPress={handleCloseModal}>
+                <Icon name="times" size={24} color={'black'} />
+              </TouchableOpacity>
               <ScrollView>
                 <Text style={styles.modalTitle}>Edit Profile</Text>
-                {/* Profile Edit Form */}
-                {/* Input fields */}
                 <TextInput
                   style={styles.inputField}
                   value={formData.fname}
@@ -400,51 +391,32 @@ const ProfileScreen = () => {
                   value={formData.phone}
                   onChangeText={(text) => handleInputChange('phone', text)}
                   placeholder="Phone"
-                  keyboardType="numeric" // Set keyboardType to 'numeric'
+                  keyboardType="numeric"
                 />
-                {/* Editable Address */}
                 <TextInput
-                  style={[styles.inputField, styles.addressInput]} // Adjust the styles as needed
+                  style={[styles.inputField, styles.addressInput]}
                   value={formData.address}
                   onChangeText={(text) => handleInputChange('address', text)}
                   placeholder="Enter Address"
                   multiline={true}
                   numberOfLines={4}
                 />
-                <View style={styles.inputContainer}>
-                  {/* Birthdate Text Input */}
-                  <TextInput
-                    style={[styles.inputField, styles.birthdateInput]}
-                    value={formatBirthdate(formData.birthdate)}
-                    editable={false} // Prevent manual editing
-                    placeholder="Select Birthdate"
+                <TouchableOpacity onPress={() => setIsDateTimePickerVisible(true)} style={styles.datePicker}>
+                  <Icon name="calendar" size={20} color={COLORS.black} />
+                  <Text style={styles.datePickerText}>{formatBirthdate(formData.birthdate)}</Text>
+                </TouchableOpacity>
+                {isDateTimePickerVisible && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    value={formData.birthdate}
+                    mode="date"
+                    is24Hour={true}
+                    display="default"
+                    onChange={handleDateChange}
                   />
-
-                  {/* Date Picker */}
-                  <TouchableOpacity onPress={() => setIsDateTimePickerVisible(true)} style={styles.datePicker}>
-                    <Icon name="calendar" size={20} color="black" />
-                  </TouchableOpacity>
-
-                  {/* DateTimePicker */}
-                  {isDateTimePickerVisible && (
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={formData.birthdate || new Date()}
-                      mode="date"
-                      display="spinner"
-                      onChange={handleDateChange}
-                      style={styles.dateTimePicker}
-                    />
-                  )}
-                </View>
-                {/* Add other input fields */}
-                {/* Save Changes button */}
+                )}
                 <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
                   <Text style={styles.saveButtonText}>Save Changes</Text>
-                </TouchableOpacity>
-                {/* Close button */}
-                <TouchableOpacity style={styles.closeButton} onPress={handleCloseModal}>
-                  <Text style={styles.closeButtonText}>Close</Text>
                 </TouchableOpacity>
               </ScrollView>
             </View>
@@ -456,172 +428,149 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  picker: {
-    height: 50,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  datePicker: {
-    padding: 10,
-  },
-  birthdateInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginRight: 10,
-    textAlign: 'right',
-  },
-  dateTimePicker: {
-    marginRight: 10,
-  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
+    backgroundColor: 'lightgray',
   },
   avatarContainer: {
     alignItems: 'center',
-    marginTop: 20,
+    paddingTop: 30,
+    paddingBottom: 20,
   },
   avatar: {
     width: 120,
     height: 120,
     borderRadius: 60,
   },
-  name: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  clearButton: {
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
     marginTop: 10,
-    color: 'white'
   },
-  content: {
-    marginTop: 20,
-    flex: 1,
+  clearButtonText: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+  },
+  textWithShadow: {
+    textShadowColor: 'black',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    padding: 8,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: 'maroon',
-    marginTop: 20,
-    width: 100,
+    justifyContent: 'center',
+    marginTop: 10,
   },
   logoutButtonText: {
-    marginLeft: 10,
-    color: 'maroon',
-  },
-  clearButton: {
-    borderWidth: 1,
-    borderColor: 'white',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  clearButtonText: {
-    color: 'white',
-    fontSize: 16,
+    color: 'black',
     fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
   },
   profileInfo: {
-    marginBottom: 20,
+    marginTop: 20,
   },
   infoContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Aligns label and value
-    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
   infoLabel: {
     fontWeight: 'bold',
-    marginRight: 10,
-    color: 'black', // Example label color
+    color: 'gray',
   },
   infoValue: {
     flex: 1,
-    textAlign: 'right', // Aligns value to the right
+    textAlign: 'right',
+    color: 'gray',
   },
   editButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: 'maroon',
-    padding: 8,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: 'maroon',
-    marginTop: 20,
-    width: 300,
     justifyContent: 'center',
+    backgroundColor: 'black',
+    paddingVertical: 12,
+    borderRadius: 20,
+    marginTop: 20,
   },
   editButtonText: {
-    marginLeft: 10,
     color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 5,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 20,
   },
   modalContent: {
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 20,
-    width: '80%',
-    maxHeight: '80%',
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: 'maroon',
+    marginBottom: 20,
     textAlign: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
   inputField: {
     borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
+    borderColor: 'lightgray',
+    borderRadius: 10,
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginBottom: 10,
+    paddingVertical: 8,
+    marginBottom: 15,
+  },
+  addressInput: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+  picker: {
+    height: 50,
+  },
+  datePicker: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 15,
+  },
+  datePickerText: {
+    marginLeft: 10,
+    color: 'black',
   },
   saveButton: {
-    backgroundColor: 'maroon',
-    borderRadius: 5,
-    padding: 10,
-    alignItems: 'center',
+    backgroundColor: 'black',
+    paddingVertical: 12,
+    borderRadius: 20,
     marginTop: 20,
   },
   saveButtonText: {
     color: 'white',
     fontWeight: 'bold',
-  },
-  closeButton: {
-    backgroundColor: 'gray',
-    borderRadius: 5,
-    padding: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

@@ -6,27 +6,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  TextInput
+  TextInput,
 } from "react-native";
-import { Select, Box } from 'native-base'; // Importing Select and Box from native-base
-
-import Icon from "react-native-vector-icons/FontAwesome"
-import Toast from "react-native-toast-message"
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import baseURL from "../../../assets/common/baseurl"
-import Error from "../../../Shared/Error"
-import axios from "axios"
-import * as ImagePicker from "expo-image-picker"
-import { useFocusEffect, useNavigation } from "@react-navigation/native"
-import mime from "mime";
-
+import { Select, Box } from 'native-base';
+import Icon from "react-native-vector-icons/FontAwesome";
+import Toast from "react-native-toast-message";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import baseURL from "../../../assets/common/baseurl";
+import Error from "../../../Shared/Error";
+import axios from "axios";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { RadioButton } from 'react-native-paper';
 import Checkbox from 'expo-checkbox';
-
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
-import AuthGlobal from "../../../Context/Store/AuthGlobal"
-import * as actions from '../../../Context/Actions/cartActions'
+import AuthGlobal from "../../../Context/Store/AuthGlobal";
+import * as actions from '../../../Context/Actions/cartActions';
 
 const ConfirmationForm = (props) => {
   const context = useContext(AuthGlobal);
@@ -39,8 +33,7 @@ const ConfirmationForm = (props) => {
   const [sadvisers, setSadvisers] = useState([]);
   const [isChecked, setIsChecked] = useState(false);
   const [error, setError] = useState();
-
-  const [college, setCollege] = useState([]);
+  const [college, setCollege] = useState("");
 
   const userProfilerole = context.stateUser.userProfile;
 
@@ -58,137 +51,64 @@ const ConfirmationForm = (props) => {
     }
   };
 
-  let SendRequest;
-  
-  if (userProfilerole.role === "Faculty" || userProfilerole.role === "Staff") {
-    SendRequest = async () => {
-      try {
-        const jwtToken = await AsyncStorage.getItem('jwt');
-        const userProfile = context.stateUser.userProfile;
-        console.log(userProfile);
-        const check = isChecked === true ? 'Yes' : 'No';
-  
-        if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
-          setError("User authentication or profile information is missing");
-          return;
-        }
-  
-        const userId = userProfile.id;
-  
-        const confirm = {
-          isChecked: check,
-        };
-  
-        const formData = new FormData();
-  
-        // Merge confirm with props.route.params.request
-        const requestData = { ...confirm, ...props.route.params.request };
-  
-        Object.keys(requestData).forEach((key) => {
-          formData.append(key, requestData[key]);
-        });
-  
-        formData.append("user_id", userId);
-        formData.append("college", college);
-  
-        const response = await axios.post(`${baseURL}mobilefacultyapply_certification/${userProfile.id}`, formData, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        });
-  
-        console.log("Request Sent Successfully", response.data);
-        Toast.show({
-          topOffset: 60,
-          type: "success",
-          text1: "Request Sent Successfully.",
-          text2: "The Response is in process",
-        });
-        setTimeout(() => {
-          dispatch(actions.clearCart())
-          navigation.navigate("Home");
-        }, 500);
-  
-      } catch (error) {
-        console.error('Error sending request:', error);
-        setError('Error sending request');
-        Toast.show({
-          position: 'bottom',
-          bottomOffset: 20,
-          type: "error",
-          text1: "Error uploading file.",
-          text2: "Please try again.",
-        });
-      }
-    };
-  } else {
-    SendRequest = async () => {
-      try {
-        const jwtToken = await AsyncStorage.getItem('jwt');
-        const userProfile = context.stateUser.userProfile;
-        console.log(userProfile);
-        const check = isChecked === true ? 'Yes' : 'No';
-  
-        if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
-          setError("User authentication or profile information is missing");
-          return;
-        }
-  
-        const userId = userProfile.id;
-  
-        const confirm = {
-          isChecked: check,
-        };
-  
-        const formData = new FormData();
-  
-        // Merge confirm with props.route.params.request
-        const requestData = { ...confirm, ...props.route.params.request };
-  
-        Object.keys(requestData).forEach((key) => {
-          formData.append(key, requestData[key]);
-        });
-  
-        formData.append("user_id", userId);
-        formData.append("technicalAdviser_id", selectedAdviser);
-        formData.append("subjectAdviser_id", selectedSadviser);
-  
-        const response = await axios.post(`${baseURL}mobileapply_certification/${userProfile.id}`, formData, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        });
-  
-        console.log("Request Sent Successfully", response.data);
-        Toast.show({
-          topOffset: 60,
-          type: "success",
-          text1: "Request Sent Successfully.",
-          text2: "The Response is in process",
-        });
-        setTimeout(() => {
-          dispatch(actions.clearCart())
-          navigation.navigate("Home");
-        }, 500);
-  
-      } catch (error) {
-        console.error('Error sending request:', error);
-        setError('Error sending request');
-        Toast.show({
-          position: 'bottom',
-          bottomOffset: 20,
-          type: "error",
-          text1: "Error uploading file.",
-          text2: "Please try again.",
-        });
-      }
-    };
-  }
+  const SendRequest = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem('jwt');
+      const userProfile = context.stateUser.userProfile;
+      const check = isChecked === true ? 'Yes' : 'No';
 
+      if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
+        setError("User authentication or profile information is missing");
+        return;
+      }
+
+      const userId = userProfile.id;
+      const confirm = { isChecked: check };
+      const formData = new FormData();
+
+      const requestData = { ...confirm, ...props.route.params.request };
+
+      Object.keys(requestData).forEach((key) => {
+        formData.append(key, requestData[key]);
+      });
+
+      formData.append("user_id", userId);
+      formData.append("college", college);
+      formData.append("technicalAdviser_id", selectedAdviser);
+      formData.append("subjectAdviser_id", selectedSadviser);
+
+      const response = await axios.post(`${baseURL}mobileapply_certification/${userProfile.id}`, formData, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      console.log("Request Sent Successfully", response.data);
+      Toast.show({
+        topOffset: 60,
+        type: "success",
+        text1: "Request Sent Successfully.",
+        text2: "The Response is in process",
+      });
+      setTimeout(() => {
+        dispatch(actions.clearCart());
+        navigation.navigate("Home");
+      }, 500);
+
+    } catch (error) {
+      console.error('Error sending request:', error);
+      setError('Error sending request');
+      Toast.show({
+        position: 'bottom',
+        bottomOffset: 20,
+        type: "error",
+        text1: "Error uploading file.",
+        text2: "Please try again.",
+      });
+    }
+  };
 
   return (
     <KeyboardAwareScrollView
@@ -199,7 +119,7 @@ const ConfirmationForm = (props) => {
       <View style={styles.container}>
         <Image
           source={{ uri: 'https://www.bootdey.com/image/280x280/800000/800000' }}
-          style={styles.background}
+          // style={styles.background}
         />
         <View style={styles.formContainer}>
           <Text style={styles.title}>Requesting For Certification</Text>
@@ -207,26 +127,20 @@ const ConfirmationForm = (props) => {
             {userProfilerole.role === "Faculty" || userProfilerole.role === "Staff" ? (
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>College</Text>
-                <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
-                <TextInput
-                  style={{
-                    borderColor: 'maroon',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    padding: 3,
-                    minWidth: '100%',
-                  }}
-                  placeholder="Enter College"
-                  value={college}
-                  onChangeText={(text) => setCollege(text)}
-                />
+                <Box style={styles.inputBox}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter College"
+                    value={college}
+                    onChangeText={(text) => setCollege(text)}
+                  />
                 </Box>
               </View>
             ) : (
               <React.Fragment>
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Technical Adviser</Text>
-                  <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
+                  <Box style={styles.inputBox}>
                     <Select
                       minWidth="90%"
                       placeholder="Select Technical Adviser"
@@ -245,7 +159,7 @@ const ConfirmationForm = (props) => {
                 </View>
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Subject Adviser</Text>
-                  <Box style={{ borderColor: 'maroon', borderWidth: 1, borderRadius: 5, padding: 3 }}>
+                  <Box style={styles.inputBox}>
                     <Select
                       minWidth="90%"
                       placeholder="Select Subject Adviser"
@@ -265,14 +179,13 @@ const ConfirmationForm = (props) => {
               </React.Fragment>
             )}
 
-            <View style={{ flexDirection: 'row', marginVertical: 6 }}>
+            <View style={styles.checkboxContainer}>
               <Checkbox
-                style={{ marginRight: 8 }}
                 value={isChecked}
                 onValueChange={setIsChecked}
                 color={isChecked ? '#800000' : undefined} // Maroon color when checked
               />
-              <Text>I agree to the terms and conditions</Text>
+              <Text style={styles.checkboxText}>I agree to the terms and conditions</Text>
             </View>
 
             {error ? <Error message={error} /> : null}
@@ -288,7 +201,7 @@ const ConfirmationForm = (props) => {
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -303,13 +216,13 @@ const styles = {
   },
   title: {
     fontSize: 24,
-    color: '#fff',
+    color: 'black',
     marginBottom: 20,
     marginTop: 20,
   },
   card: {
     width: '80%',
-    backgroundColor: '#fff',
+    backgroundColor: 'lightgray',
     borderRadius: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -325,10 +238,23 @@ const styles = {
     fontSize: 16,
     color: '#333',
   },
+  inputBox: {
+    borderColor: 'grey',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 3,
+    minWidth: '100%',
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    color: '#333',
+    paddingLeft: 10,
+  },
   button: {
     width: '100%',
     height: 40,
-    backgroundColor: 'maroon',
+    backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
@@ -337,6 +263,13 @@ const styles = {
     color: '#fff',
     fontSize: 16,
   },
-};
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginVertical: 6,
+  },
+  checkboxText: {
+    marginLeft: 8,
+  },
+});
 
 export default ConfirmationForm;

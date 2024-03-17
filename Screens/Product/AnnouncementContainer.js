@@ -23,8 +23,8 @@ const AnnouncementList = () => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track user login status
-  const [refresh, setRefresh] = useState(false); // State to force component refresh
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const context = useContext(AuthGlobal);
 
@@ -42,28 +42,25 @@ const AnnouncementList = () => {
           headers: { Authorization: `Bearer ${jwtToken}` },
         });
 
-        console.log('Fetched data:', response.data);
         setAnnouncements(Object.values(response.data.announcements));
-        setIsLoggedIn(!!context.stateUser.isAuthenticated); // Set login status
+        setIsLoggedIn(!!context.stateUser.isAuthenticated);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, [context.stateUser.isAuthenticated, refresh]); // Add refresh to the dependency array
+  }, [context.stateUser.isAuthenticated, refresh]);
 
   const handlePress = async (announcement) => {
     setSelectedAnnouncement(announcement);
-    console.log('Selected Announcement:', announcement);
     await fetchComments(announcement[0].announcement_id);
   };
 
   const fetchComments = async (announcementId) => {
     try {
       const response = await axios.get(`${baseURL}show/comments/${announcementId}`);
-      console.log('Fetched comments:', response.data);
-      setComments(response.data); // Assuming response.data is an array of comments
+      setComments(response.data);
     } catch (error) {
       console.error('Error fetching comments:', error);
     }
@@ -110,22 +107,18 @@ const AnnouncementList = () => {
       });
 
       if (response.data.comment) {
-        console.log('Comment added successfully');
         Toast.show({
           type: "success",
           text1: "Comment added successfully",
         });
-
         setComments([...comments, response.data.comment]);
         setNewComment('');
         resetState();
       } else {
         console.error('Failed to add comment');
-        // Handle error state or display an error message to the user
       }
     } catch (error) {
       console.error('Error adding comment:', error.message);
-      // Handle error state or display an error message to the user
       Toast.show({
         type: "error",
         text1: "Error adding comment",
@@ -136,7 +129,7 @@ const AnnouncementList = () => {
 
   const resetState = () => {
     setNewComment('');
-    setRefresh(prev => !prev); // Toggle the refresh state to force re-render
+    setRefresh(prev => !prev);
     closeModal();
   };
 
@@ -149,11 +142,8 @@ const AnnouncementList = () => {
             <View style={styles.card}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image
-                  source={{ uri: `https://tse4.mm.bing.net/th?id=OIP.sRdQAfzOzF_ZjC3dnAZVSQHaGw&pid=Api&P=0&h=180` }} // Replace './path/to/your/image/icon.png' with the actual path to your image icon
+                  source={{ uri: `https://tse4.mm.bing.net/th?id=OIP.sRdQAfzOzF_ZjC3dnAZVSQHaGw&pid=Api&P=0&h=180` }}
                   style={{ width: 40, height: 40, marginLeft: 20, marginTop: 20 }}
-                  onLoad={() => console.log('Image loaded')}
-                  onError={(error) => handleImageError(error, announcement)}
-                // Adjust width, height, and margin as needed
                 />
                 <Text style={styles.productName}>
                   {announcement[0].fname} {announcement[0].mname} {announcement[0].lname}
@@ -174,7 +164,6 @@ const AnnouncementList = () => {
                     <Image
                       style={styles.productImage}
                       source={{ uri: `${baseURL2}/images/${imageData.img_path}` }}
-                      onLoad={() => console.log('Image loaded')}
                       onError={(error) => handleImageError(error, imageData)}
                     />
                   </View>
@@ -222,11 +211,11 @@ const AnnouncementList = () => {
                 </View>
               )}
 
-              {!isLoggedIn && ( // Conditionally render based on login status
+              {!isLoggedIn && (
                 <Text>Please log in to add a comment</Text>
               )}
 
-              {isLoggedIn && ( // Conditionally render based on login status
+              {isLoggedIn && (
                 <View style={styles.commentFormContainer}>
                   <TextInput
                     placeholder="Write a comment"
@@ -253,7 +242,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: 'maroon',
+    backgroundColor: 'gray',
   },
   card: {
     backgroundColor: '#fff',
@@ -301,7 +290,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalImage: {
-    width: 200, // Set the width based on your preference
+    width: 200,
     height: 200,
     margin: 10,
     borderRadius: 5,
@@ -327,15 +316,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   title: {
-    fontSize: 20, // Example font size
-    fontWeight: 'bold', // Example font weight
-    color: 'black', // Example color
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
     marginBottom: 20,
     marginLeft: 15
   },
   content: {
-    fontSize: 16, // Example font size for content
-    color: 'gray', // Example color for content
+    fontSize: 16,
+    color: 'gray',
     marginLeft: 15
   },
 });

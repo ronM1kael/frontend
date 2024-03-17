@@ -6,7 +6,7 @@ const CartItem = (props) => {
   const data = props.item.item;
 
   return (
-    <Box>
+    <Box style={styles.listItem}>
       <HStack width="100%" px={4}>
         <HStack space={2} alignItems="center">
           <Avatar
@@ -32,11 +32,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     justifyContent: 'center',
-  },
-  body: {
-    margin: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginBottom: 10,
   },
 });
 

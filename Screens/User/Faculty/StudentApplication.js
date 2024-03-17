@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Button, FlatList, Modal, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Modal, ScrollView, RefreshControl, TextInput, Button } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../../Context/Store/AuthGlobal';
-import baseURL from '../../../assets/common/baseurl';
-import Toast from "react-native-toast-message";
 import { Picker } from '@react-native-picker/picker';
-
+import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
-
-import baseURL2 from '../../../assets/common/baseurlnew';
-
 import { WebView } from 'react-native-webview';
+
+import baseURL from '../../../assets/common/baseurl';
+import baseURL2 from '../../../assets/common/baseurlnew';
 
 const StudentApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -24,32 +22,33 @@ const StudentApplications = () => {
   const [showSubjectAdviserRemarks, setShowSubjectAdviserRemarks] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const context = useContext(AuthGlobal);
-
   const [showPDF, setShowPDF] = useState(false);
   const [pdfFileName, setPdfFileName] = useState('');
+
+  const context = useContext(AuthGlobal);
+
+  useEffect(() => {
+    fetchStudentApplications();
+  }, [context.stateUser.isAuthenticated]);
 
   const fetchStudentApplications = async () => {
     try {
       const jwtToken = await AsyncStorage.getItem('jwt');
       const userProfile = context.stateUser.userProfile;
       if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
-        console.error('Invalid authentication state');
+        showError('Invalid authentication state');
         return;
       }
       const response = await axios.get(`${baseURL}mobile/students/application/${userProfile.id}`, {
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
-      console.log(response.data.application)
       setApplications(response.data.application);
+      showSuccess('Applications fetched successfully');
     } catch (error) {
       console.error('Error fetching applications:', error);
+      showError('Error fetching applications');
     }
   };
-
-  useEffect(() => {
-    fetchStudentApplications();
-  }, [context.stateUser.isAuthenticated]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -57,6 +56,7 @@ const StudentApplications = () => {
       await fetchStudentApplications();
     } catch (error) {
       console.error('Error refreshing data:', error);
+      showError('Error refreshing data');
     } finally {
       setRefreshing(false);
     }
@@ -71,22 +71,12 @@ const StudentApplications = () => {
       }, {
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
-      Toast.show({
-        topOffset: 60,
-        type: "success",
-        text1: "Processed successfully.",
-        text2: "Technical Adviser Approval",
-      });
-      console.log('Technical adviser approval response:', response.data);
+      showSuccess('Technical Adviser Approval processed successfully');
       setIsModalVisible(false); // Close the modal
       onRefresh(); // Refresh data using onRefresh function
     } catch (error) {
-      Toast.show({
-        topOffset: 60,
-        type: "success",
-        text1: "Processed successfully.",
-        text2: "Technical Adviser Approval",
-      });
+      console.error('Error processing Technical Adviser Approval:', error);
+      showError('Error processing Technical Adviser Approval');
       setIsModalVisible(false); // Close the modal even if there's an error
       onRefresh(); // Refresh data using onRefresh function even if there's an error
     }
@@ -101,27 +91,16 @@ const StudentApplications = () => {
       }, {
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
-      Toast.show({
-        topOffset: 60,
-        type: "success",
-        text1: "Processed successfully.",
-        text2: "subject Adviser Approval",
-      });
-      console.log('Subject adviser approval response:', response.data);
+      showSuccess('Subject Adviser Approval processed successfully');
       setIsModalVisible(false); // Close the modal
       onRefresh(); // Refresh data using onRefresh function
     } catch (error) {
-      Toast.show({
-        topOffset: 60,
-        type: "success",
-        text1: "Processed successfully.",
-        text2: "subject Adviser Approval",
-      });
+      console.error('Error processing Subject Adviser Approval:', error);
+      showError('Error processing Subject Adviser Approval');
       setIsModalVisible(false); // Close the modal even if there's an error
       onRefresh(); // Refresh data using onRefresh function even if there's an error
     }
   };
-  
 
   const Viewpdf = async () => {
     try {
@@ -131,6 +110,7 @@ const StudentApplications = () => {
       console.log(uri);
     } catch (error) {
       console.error('Error fetching PDF:', error);
+      showError('Error fetching PDF');
     }
   };
 
@@ -139,11 +119,26 @@ const StudentApplications = () => {
     setPdfFileName('');
   };
 
+  const showError = (message) => {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: message,
+    });
+  };
+
+  const showSuccess = (message) => {
+    Toast.show({
+      type: 'success',
+      text1: 'Success',
+      text2: message,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         style={styles.userList}
-        columnWrapperStyle={styles.listContainer}
         data={applications}
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) => (
@@ -154,7 +149,7 @@ const StudentApplications = () => {
               setIsModalVisible(true);
             }}
           >
-            <Image style={styles.image} source={{ uri: item.image }} />
+            {/* <Image style={styles.image} source={{ uri: item.image }} /> */}
             <View style={{ alignItems: 'center' }}>
               <View style={styles.cardContent}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -179,7 +174,6 @@ const StudentApplications = () => {
                   <Text style={styles.followButtonText}>{item.research_title}</Text>
                 </TouchableOpacity>
               </View>
-
             </View>
           </TouchableOpacity>
         )}
@@ -187,7 +181,7 @@ const StudentApplications = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#800000"]} // Maroon color for the refresh indicator
+            colors={["black"]} // Maroon color for the refresh indicator
           />
         }
         contentContainerStyle={{ flexGrow: 1 }}
@@ -227,7 +221,7 @@ const StudentApplications = () => {
                     style={styles.textInput}
                   />
                 )}
-                <Button title="Send" onPress={handleTechnicalAdviserApproval} color="#800000" />
+                <Button title="Send" onPress={handleTechnicalAdviserApproval} color="black" />
               </View>
             )}
 
@@ -285,7 +279,6 @@ const StudentApplications = () => {
           </View>
         </View>
       </Modal>
-
     </View>
   );
 };
@@ -300,7 +293,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardContent: {
-    marginLeft: 20,
+    justifyContent: 'center',
     marginTop: 5,
     marginBottom: 10
   },
@@ -322,9 +315,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     backgroundColor: '#FFFFFF', // White card background
     flexDirection: 'row',
-    borderColor: 'maroon', // Add border color maroon
+    borderColor: 'grey', // Add border color maroon
     borderWidth: 2, // Add border width
     borderRadius: 10, // Add border radius
+    alignSelf: 'center',
   },
   name: {
     fontSize: 18,
@@ -341,11 +335,11 @@ const styles = StyleSheet.create({
   followButton: {
     marginTop: 10,
     height: 35,
-    width: 120,
+    width: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20,
-    backgroundColor: '#800000', // Maroon color
+    // borderRadius: 10,
+    backgroundColor: 'black', // Maroon color
   },
   followButtonText: {
     color: '#FFFFFF',
@@ -389,13 +383,13 @@ const styles = StyleSheet.create({
   btnClose: {
     backgroundColor: '#FFFFFF', // White background
     borderWidth: 1,
-    borderColor: '#800000', // Maroon border
+    borderColor: 'black', // Maroon border
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   btnCloseText: {
-    color: '#800000', // Maroon color
+    color: 'black', // Maroon color
     fontWeight: 'bold',
   },
   centeredViews: {

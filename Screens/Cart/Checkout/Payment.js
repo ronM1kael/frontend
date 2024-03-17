@@ -20,16 +20,11 @@ const ResearchersForm = (props) => {
   const request = props.route.params ? props.route.params.request : null;
   const navigation = useNavigation();
 
-  const [researchers, setResearchers] = useState([
-    { name: "", stateSetter: null },
-  ]);
+  const [researchers, setResearchers] = useState([{ name: "", stateSetter: null }]);
   const [error, setError] = useState();
 
   useEffect(() => {
-    setResearchers((prevResearchers) => [
-      ...prevResearchers,
-      { name: "", stateSetter: null },
-    ]);
+    setResearchers((prevResearchers) => [...prevResearchers, { name: "", stateSetter: null }]);
   }, []);
 
   const handleInputChange = (text, index) => {
@@ -39,16 +34,11 @@ const ResearchersForm = (props) => {
   };
 
   const addTextBox = () => {
-    setResearchers((prevResearchers) => [
-      ...prevResearchers,
-      { name: "", stateSetter: null },
-    ]);
+    setResearchers((prevResearchers) => [...prevResearchers, { name: "", stateSetter: null }]);
   };
 
   const removeTextBox = (index) => {
-    setResearchers((prevResearchers) =>
-      prevResearchers.filter((_, i) => i !== index)
-    );
+    setResearchers((prevResearchers) => prevResearchers.filter((_, i) => i !== index));
   };
 
   const SendRequest = () => {
@@ -56,26 +46,16 @@ const ResearchersForm = (props) => {
     researchers.forEach((researcher, index) => {
       researchersData[`researchers_name${index + 1}`] = researcher.name;
     });
-    const requestResearchers = {
-      ...request,
-      ...researchersData,
-    };
+    const requestResearchers = { ...request, ...researchersData };
 
     console.log(requestResearchers);
     navigation.navigate("Confirm", { request: requestResearchers });
   };
 
   return (
-    <KeyboardAwareScrollView
-      viewIsInsideTabBar={true}
-      extraHeight={200}
-      enableOnAndroid={true}
-    >
+    <KeyboardAwareScrollView viewIsInsideTabBar={true} extraHeight={200} enableOnAndroid={true}>
       <View style={styles.container}>
-        <Image
-          source={{ uri: "https://www.bootdey.com/image/280x280/800000/800000" }}
-          style={styles.background}
-        />
+        <Image source={{ uri: "https://www.bootdey.com/image/280x280/800000/800000" }} />
         <View style={styles.formContainer}>
           <Text style={styles.title}>Requesting For Certification</Text>
           <View style={styles.card}>
@@ -106,7 +86,7 @@ const ResearchersForm = (props) => {
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -121,13 +101,13 @@ const styles = {
   },
   title: {
     fontSize: 24,
-    color: "#fff",
+    color: "black",
     marginBottom: 20,
     marginTop: 20,
   },
   card: {
     width: "80%",
-    backgroundColor: "#fff",
+    backgroundColor: "lightgray",
     borderRadius: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -140,26 +120,22 @@ const styles = {
     marginBottom: 20,
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: 10, // Padding to the right of the container
-  },
-  label: {
-    fontSize: 16,
-    color: "#333",
+    paddingRight: 10,
   },
   input: {
     flex: 1,
     height: 40,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: "maroon",
+    borderColor: "grey",
     color: "#333",
     paddingLeft: 10,
-    marginRight: 10, // Margin to the right of the input field
+    marginRight: 10,
   },
   button: {
     width: "100%",
     height: 40,
-    backgroundColor: "maroon",
+    backgroundColor: "black",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 4,
@@ -181,18 +157,18 @@ const styles = {
   buttons: {
     width: "100%",
     height: 40,
-    backgroundColor: "#fff", // White background
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 4,
-    borderWidth: 1, // Border width
-    borderColor: "maroon", // Maroon border color
+    borderWidth: 1,
+    borderColor: "black",
     marginBottom: 10,
   },
   buttonTexts: {
-    color: "maroon", // Maroon text color
+    color: "black",
     fontSize: 16,
   },
-};
+});
 
 export default ResearchersForm;

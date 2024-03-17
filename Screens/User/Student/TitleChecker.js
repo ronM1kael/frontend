@@ -94,65 +94,59 @@ const YourComponent = () => {
 
   const handleConfirmation = async () => {
     try {
-      const jwtToken = await AsyncStorage.getItem('jwt');
-      const userProfile = context.stateUser.userProfile;
+        const jwtToken = await AsyncStorage.getItem('jwt');
+        const userProfile = context.stateUser.userProfile;
 
-      if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
-        setError("User authentication or profile information is missing");
-        return;
-      }
+        if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
+            setError("User authentication or profile information is missing");
+            return;
+        }
 
-      const userId = userProfile.id;
-      const role = userProfile.role;
+        const userId = userProfile.id;
+        const role = userProfile.role;
 
-      const response = await axios.post(`${baseURL}student/send-request-access`, {
-        research_id: selectedResearchId, // Use the selectedResearchId here
-        purpose: purpose,
-        requestor_id: userId,
-        requestor_type: role
-      });
-
-      if (response.data.success) {
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Request was successfully sent',
-          visibilityTime: 3000,
-          autoHide: true
+        const response = await axios.post(`${baseURL}student/send-request-access`, {
+            research_id: selectedResearchId,
+            purpose: purpose,
+            requestor_id: userId,
+            requestor_type: role
         });
-        setAccessModalVisible(false);
-        setRejectModalVisible(false);
-      } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to send request',
-          visibilityTime: 3000,
-          autoHide: true
-        });
-      }
+
+        if (response.data.success) {
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Request was successfully sent',
+                visibilityTime: 3000,
+                autoHide: true
+            });
+            setAccessModalVisible(false);
+            setRejectModalVisible(false);
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to send request',
+                visibilityTime: 3000,
+                autoHide: true
+            });
+        }
     } catch (error) {
-      console.error('Error sending request:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to send request',
-        visibilityTime: 3000,
-        autoHide: true
-      });
+        console.error('Error sending request:', error);
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to send request',
+            visibilityTime: 3000,
+            autoHide: true
+        });
     }
-  };
-
-
-  // const openRequestModal = () => {
-  //   setRequestModalVisible(true);
-  // };
+};
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
         <View>
-          <Text style={[styles.title, { textAlign: 'left', color: 'maroon' }]}>Title Checker</Text>
+        <Text style={styles.title}>Title Checker</Text>
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
@@ -162,14 +156,14 @@ const YourComponent = () => {
             <TouchableOpacity style={styles.searchIcon}
               onPress={searchResearch}
               underlayColor="#E8E8E8">
-              <Icon name="search" size={20} color="#800000" />
+              <Icon name="search" size={20} color="gray" />
             </TouchableOpacity>
           </View>
         </View>
         {error ? (
-          <Text style={[styles.listItem, { color: '#800000' }]}>{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
         ) : researchCount === 0 ? (
-          <Text style={[styles.listItem, { color: '#800000' }]}>Nothing matched your title.</Text>
+          <Text style={styles.errorText}>Nothing matched your title.</Text>
         ) : (
           // Inside the return statement of YourComponent
           <ScrollView style={styles.list}>
@@ -558,8 +552,6 @@ const YourComponent = () => {
             </View>
           </View>
         </Modal>
-
-      </View>
     </SafeAreaView>
   );
 };
@@ -580,7 +572,7 @@ const styles = StyleSheet.create({
     height: 40,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#800000',
+    borderColor: 'black',
   },
   list: {
     marginTop: 10,
@@ -593,7 +585,13 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   researchTitle: {
-    color: '#800000', // Maroon color
+    color: 'black', // Maroon color
+  },
+  errorText: {
+    color: 'grey', // Maroon color
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 16,
   },
   modalView: {
     flex: 1,

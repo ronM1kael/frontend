@@ -2,39 +2,25 @@ import React, { useState } from 'react';
 import { View, Dimensions, FlatList, StyleSheet, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import * as actions from '../../Context/Actions/cartActions'
-import {
-    Container,
-    Text,
-    Box,
-    HStack,
-    Avatar,
-    VStack,
-    Spacer,
-    Divider,
-    Center,
-    Button,
-    Heading,
-
-} from "native-base";
+import * as actions from '../../Context/Actions/cartActions';
+import { Container, Text, Box, HStack, Avatar, VStack, Spacer, Button, Heading } from "native-base";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from "react-native-vector-icons/FontAwesome";
-var { height, width } = Dimensions.get("window");
-import EasyButton from "../../Shared/StyledComponents/EasyButton"
+import EasyButton from "../../Shared/StyledComponents/EasyButton";
 
-const Cart = (props) => {
+const { height, width } = Dimensions.get("window");
 
+const Cart = () => {
     const [research_id, setFileId] = useState(false);
-
-    const navigation = useNavigation()
+    const navigation = useNavigation();
     var total = 0;
-    const cartItems = useSelector(state => state.cartItems)
-    // console.log(cartItems[0]?.id);
+    const cartItems = useSelector(state => state.cartItems);
     cartItems.forEach(cart => {
-        return (total += cart.price)
+        return (total += cart.price);
     });
-    dispatch = useDispatch()
-    const renderItem = ({ item, index }) =>
+    const dispatch = useDispatch();
+
+    const renderItem = ({ item, index }) => (
         <TouchableHighlight
             onPress={() => console.log('You touched me')}
             _dark={{ bg: 'coolGray.800' }}
@@ -52,7 +38,6 @@ const Cart = (props) => {
                         <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold onChangeText={(text) => setResearch_title(text)}>
                             {item.research_title}
                         </Text>
-                        {/* Conditional rendering based on a condition */}
                         { /* Check if the condition is met before rendering the text */}
                         {!item.shouldHideId ? null : (
                             <Text color="coolGray.800" _dark={{ color: 'warmGray.50' }} bold onChangeText={(text) => setFileId(text)}>
@@ -64,25 +49,22 @@ const Cart = (props) => {
                 </HStack>
             </Box>
         </TouchableHighlight>
+    );
 
-
-    const renderHiddenItem = (cartItems) =>
+    const renderHiddenItem = (cartItems) => (
         <TouchableOpacity
             onPress={() => dispatch(actions.removeFromCart(cartItems.item))}
         >
-
             <VStack alignItems="center" style={styles.hiddenButton} >
-                <View >
+                <View>
                     <Icon name="trash" color={"white"} size={30} bg="red" />
                     <Text color="white" fontSize="xs" fontWeight="medium">
                         Delete
                     </Text>
                 </View>
             </VStack>
-
-        </TouchableOpacity>;
-
-    // console.log(cartItems)
+        </TouchableOpacity>
+    );
 
     return (
         <>
@@ -102,12 +84,10 @@ const Cart = (props) => {
                 </Box>
             ) : (
                 <Box style={styles.emptyContainer}>
-                    <Text >No Research Request
-                    </Text>
+                    <Text>No Research Request</Text>
                 </Box>
             )}
-            <VStack style={styles.bottomContainer} w='100%' justifyContent='space-between'
-            >
+            <VStack style={styles.bottomContainer} w='100%' justifyContent='space-between'>
                 <HStack justifyContent="space-between">
                     <EasyButton
                         danger
@@ -117,28 +97,24 @@ const Cart = (props) => {
                     >
                         <Text style={{ color: 'white' }}>Clear</Text>
                     </EasyButton>
-                    {/* <Button alignItems="center" onPress={() => dispatch(actions.clearCart())} > Clear</Button> */}
                 </HStack>
                 <HStack justifyContent="space-between">
-                    {/* <Button alignItems="center" colorScheme="primary">Check Out</Button> */}
                     <EasyButton
                         secondary
                         medium
-                        // onPress={() => navigation.navigate('Details', {research_ids : 22})}
                         onPress={() => navigation.navigate('Checkout', {
                             screen: 'Details',
-                            params: {research_id : cartItems[0]?.id}, // Params being passed
-                          })}
+                            params: { research_id: cartItems[0]?.id },
+                        })}
                     >
                         <Text style={{ color: 'white' }}>Proceed</Text>
                     </EasyButton>
-                    {/* <Button alignItems="center" colorScheme="primary" onPress={() => navigation.navigate('Checkout')}>Check Out</Button> */}
                 </HStack>
-            </VStack >
+            </VStack>
         </>
-
     );
 }
+
 const styles = StyleSheet.create({
     emptyContainer: {
         height: height,
@@ -153,17 +129,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         elevation: 20
     },
-    price: {
-        fontSize: 18,
-        margin: 20,
-        color: 'red'
-    },
-    hiddenContainer: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        flexDirection: 'row',
-        // width: 'lg'
-    },
     hiddenButton: {
         backgroundColor: 'red',
         justifyContent: 'center',
@@ -174,4 +139,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Cart
+export default Cart;

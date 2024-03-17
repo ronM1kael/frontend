@@ -83,13 +83,13 @@ const App = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Text style={[styles.pageTitle, { textAlign: 'center', color: 'maroon' }]}>
+            <Text style={[styles.pageTitle, { textAlign: 'center', color: 'black' }]}>
                 Applications Status
             </Text>
             <TextInput
                 style={styles.searchInput}
                 placeholder="Search..."
-                placeholderTextColor="maroon"
+                placeholderTextColor="black"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
             />
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: 1,
         borderRadius: 5,
-        borderColor: 'maroon',
+        borderColor: 'grey',
         marginBottom: 20,
         paddingHorizontal: 10,
     },

@@ -135,15 +135,10 @@ const Main = () => {
           component={TabNavigator}
           options={{
             drawerIcon: ({ color, size }) => (
-              <Icon name="home" size={size} color="maroon" />
+              <Icon name="home" size={size} color="#333" />
             ),
             headerTitle: () => (
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                <Image
-                  source={require("../assets/tup.jpg")}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
                 <Image
                   source={require("../assets/res.jpg")}
                   style={styles.logo}
@@ -172,7 +167,7 @@ const Main = () => {
             component={Dashboard}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="dashboard" size={size} color="maroon" />
+                <Icon name="dashboard" size={size} color="#333" />
               ),
             }}
           />
@@ -184,7 +179,7 @@ const Main = () => {
             component={Administration}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="users" size={size} color="maroon" />
+                <Icon name="users" size={size} color="#333" />
               ),
             }}
           />
@@ -196,7 +191,7 @@ const Main = () => {
             component={ListDepartment}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="building" size={size} color="maroon" />
+                <Icon name="building" size={size} color="#333" />
               ),
             }}
           />
@@ -208,7 +203,7 @@ const Main = () => {
             component={AnnouncementForm}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="bullhorn" size={size} color="maroon" />
+                <Icon name="bullhorn" size={size} color="#333" />
               ),
             }}
           />
@@ -220,7 +215,7 @@ const Main = () => {
             component={EventCalendar}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="calendar" size={size} color="maroon" />
+                <Icon name="calendar" size={size} color="#333" />
               ),
             }}
           />
@@ -232,7 +227,17 @@ const Main = () => {
             component={UserNavigator}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="sign-in" size={size} color="maroon" />
+                <Icon name="sign-in" size={size} color="#333" />
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+                </View>
               ),
             }}
           />
@@ -245,7 +250,17 @@ const Main = () => {
             component={Choose}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="user-plus" size={size} color="maroon" />
+                <Icon name="user-plus" size={size} color="#333" />
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+                </View>
               ),
             }}
           />
@@ -258,7 +273,7 @@ const Main = () => {
             options={{
               drawerIcon: ({ color, size }) => (
                 <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
-                  <Icon name="check-circle" size={size * 0.8} color="maroon" />
+                  <Icon name="check-circle" size={size * 0.8} color="#333" />
                 </View>
               ),
               headerTitle: () => (
@@ -281,7 +296,7 @@ const Main = () => {
             component={Addfile}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="save" size={size} color="maroon" />
+                <Icon name="save" size={size} color="#333" />
               ),
               headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
@@ -305,7 +320,7 @@ const Main = () => {
             component={ApplicationStatus}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="list" size={size} color="maroon" />
+                <Icon name="list" size={size} color="#333" />
               ),
               headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
@@ -328,7 +343,7 @@ const Main = () => {
             component={StudentApplication}
             options={{
               drawerIcon: ({ color, size }) => (
-                <Icon name="file-pdf-o" size={size} color="maroon" />
+                <Icon name="file-pdf-o" size={size} color="#333" />
               ),
               headerTitle: () => (
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
@@ -352,7 +367,7 @@ const Main = () => {
             options={{
               drawerIcon: ({ color, size }) => (
                 <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
-                  <Icon name="check-circle" size={size * 0.8} color="maroon" />
+                  <Icon name="check-circle" size={size * 0.8} color="#333" />
                 </View>
               ),
               headerTitle: () => (
@@ -376,7 +391,7 @@ const Main = () => {
             options={{
               drawerIcon: ({ color, size }) => (
                 <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
-                  <Icon name="file-archive-o" size={size * 0.8} color="maroon" />
+                  <Icon name="file-archive-o" size={size * 0.8} color="#333" />
                 </View>
               ),
               headerTitle: () => (
@@ -398,7 +413,7 @@ const Main = () => {
           component={Contact}
           options={{
             drawerIcon: ({ color, size }) => (
-              <Icon name="info-circle" size={size} color="maroon" />
+              <Icon name="info-circle" size={size} color="#333" />
             ),
           }}
         />
@@ -408,7 +423,7 @@ const Main = () => {
           component={Contact}
           options={{
             drawerIcon: ({ color, size }) => (
-              <Icon name="envelope" size={size} color="maroon" />
+              <Icon name="envelope" size={size} color="#333" />
             ),
           }}
         />
@@ -425,7 +440,7 @@ const TabNavigator = ({ isLoggedIn }) => {
     <Tab.Navigator
       initialRouteName="User"
       tabBarOptions={{
-        activeTintColor: "maroon",
+        activeTintColor: "#333",
         showIcon: true,
         showLabel: false,
       }}
@@ -438,7 +453,7 @@ const TabNavigator = ({ isLoggedIn }) => {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Icon name="home" style={{ position: "relative" }} color={color} size={25} />
+              <Icon name="home" style={{ position: "relative" }} color="#333" size={25} />
             ),
           }}
         />
@@ -451,7 +466,7 @@ const TabNavigator = ({ isLoggedIn }) => {
           options={{
             headerShown: false,
             tabBarIcon: ({ color }) => (
-              <Icon name="file-text" style={{ position: "relative" }} color={color} size={25} />
+              <Icon name="file-text" style={{ position: "relative" }} color="#333" size={25} />
             ),
           }}
         />
@@ -468,7 +483,7 @@ const TabNavigator = ({ isLoggedIn }) => {
                 <Icon
                   name="certificate"
                   style={{ position: "relative" }}
-                  color={color}
+                  color="#333"
                   size={25}
                 />
                 <CartIcon />
@@ -484,7 +499,7 @@ const TabNavigator = ({ isLoggedIn }) => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <Icon name="user" style={{ position: "relative" }} color={color} size={25} />
+            <Icon name="user" style={{ position: "relative" }} color="#333" size={25} />
           ),
         }}
       />
@@ -503,7 +518,7 @@ const styles = StyleSheet.create({
   companyName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'maroon',
+    color: '#333',
     marginLeft: 10,
   },
   bellContainer: {
@@ -511,7 +526,7 @@ const styles = StyleSheet.create({
     width: 50,
     left: 245,
     borderLeftWidth: 2,
-    borderLeftColor: 'maroon',
+    borderLeftColor: '#333',
   },
   bellIconContainer: {
     width: 40,
@@ -522,7 +537,7 @@ const styles = StyleSheet.create({
   bellIcon: {
     width: 25,
     height: 25,
-    tintColor: 'maroon',
+    tintColor: '#333',
   },
   buttons: {
     justifyContent: 'center',

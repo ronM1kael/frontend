@@ -7,7 +7,6 @@ import {
   Dimensions,
   Modal,
   Image,
-  Alert,  
   SafeAreaView,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";

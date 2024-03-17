@@ -1,15 +1,13 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, SafeAreaView, ToastAndroid } from 'react-native';
 import { loginUser } from '../../Context/Actions/Auth.actions';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-
+import { Ionicons } from "@expo/vector-icons";
 import FormContainer from "../../Shared/Form/FormContainer";
 import Error from "../../Shared/Error";
 import COLORS from '../../Constants/color';
-
-import { Ionicons } from "@expo/vector-icons";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -17,7 +15,6 @@ const Login = () => {
     const [error, setError] = useState('');
     const context = useContext(AuthGlobal);
     const navigation = useNavigation();
-
     const [isPasswordShown, setIsPasswordShown] = useState(false);
 
     useFocusEffect(
@@ -31,112 +28,89 @@ const Login = () => {
         }, [context.stateUser.isAuthenticated, navigation, setEmail, setPassword])
     );
 
-    console.log(context.stateUser.isAuthenticated);
+    const showToast = (message) => {
+        ToastAndroid.showWithGravityAndOffset(
+            message,
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM,
+            25,
+            50
+        );
+    };
 
     const handleSubmit = () => {
         if (email === "" || password === "") {
             setError("Please fill in your credentials");
         } else {
-            loginUser(email, password, navigation, context.dispatch);
+            loginUser(email, password, navigation, context.dispatch)
+                .then(() => {
+                    // showToast("Login successful");
+                    // Navigate to the appropriate screen after successful login
+                })
+                .catch((error) => {
+                    showToast("Login failed. Please check your credentials.");
+                    setError("Login failed. Please check your credentials.");
+                });
         }
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <KeyboardAwareScrollView
-                viewIsInsideTabBar={true}
-                extraHeight={200}
-                enableOnAndroid={true}
-            >
-                <FormContainer style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <KeyboardAwareScrollView contentContainerStyle={styles.scrollViewContent}>
+                <View style={styles.logoContainer}>
+                    <Image
+                        source={{
+                            uri: 'https://res.cloudinary.com/deda2zopr/image/upload/v1700396494/400103576_1149027812724794_5925367876009301723_n_1_tkrbph.png',
+                        }}
+                        style={styles.logo}
+                        resizeMode="contain"
+                    />
+                    <Text style={styles.logoText}>R&E-Services</Text>
+                </View>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-                        <Image
-                            source={{
-                                uri: 'https://res.cloudinary.com/deda2zopr/image/upload/v1700396494/400103576_1149027812724794_5925367876009301723_n_1_tkrbph.png',
-                            }}
-                            style={{ width: 50, height: 50, resizeMode: 'contain' }}
-                        />
-                        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 10 }}>
-                            R&E-Services
-                        </Text>
-                    </View>
+                <View style={styles.inputContainer}>
+                    <Image style={styles.inputIcon} source={{ uri: 'https://img.icons8.com/ios-filled/512/circled-envelope.png' }} />
+                    <TextInput
+                        style={styles.input}
+                        keyboardType="email-address"
+                        placeholder="Email Address"
+                        value={email}
+                        onChangeText={(text) => setEmail(text.toLowerCase())}
+                    />
+                </View>
 
-                    <View style={styles.inputContainer}>
-                        <Image style={[styles.icon, { tintColor: 'maroon' }]} source={{ uri: 'https://img.icons8.com/ios-filled/512/circled-envelope.png' }} />
-                        <TextInput
-                            style={styles.inputs}
-                            keyboardType="email-address"
-                            placeholder={"Enter your Email Address"}
-                            value={email}
-                            onChangeText={(text) => setEmail(text.toLowerCase())}
-                        />
-                    </View>
-
-                    <View style={styles.inputContainer}>
-                        <Image style={[styles.icon, { tintColor: 'maroon' }]} source={{ uri: 'https://img.icons8.com/ios-glyphs/512/key.png' }} />
-                        <TextInput
-                            style={styles.inputs}
-                            placeholder={"Enter your Password"}
-                            secureTextEntry={!isPasswordShown}
-                            value={password}
-                            onChangeText={(text) => setPassword(text)}
-                        />
-
-                        <TouchableOpacity
-                            onPress={() => setIsPasswordShown(!isPasswordShown)}
-                            style={{
-                                position: "absolute",
-                                right: 12
-                            }}
-                        >
-                            {
-                                isPasswordShown == false ? (
-                                    <Ionicons name="eye-off" size={24} color='#800000' />
-                                ) : (
-                                    <Ionicons name="eye" size={24} color='#800000' />
-                                )
-                            }
-                        </TouchableOpacity>
-                    </View>
-
-                    <TouchableOpacity style={styles.restoreButtonContainer}>
-                        <Text style={{ textDecorationLine: 'underline' }}>Forgot Password?</Text>
-                    </TouchableOpacity>
-
-                    <View style={styles.buttonGroup}>
-                        {error ? <Error message={error} /> : null}
-                    </View>
-
-                    <TouchableOpacity style={[styles.buttonContainer, { justifyContent: 'flex-start' }]} onPress={() => navigation.navigate("Choose")}>
-                        <Text style={styles.middleText}>Don't have an account? </Text>
-                        <Text style={[styles.loginText, { color: 'maroon', textDecorationLine: 'underline' }]}>Sign up</Text>
-                    </TouchableOpacity>
-
+                <View style={styles.inputContainer}>
+                    <Image style={styles.inputIcon} source={{ uri: 'https://img.icons8.com/ios-glyphs/512/key.png' }} />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        secureTextEntry={!isPasswordShown}
+                        value={password}
+                        onChangeText={(text) => setPassword(text)}
+                    />
                     <TouchableOpacity
-                        style={[styles.buttonContainer, styles.loginButton, { backgroundColor: 'maroon' }]}
-                        onPress={() => handleSubmit()}
+                        style={styles.togglePasswordVisibility}
+                        onPress={() => setIsPasswordShown(!isPasswordShown)}
                     >
-                        <Text style={styles.loginText}>Sign In</Text>
+                        <Ionicons name={isPasswordShown ? "eye-off" : "eye"} size={24} color="#808080" />
                     </TouchableOpacity>
+                </View>
 
-                    <TouchableOpacity
-                        style={[
-                            styles.buttonContainer,
-                            styles.googleButton,
-                            {
-                                backgroundColor: 'white',
-                                borderColor: 'maroon',
-                                borderWidth: 1,
-                            }
-                        ]}
-                    >
-                        <View style={styles.socialButtonContent}>
-                            <Image style={styles.icon} source={{ uri: 'https://img.icons8.com/color/70/000000/google-logo.png' }} />
-                            <Text style={[styles.loginText, { color: 'black' }]}> Sign in with Google</Text>
-                        </View>
-                    </TouchableOpacity>
-                </FormContainer>
+                {/* <TouchableOpacity style={styles.forgotPasswordButton}>
+                    <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                </TouchableOpacity> */}
+
+                {error ? <Error message={error} /> : null}
+
+                <TouchableOpacity style={[styles.loginButton, { backgroundColor: 'black' }]} onPress={() => handleSubmit()}>
+                    <Text style={styles.loginButtonText}>Sign In</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.signupButton} onPress={() => navigation.navigate("Choose")}>
+                    <Text style={styles.signupButtonText}>Don't have an account? Sign up</Text>
+                </TouchableOpacity>
+
+                {/* Social login buttons */}
             </KeyboardAwareScrollView>
         </SafeAreaView>
     );
@@ -145,68 +119,77 @@ const Login = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#B0E0E6',
-    },
-    inputContainer: {
-        borderBottomColor: '#F5FCFF',
         backgroundColor: '#FFFFFF',
-        borderRadius: 30,
-        borderBottomWidth: 1,
-        width: 250,
-        height: 45,
-        marginBottom: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
     },
-    inputs: {
-        height: 45,
-        marginLeft: 16,
-        borderBottomColor: '#FFFFFF',
-        flex: 1,
-    },
-    icon: {
-        width: 25,
-        height: 25,
-        marginLeft: 10,
-    },
-    restoreButtonContainer: {
-        width: 250,
-        marginBottom: 15,
-        alignItems: 'flex-end',
-    },
-    buttonGroup: {
-        width: "80%",
-        margin: 10,
-        alignItems: "center",
-    },
-    loginButton: {
-        backgroundColor: 'maroon',
-    },
-    googleButton: {
-        backgroundColor: '#ff0000',
-    },
-    loginText: {
-        color: 'white',
-    },
-    middleText: {
-        color: 'black',
-    },
-    buttonContainer: {
-        height: 45,
-        flexDirection: 'row',
+    scrollViewContent: {
+        flexGrow: 1,
         justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    logoContainer: {
         alignItems: 'center',
         marginBottom: 20,
-        width: 250,
-        borderRadius: 30,
     },
-    socialButtonContent: {
+    logo: {
+        width: 100,
+        height: 100,
+    },
+    logoText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginTop: 10,
+    },
+    inputContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
         alignItems: 'center',
+        borderRadius: 25,
+        borderWidth: 1,
+        borderColor: '#CCCCCC',
+        marginBottom: 15,
+        paddingHorizontal: 15,
     },
+    inputIcon: {
+        width: 20,
+        height: 20,
+        marginRight: 10,
+    },
+    input: {
+        flex: 1,
+        height: 40,
+    },
+    togglePasswordVisibility: {
+        position: 'absolute',
+        right: 10,
+    },
+    forgotPasswordButton: {
+        alignSelf: 'flex-end',
+        marginBottom: 15,
+    },
+    forgotPasswordText: {
+        color: '#808080',
+        textDecorationLine: 'underline',
+    },
+    loginButton: {
+        backgroundColor: '#FF5733',
+        borderRadius: 25,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        marginBottom: 15,
+    },
+    loginButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    signupButton: {
+        alignSelf: 'center',
+    },
+    signupButtonText: {
+        color: '#808080',
+        textDecorationLine: 'underline',
+    },
+    // Additional styles for social login buttons, error message, etc.
 });
 
 export default Login;

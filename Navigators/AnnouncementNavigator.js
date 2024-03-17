@@ -16,7 +16,7 @@ function MyAnnouncementTabs() {
     return (
         <Tab.Navigator
             tabBarOptions={{
-                activeTintColor: "maroon",
+                activeTintColor: "black",
                 showIcon: true,
                 showLabel: false,
             }} >

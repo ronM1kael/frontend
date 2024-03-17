@@ -194,7 +194,7 @@ const YourComponent = () => {
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
                 <View>
-                    <Text style={[styles.title, { textAlign: 'left', color: 'maroon' }]}>Title Checker</Text>
+                    <Text style={[styles.title, { textAlign: 'center', color: 'black' }]}>Title Checker</Text>
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={styles.input}
@@ -204,14 +204,14 @@ const YourComponent = () => {
                         <TouchableOpacity style={styles.searchIcon}
                             onPress={searchResearch}
                             underlayColor="#E8E8E8">
-                            <Icon name="search" size={20} color="#800000" />
+                            <Icon name="search" size={20} color="gray" />
                         </TouchableOpacity>
                     </View>
                 </View>
                 {error ? (
-                    <Text style={[styles.listItem, { color: '#800000' }]}>{error}</Text>
+                    <Text style={[styles.listItem, { color: 'grey' }]}>{error}</Text>
                 ) : researchCount === 0 ? (
-                    <Text style={[styles.listItem, { color: '#800000' }]}>Nothing matched your title.</Text>
+                    <Text style={[styles.listItem, { color: 'grey' }]}>Nothing matched your title.</Text>
                 ) : (
                     // Inside the return statement of YourComponent
                     <ScrollView style={styles.list}>
@@ -685,7 +685,7 @@ const styles = StyleSheet.create({
         height: 40,
         padding: 10,
         borderWidth: 1,
-        borderColor: '#800000',
+        borderColor: 'black',
     },
     list: {
         marginTop: 10,
@@ -698,7 +698,7 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
     },
     researchTitle: {
-        color: '#800000', // Maroon color
+        color: 'black', // Maroon color
     },
     modalView: {
         flex: 1,
