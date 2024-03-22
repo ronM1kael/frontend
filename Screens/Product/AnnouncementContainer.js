@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import {
   View,
   Text,
@@ -28,29 +29,31 @@ const AnnouncementList = () => {
 
   const context = useContext(AuthGlobal);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const jwtToken = await AsyncStorage.getItem('jwt');
-        const userProfile = context.stateUser.userProfile;
-        if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
-          console.error('Invalid authentication state');
-          return;
-        }
-
-        const response = await axios.get(`${baseURL}mobilehomepage/${userProfile.id}`, {
-          headers: { Authorization: `Bearer ${jwtToken}` },
-        });
-
-        setAnnouncements(Object.values(response.data.announcements));
-        setIsLoggedIn(!!context.stateUser.isAuthenticated);
-      } catch (error) {
-        console.error('Error fetching data:', error);
+  const fetchData = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem('jwt');
+      const userProfile = context.stateUser.userProfile;
+      if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
+        console.error('Invalid authentication state');
+        return;
       }
-    };
 
-    fetchData();
-  }, [context.stateUser.isAuthenticated, refresh]);
+      const response = await axios.get(`${baseURL}mobilehomepage/${userProfile.id}`, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
+
+      setAnnouncements(Object.values(response.data.announcements));
+      setIsLoggedIn(!!context.stateUser.isAuthenticated);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [context.stateUser.isAuthenticated, refresh])
+  );
 
   const handlePress = async (announcement) => {
     setSelectedAnnouncement(announcement);

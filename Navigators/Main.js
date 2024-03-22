@@ -45,6 +45,8 @@ import Researches from "../Screens/User/Faculty/Researches"
 import ResearchTemplatesScreen from "../Screens/User/Faculty/ResearchTemplates";
 import ExtensionTemplatesScreen from "../Screens/User/Faculty/ExtensionTemplates";
 
+import FacultyApplication from "../Screens/Extend/FacultyExtension"
+
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -411,6 +413,16 @@ const Main = () => {
         <Drawer.Screen
           name="About Us"
           component={Contact}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="info-circle" size={size} color="#333" />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="Extension Application"
+          component={FacultyApplication}
           options={{
             drawerIcon: ({ color, size }) => (
               <Icon name="info-circle" size={size} color="#333" />
