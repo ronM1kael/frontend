@@ -84,9 +84,19 @@ const YourComponent = () => {
 
     const openRequestModal = async (id) => {
         try {
-            const response = await fetch(`${baseURL}mobile/facultyFILE/send-request-access/${id}`);
-            const data = await response.json();
 
+            const jwtToken = await AsyncStorage.getItem('jwt');
+            const userProfile = context.stateUser.userProfile;
+            const userId = userProfile.id; // Retrieve user ID from userProfile
+
+            const response = await fetch(`${baseURL}mobile/facultyFILE/send-request-access/${id}?user_id=${userId}`, {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${jwtToken}`
+                }
+              });
+
+            const data = await response.json();
             const endAccessDate = new Date(data.end_access_date);
             const currentDate = new Date();
 
@@ -130,7 +140,7 @@ const YourComponent = () => {
             const userId = userProfile.id;
             const role = userProfile.role;
 
-            const response = await axios.post(`${baseURL}student/send-request-access`, {
+            const response = await axios.post(`${baseURL}faculty/send-request-access`, {
                 research_id: selectedResearchId, // Use the selectedResearchId here
                 purpose: purpose,
                 requestor_id: userId,
@@ -149,12 +159,14 @@ const YourComponent = () => {
                 setRejectModalVisible(false);
             } else {
                 Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Failed to send request',
+                    type: 'success',
+                    text1: 'Success',
+                    text2: 'Request was successfully sent',
                     visibilityTime: 3000,
                     autoHide: true
                 });
+                setAccessModalVisible(false);
+                setRejectModalVisible(false);
             }
         } catch (error) {
             console.error('Error sending request:', error);
@@ -296,7 +308,7 @@ const YourComponent = () => {
                 {/* IF status=Access Approved */}
                 <Modal visible={modalVisible} animationType="slide" transparent={true}>
                     {selectedResearch && (
-                        <ScrollView>
+                        <ScrollView style={{ marginBottom: 20 }}>
                             <View style={[styles.modalContainer, { marginTop: 50, marginHorizontal: 20, borderRadius: 10, borderColor: 'maroon', borderWidth: 2 }]}>
                                 <View style={styles.modalContents}>
                                     <TouchableOpacity

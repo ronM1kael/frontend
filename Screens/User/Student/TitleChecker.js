@@ -1,11 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Button, ScrollView, TouchableOpacity, Modal, StyleSheet, SafeAreaView, TouchableWithoutFeedback } from 'react-native';
-
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import baseURL from '../../../assets/common/baseurl';
-
 import Icon from "react-native-vector-icons/FontAwesome";
-
 import Toast from "react-native-toast-message";
 import AuthGlobal from '../../../Context/Store/AuthGlobal';
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -18,22 +15,14 @@ const YourComponent = () => {
   const [selectedResearch, setSelectedResearch] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [error, setError] = useState('');
-
-  // const [requestModalVisible, setRequestModalVisible] = useState(false);
-
   const [accessModalVisible, setAccessModalVisible] = useState(false);
   const [pendingModalVisible, setPendingModalVisible] = useState(false);
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
-
   const [endModalVisible, setEndModalVisible] = useState(false);
-
   const context = useContext(AuthGlobal);
   const navigation = useNavigation();
-
   const [purpose, setPurpose] = useState('');
-
-  const [selectedResearchId, setSelectedResearchId] = useState(null); // Add state for selected research id
-
+  const [selectedResearchId, setSelectedResearchId] = useState(null);
   const [showInputContainer, setShowInputContainer] = useState(false);
 
   useEffect(() => {
@@ -59,20 +48,28 @@ const YourComponent = () => {
 
   const openResearchModal = async (id) => {
     try {
-      const response = await fetch(`${baseURL}mobile/student/send-request-access/${id}`);
+      const jwtToken = await AsyncStorage.getItem('jwt');
+      const userProfile = context.stateUser.userProfile;
+      const userId = userProfile.id; // Retrieve user ID from userProfile
+  
+      const response = await fetch(`${baseURL}mobile/student/send-request-access/${id}?user_id=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${jwtToken}`
+        }
+      });
+  
       const data = await response.json();
-
       const endAccessDate = new Date(data.end_access_date);
       const currentDate = new Date();
-
-      // Set hours, minutes, seconds, and milliseconds to zero
+  
       endAccessDate.setHours(0, 0, 0, 0);
       currentDate.setHours(0, 0, 0, 0);
-
+  
       console.log(data);
       if (data.status == null) {
         setAccessModalVisible(true);
-        setSelectedResearchId(id); // Store the id in state
+        setSelectedResearchId(id);
       } else if (data.status === 'Access Approved') {
         if (endAccessDate.getTime() > currentDate.getTime()) {
           setSelectedResearch(data);
@@ -248,7 +245,7 @@ const YourComponent = () => {
         {/* IF status=Access Approved */}
         <Modal visible={modalVisible} animationType="slide" transparent={true}>
           {selectedResearch && (
-            <ScrollView>
+            <ScrollView style={{ marginBottom: 20 }}>
               <View style={[styles.modalContainer, { marginTop: 50, marginHorizontal: 20, borderRadius: 10, borderColor: 'maroon', borderWidth: 2 }]}>
                 <View style={styles.modalContents}>
                   <TouchableOpacity
@@ -566,6 +563,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   input: {
     flex: 1,

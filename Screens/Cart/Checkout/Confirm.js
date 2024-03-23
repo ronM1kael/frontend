@@ -21,8 +21,10 @@ import { RadioButton } from 'react-native-paper';
 import Checkbox from 'expo-checkbox';
 import AuthGlobal from "../../../Context/Store/AuthGlobal";
 import * as actions from '../../../Context/Actions/cartActions';
+import { useDispatch } from 'react-redux';
 
 const ConfirmationForm = (props) => {
+  const dispatch = useDispatch();
   const context = useContext(AuthGlobal);
   const navigation = useNavigation();
   const request = props.route.params ? props.route.params.request : null;
@@ -56,35 +58,42 @@ const ConfirmationForm = (props) => {
       const jwtToken = await AsyncStorage.getItem('jwt');
       const userProfile = context.stateUser.userProfile;
       const check = isChecked === true ? 'Yes' : 'No';
-
+  
       if (!jwtToken || !context.stateUser.isAuthenticated || !userProfile || !userProfile.id) {
         setError("User authentication or profile information is missing");
         return;
       }
-
+  
       const userId = userProfile.id;
       const confirm = { isChecked: check };
       const formData = new FormData();
-
+  
       const requestData = { ...confirm, ...props.route.params.request };
-
+  
       Object.keys(requestData).forEach((key) => {
         formData.append(key, requestData[key]);
       });
-
+  
       formData.append("user_id", userId);
       formData.append("college", college);
       formData.append("technicalAdviser_id", selectedAdviser);
       formData.append("subjectAdviser_id", selectedSadviser);
-
-      const response = await axios.post(`${baseURL}mobileapply_certification/${userProfile.id}`, formData, {
+  
+      let url = '';
+      if (userProfile.role === 'Student') {
+        url = `${baseURL}mobileapply_certification/${userProfile.id}`;
+      } else {
+        url = `${baseURL}mobilefacultyapply_certificationfinal/${userProfile.id}`;
+      }
+  
+      const response = await axios.post(url, formData, {
         headers: {
           Accept: "application/json",
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-
+  
       console.log("Request Sent Successfully", response.data);
       Toast.show({
         topOffset: 60,
@@ -96,7 +105,7 @@ const ConfirmationForm = (props) => {
         dispatch(actions.clearCart());
         navigation.navigate("Home");
       }, 500);
-
+  
     } catch (error) {
       console.error('Error sending request:', error);
       setError('Error sending request');
@@ -109,6 +118,7 @@ const ConfirmationForm = (props) => {
       });
     }
   };
+  
 
   return (
     <KeyboardAwareScrollView

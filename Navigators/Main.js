@@ -410,19 +410,21 @@ const Main = () => {
           />
         ) : null}
 
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
         <Drawer.Screen
-          name="About Us"
-          component={Contact}
+          name="Extension Application"
+          component={FacultyApplication}
           options={{
             drawerIcon: ({ color, size }) => (
               <Icon name="info-circle" size={size} color="#333" />
             ),
           }}
         />
+        ) : null}
 
         <Drawer.Screen
-          name="Extension Application"
-          component={FacultyApplication}
+          name="About Us"
+          component={Contact}
           options={{
             drawerIcon: ({ color, size }) => (
               <Icon name="info-circle" size={size} color="#333" />

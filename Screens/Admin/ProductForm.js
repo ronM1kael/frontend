@@ -24,7 +24,6 @@ import ListItem from "./ListItem";
 const CertificationForm = (props) => {
   const context = useContext(AuthGlobal);
   const navigation = useNavigation();
-
   const [files, setFiles] = useState([]);
   const [facultyFiles, setFacultyFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -360,12 +359,16 @@ const CertificationForm = (props) => {
         )}
       </View>
 
-      <TouchableOpacity
-        style={styles.uploadButton}
-        onPress={toggleForm}
-      >
-        <Text style={styles.uploadButtonText}>{showForm ? "Close" : "Upload Application"}</Text>
-      </TouchableOpacity>
+      <View>
+        <TouchableOpacity
+          style={styles.uploadButton}
+          onPress={toggleForm}
+        >
+          <Text style={styles.uploadButtonText}>{showForm ? "Close" : "Upload Application"}</Text>
+        </TouchableOpacity>
+        {/* Add margin after TouchableOpacity */}
+        <View style={{ marginBottom: 20 }} />
+      </View>
 
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <View style={{ borderWidth: 2, borderColor: 'black', margin: 5 }}>

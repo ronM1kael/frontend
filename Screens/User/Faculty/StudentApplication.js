@@ -42,6 +42,7 @@ const StudentApplications = () => {
       const response = await axios.get(`${baseURL}mobile/students/application/${userProfile.id}`, {
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
+      console.log(response.data);
       setApplications(response.data.application);
       showSuccess('Applications fetched successfully');
     } catch (error) {
