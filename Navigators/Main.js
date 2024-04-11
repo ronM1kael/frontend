@@ -47,6 +47,8 @@ import ExtensionTemplatesScreen from "../Screens/User/Faculty/ExtensionTemplates
 
 import FacultyApplication from "../Screens/Extend/FacultyExtension"
 
+import ResearchProposal from "../Screens/User/Faculty/ResearchProposal";
+
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -333,6 +335,30 @@ const Main = () => {
                   />
                   <Text style={styles.companyName}>R&E-Services</Text>
 
+                </View>
+              ),
+            }}
+          />
+        ) : null}
+
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
+          <Drawer.Screen
+            name="Research Proposal"
+            component={ResearchProposal}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
+                  <Icon name="check-circle" size={size * 0.8} color="#333" />
+                </View>
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
                 </View>
               ),
             }}
