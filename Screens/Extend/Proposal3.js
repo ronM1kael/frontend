@@ -1,26 +1,20 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Modal, Button, TextInput, StyleSheet, ToastAndroid } from 'react-native';
+import { View, Text, Modal, Button, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
-import baseURL from '../../assets/common/baseurl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
+import Icon from "react-native-vector-icons/FontAwesome";
+import baseURL from '../../assets/common/baseurl';
+import Toast from "react-native-toast-message";
 
 const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
     const [moa, setMOA] = useState(null);
     const [error, setError] = useState(null); // State for error handling
     const context = useContext(AuthGlobal);
 
-    const showToast = message => {
-        ToastAndroid.show(message, ToastAndroid.SHORT);
-    };
-
-    const refresh = () => {
-        setMOA(null);
-    };
-
-    const handleChooseFile = async (fileStateSetter) => {
+    const handleChooseFile = async () => {
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: 'application/pdf',
@@ -44,7 +38,7 @@ const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
                                 to: newUri,
                             });
 
-                            fileStateSetter({
+                            setMOA({
                                 name: pickedAsset.name,
                                 uri: newUri,
                             });
@@ -78,7 +72,7 @@ const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
     const handleSubmit = async () => {
         try {
             if (!moa || !moa.uri) { // Check if files or file URIs exist
-                setError('Please choose all files'); // Set error state if any file is not selected
+                setError('Please choose a MOA file'); // Set error state if any file is not selected
                 return;
             }
 
@@ -104,7 +98,11 @@ const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
 
             if (response.data.success) {
                 console.log(response.data.message);
-                showToast('MOA submitted successfully');
+                Toast.show({
+                    type: 'success',
+                    text1: 'Proposal sent for review by Board and OSG.',
+                    text2: 'Wait for updates on your results.',
+                  });
                 closeModal();
             } else {
                 setError('MOA submission failed. Please try again.');
@@ -115,25 +113,43 @@ const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
         }
     };
 
+    const refresh = () => {
+        setMOA(null);
+    };
+
     return (
         <Modal visible={visible} animationType="slide" transparent={true}>
             <View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
                     <Text style={styles.modalTitle}>Extension Application</Text>
+                    <View style={styles.separator} />
+                    <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+                        <Icon name="close" size={20} color="#333" />
+                    </TouchableOpacity>
                     <View style={styles.formContainer}>
-                        <View style={styles.fileInput}>
-                            <Button title="Choose MOA File" onPress={() => handleChooseFile(setMOA)} />
-                            <Text>{moa ? moa.name : 'No file chosen'}</Text>
+                        <View style={styles.fileSelectionContainer}>
+                            <TouchableOpacity style={styles.chooseFileButton} onPress={handleChooseFile}>
+                                <View style={styles.fileButtonContent}>
+                                    <Icon name="file" size={20} color="#fff" style={styles.icon} />
+                                    <Text style={styles.chooseFileText}>Choose MOA File</Text>
+                                    <Text style={styles.memoText}>(Memorandum Of Agreement)</Text>
+                                </View>
+                            </TouchableOpacity>
+                            {moa ? (
+                                <Text style={styles.fileText}>Selected File: {moa.name}</Text>
+                            ) : (
+                                <Text style={styles.fileText}>No File Chosen</Text>
+                            )}
+                            {error && <Text style={styles.errorText}>{error}</Text>}
                         </View>
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <Button title="Close" onPress={() => { closeModal(); refresh(); }} />
-                        <Button title="Submit Proposal" onPress={handleSubmit} />
+                        <View style={styles.separator} />
+                        <View style={styles.buttonContainer}>
+                            <Button title="Submit Proposal" onPress={handleSubmit} color="#000" />
+                        </View>
                     </View>
                 </View>
             </View>
         </Modal>
-
     );
 };
 
@@ -153,23 +169,84 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 24,
         marginBottom: 20,
-        fontWeight: 'bold', // Added fontWeight for emphasis
+        color: '#000',
+        fontWeight: 'bold',
+        textAlign: 'center', // Center align the text
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
     },
     formContainer: {
         width: '100%', // Full width
     },
-    fileInput: {
+    inputContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20, // Increased marginBottom for spacing
+        marginBottom: 20,
+    },
+    input: {
+        flex: 1,
+        marginLeft: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+    },
+    chooseFileButton: {
+        backgroundColor: '#000',
+        borderRadius: 5,
+        paddingVertical: 10,
+        alignItems: 'center', // Center align items horizontally
+        justifyContent: 'center', // Center align items vertically
+        marginBottom: 10,
+    },
+    chooseFileText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 10,
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center', // Center align the button
         marginTop: 20,
     },
+    separator: {
+        height: 2,
+        backgroundColor: 'maroon', // Maroon color for the separator
+        marginBottom: 20, // Adjust spacing as needed
+    },
+    fileSelectionContainer: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+    },
+    icon: {
+        marginRight: 10,
+    },
+    fileText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#333',
+        textAlign: 'center', // Center align the text
+    },
+    fileButtonContent: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center', // Align content in the center
+    },
+    memoText: {
+        fontSize: 12,
+        color: '#fff',
+        textAlign: 'center', // Center align the text
+    },
 });
-
 
 export default Proposal2Modal;

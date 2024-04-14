@@ -1,11 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Button, Modal, StyleSheet } from 'react-native';
+import { View, Text, Button, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
-import baseURL from '../../assets/common/baseurl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
+import Icon from "react-native-vector-icons/FontAwesome";
+import Toast from "react-native-toast-message";
+import baseURL from '../../assets/common/baseurl';
 
 const AppointmentModal = ({ visible, closeModal, extensionId }) => {
   const [purpose, setPurpose] = useState('');
@@ -20,7 +22,7 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
       const jwtToken = await AsyncStorage.getItem('jwt');
       const userProfile = context.stateUser.userProfile;
       const user_id = userProfile.id;
-  
+
       const response = await axios.post(
         `${baseURL}mobilecheckingDate`,
         {
@@ -28,9 +30,13 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
           time,
         }
       );
-  
+
       if (response.data.exists) {
-        alert('Appointment Conflict: Date Already Reserved');
+        Toast.show({
+          type: 'error',
+          text1: 'Appointment Conflict',
+          text2: 'Date Already Reserved.',
+        });
         setDate(new Date());
         setTime('');
       } else {
@@ -41,7 +47,7 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
           time,
           user_id: user_id,
         };
-  
+
         const res = await axios.post(
           `${baseURL}mobilefacultySchedulingAppointment1`,
           appointmentData,
@@ -52,9 +58,13 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
             },
           }
         );
-  
+
         if (res.data.success) {
-          alert('Your schedule has been sent; kindly wait to be approved.');
+          Toast.show({
+            type: 'success',
+            text1: 'Your schedule has been sent;',
+            text2: 'kindly wait to be approved.',
+          });
           closeModal();
         } else {
           alert('Failed to schedule appointment. Please try again.');
@@ -64,26 +74,36 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
       console.error('Error:', error);
       alert('An error occurred while scheduling appointment.');
     }
-  };  
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Make an Appointment</Text>
+          <Text style={styles.modalTitle}>Make an Appointment for a Pre-Survey Consultation</Text>
+          <View style={styles.separator} />
+          <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+            <Icon name="close" size={20} color="#333" />
+          </TouchableOpacity>
           <View style={styles.formContainer}>
-            <Picker
-              selectedValue={purpose}
-              onValueChange={(itemValue) => setPurpose(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="--- SELECT PURPOSE ---" value="" />
-              {/* <Picker.Item label="Consultation Meeting for Proposal" value="Proposal Consultation" /> */}
-              <Picker.Item label="Consultation Meeting for Pre-Evaluation Survey" value="Pre-Survey Consultation" />
-              {/* <Picker.Item label="Consultation Meeting for Mid-Evaluation Survey" value="Mid-Survey Consultation" /> */}
-            </Picker>
-            <View style={styles.dateContainer}>
-              <Button title="Select Date" onPress={() => setShowDatePicker(true)} />
+            <View style={styles.inputContainer}>
+              <Icon name="tasks" size={20} color="#000" />
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={purpose}
+                  onValueChange={(itemValue) => setPurpose(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="--- SELECT PURPOSE ---" value="" />
+                  <Picker.Item label="Consultation Meeting for Pre-Evaluation Survey" value="Pre-Survey Consultation" />
+                </Picker>
+              </View>
+            </View>
+            <View style={styles.inputContainer}>
+              <Icon name="calendar" size={20} color="#000" />
+              <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateContainer}>
+                <Text style={styles.dateText}>{date.toDateString()}</Text>
+              </TouchableOpacity>
               {showDatePicker && (
                 <DateTimePicker
                   value={date}
@@ -96,22 +116,27 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
                 />
               )}
             </View>
-            <Picker
-              selectedValue={time}
-              onValueChange={(itemValue) => setTime(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="--- SELECT TIME RANGE ---" value="" />
-              <Picker.Item label="09:00 AM - 10:00 AM" value="09:00 AM - 10:00 AM" />
-              <Picker.Item label="10:00 AM - 11:00 AM" value="10:00 AM - 11:00 AM" />
-              <Picker.Item label="11:00 AM - 12:00 NN" value="11:00 AM - 12:00 NN" />
-              <Picker.Item label="01:00 PM - 02:00 PM" value="01:00 PM - 02:00 PM" />
-              <Picker.Item label="02:00 PM - 03:00 PM" value="02:00 PM - 03:00 PM" />
-              <Picker.Item label="03:00 PM - 04:00 PM" value="03:00 PM - 04:00 PM" />
-            </Picker>
+            <View style={styles.inputContainer}>
+              <Icon name="clock-o" size={20} color="#000" />
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={time}
+                  onValueChange={(itemValue) => setTime(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="--- SELECT TIME RANGE ---" value="" />
+                  <Picker.Item label="09:00 AM - 10:00 AM" value="09:00 AM - 10:00 AM" />
+                  <Picker.Item label="10:00 AM - 11:00 AM" value="10:00 AM - 11:00 AM" />
+                  <Picker.Item label="11:00 AM - 12:00 NN" value="11:00 AM - 12:00 NN" />
+                  <Picker.Item label="01:00 PM - 02:00 PM" value="01:00 PM - 02:00 PM" />
+                  <Picker.Item label="02:00 PM - 03:00 PM" value="02:00 PM - 03:00 PM" />
+                  <Picker.Item label="03:00 PM - 04:00 PM" value="03:00 PM - 04:00 PM" />
+                </Picker>
+              </View>
+            </View>
+            <View style={styles.separator} />
             <View style={styles.buttonContainer}>
-              <Button title="Submit" onPress={handleSubmit} />
-              <Button title="Close" onPress={closeModal} />
+              <Button title="Submit" onPress={handleSubmit} color="#000" />
             </View>
           </View>
         </View>
@@ -136,21 +161,56 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     marginBottom: 20,
+    color: '#000',
+    fontWeight: 'bold',
+    textAlign: 'center', // Center align the text
+  },
+  separator: {
+    height: 2,
+    backgroundColor: 'maroon', // Maroon color for the separator
+    marginBottom: 20, // Adjust spacing as needed
   },
   formContainer: {
     width: '100%', // Full width
   },
-  picker: {
-    height: 50,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
   },
+  pickerContainer: {
+    flex: 1,
+    marginLeft: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    color: '#000', // Black color for the text
+  },
   dateContainer: {
-    marginBottom: 20,
+    flex: 1,
+    marginLeft: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+  },
+  dateText: {
+    color: '#000',
+    fontSize: 16,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center', // Center align the button
     marginTop: 20,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 });
 

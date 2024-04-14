@@ -348,7 +348,7 @@ const Main = () => {
             options={{
               drawerIcon: ({ color, size }) => (
                 <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
-                  <Icon name="check-circle" size={size * 0.8} color="#333" />
+                  <Icon name="file-code-o" size={size * 0.8} color="#333" />
                 </View>
               ),
               headerTitle: () => (
@@ -395,7 +395,7 @@ const Main = () => {
             options={{
               drawerIcon: ({ color, size }) => (
                 <View style={{ justifyContent: 'center', alignItems: 'center', width: size, height: size }}>
-                  <Icon name="check-circle" size={size * 0.8} color="#333" />
+                  <Icon name="book" size={size * 0.8} color="#333" />
                 </View>
               ),
               headerTitle: () => (
@@ -442,7 +442,17 @@ const Main = () => {
           component={FacultyApplication}
           options={{
             drawerIcon: ({ color, size }) => (
-              <Icon name="info-circle" size={size} color="#333" />
+              <Icon name="th-list" size={size} color="#333" />
+            ),
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                <Image
+                  source={require("../assets/res.jpg")}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.companyName}>R&E-Services</Text>
+              </View>
             ),
           }}
         />

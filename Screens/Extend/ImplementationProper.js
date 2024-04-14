@@ -9,7 +9,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Toast from "react-native-toast-message";
 import baseURL from '../../assets/common/baseurl';
 
-const AppointmentModal = ({ visible, closeModal, extensionId }) => {
+const ImplementationProper = ({ visible, closeModal, extensionId }) => {
   const [purpose, setPurpose] = useState('');
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState('');
@@ -80,7 +80,7 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Make an Appointment for a Proposal Consultation</Text>
+          <Text style={styles.modalTitle}>Make an Appointment for Implementation Proper</Text>
           <View style={styles.separator} />
           <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
             <Icon name="close" size={20} color="#333" />
@@ -95,7 +95,7 @@ const AppointmentModal = ({ visible, closeModal, extensionId }) => {
                   style={styles.picker}
                 >
                   <Picker.Item label="--- SELECT PURPOSE ---" value="" />
-                  <Picker.Item label="Consultation Meeting for Proposal" value="Proposal Consultation" />
+                  <Picker.Item label="Appointment for Implementation Proper" value="Implementation Proper Appointment" />
                 </Picker>
               </View>
             </View>
@@ -214,4 +214,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppointmentModal;
+export default ImplementationProper;
