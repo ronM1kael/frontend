@@ -54,13 +54,14 @@ const ExtensionApplication = () => {
     proposal2: false,
     proposal3: false,
     proposal4: false,
-    proposal5: false, 
+    proposal5: false,
     proposal6: false,
     proposal7: false,
     proposal8: false,
     proposal9: false,
     proposal10: false,
     proposal11: false,
+    proposal12: false,
   });
 
   const handleCreateApplication = async () => {
@@ -416,8 +417,8 @@ const ExtensionApplication = () => {
   };
 
   const PendingApprovalforPreSurveyConsultationAppointment = async () => {
-      setShowProposalNotification({ ...showProposalNotification, proposal8: true });
-      setTimeout(() => setShowProposalNotification({ ...showProposalNotification, proposal8: false }), 2000); // Close proposal notification after 2 seconds
+    setShowProposalNotification({ ...showProposalNotification, proposal8: true });
+    setTimeout(() => setShowProposalNotification({ ...showProposalNotification, proposal8: false }), 2000); // Close proposal notification after 2 seconds
   };
 
   const AppointmentCancelledforPreSurveyConsultation = async (id) => {
@@ -557,6 +558,10 @@ const ExtensionApplication = () => {
     setShowCreateForm(prevState => !prevState); // Toggle the state
     setTitle(''); // Reset the title when closing the form
   };
+  const ProcessDone = async () => {
+    setShowProposalNotification({ ...showProposalNotification, proposal12: true });
+    setTimeout(() => setShowProposalNotification({ ...showProposalNotification, proposal12: false }), 2000); // Close proposal notification after 2 seconds
+  };
 
   return (
     <View style={styles.container}>
@@ -578,13 +583,13 @@ const ExtensionApplication = () => {
                 <Text style={styles.statusText}>{application.status}</Text>
               </View>
               <View style={styles.progressBarContainer}>
-  <View style={[styles.progressBar, { width: `${application.percentage_status}%` }]}>
-    <Text style={styles.progressText}>{application.percentage_status}%</Text>
-  </View>
-</View>
+                <View style={[styles.progressBar, { width: `${application.percentage_status}%` }]}>
+                  <Text style={styles.progressText}>{application.percentage_status}%</Text>
+                </View>
+              </View>
               {application.status == 'New Application' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal(application.id)}
+                  onPress={() => submitProposal(application.id)}
                   disabled={application.status !== 'New Application'}
                   style={styles.proposalButton}
                 >
@@ -608,7 +613,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Appointment Done for Proposal Consultation' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal1(application.id)}
+                  onPress={() => submitProposal1(application.id)}
                   disabled={application.status !== 'Appointment Done for Proposal Consultation'}
                   style={styles.proposalButton}
                 >
@@ -616,15 +621,15 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Proposal Consultation Appointment Cancelled' ? (
                 <TouchableOpacity
-                onPress={() => submitProposalAppointmentCancelled(application.id)}
-                disabled={application.status !== 'Proposal Consultation Appointment Cancelled'}
+                  onPress={() => submitProposalAppointmentCancelled(application.id)}
+                  disabled={application.status !== 'Proposal Consultation Appointment Cancelled'}
                   style={styles.proposalButton}
                 >
                   <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
                 </TouchableOpacity>
               ) : application.status == 'Pending Approval of R&E Office' ? (
                 <TouchableOpacity
-                onPress={() => PendingApprovalofREOffice()}
+                  onPress={() => PendingApprovalofREOffice()}
                   disabled={application.status !== 'Pending Approval of R&E Office'}
                   style={styles.proposalButton}
                 >
@@ -632,7 +637,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Proposal Approved by R&E Office' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal2(application.id)}
+                  onPress={() => submitProposal2(application.id)}
                   disabled={application.status !== 'Proposal Approved by R&E Office'}
                   style={styles.proposalButton}
                 >
@@ -640,15 +645,15 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Proposal Rejected by R&E Office' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal1RejectedbyREOffice(application.id)}
+                  onPress={() => submitProposal1RejectedbyREOffice(application.id)}
                   disabled={application.status !== 'Proposal Rejected by R&E Office'}
                   style={styles.proposalButton}
                 >
                   <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
                 </TouchableOpacity>
-              ): application.status == 'Pending Approval of DO, UES and President' ? (
+              ) : application.status == 'Pending Approval of DO, UES and President' ? (
                 <TouchableOpacity
-                onPress={() => PendingApprovalDOUESPresident()}
+                  onPress={() => PendingApprovalDOUESPresident()}
                   disabled={application.status !== 'Pending Approval of DO, UES and President'}
                   style={styles.proposalButton}
                 >
@@ -662,7 +667,7 @@ const ExtensionApplication = () => {
                 />
               ) : application.status == 'Proposal Rejected By DO' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal2ProposalRejectedByDO(application.id)}
+                  onPress={() => submitProposal2ProposalRejectedByDO(application.id)}
                   disabled={application.status !== 'Proposal Rejected By DO'}
                   style={styles.proposalButton}
                 >
@@ -676,7 +681,7 @@ const ExtensionApplication = () => {
                 />
               ) : application.status == 'Proposal Rejected By UES' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal2ProposalRejectedByUES(application.id)}
+                  onPress={() => submitProposal2ProposalRejectedByUES(application.id)}
                   disabled={application.status !== 'Proposal Rejected By UES'}
                   style={styles.proposalButton}
                 >
@@ -690,7 +695,7 @@ const ExtensionApplication = () => {
                 />
               ) : application.status == 'Proposal Approved By DO, UES and President' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal3(application.id)}
+                  onPress={() => submitProposal3(application.id)}
                   disabled={application.status !== 'Proposal Approved By DO, UES and President'}
                   style={styles.proposalButton}
                 >
@@ -698,7 +703,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Proposal Rejected By President' ? (
                 <TouchableOpacity
-                onPress={() => ProposalRejectedByPresident(application.id)}
+                  onPress={() => ProposalRejectedByPresident(application.id)}
                   disabled={application.status !== 'Proposal Rejected By President'}
                   style={styles.proposalButton}
                 >
@@ -706,7 +711,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Pending Approval of Board and OSG' ? (
                 <TouchableOpacity
-                onPress={() => PendingApprovalofBoardOSG()}
+                  onPress={() => PendingApprovalofBoardOSG()}
                   disabled={application.status !== 'Pending Approval of Board and OSG'}
                   style={styles.proposalButton}
                 >
@@ -720,7 +725,7 @@ const ExtensionApplication = () => {
                 />
               ) : application.status == 'Proposal Rejected By Board' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal2ProposalRejectedByBoard(application.id)}
+                  onPress={() => submitProposal2ProposalRejectedByBoard(application.id)}
                   disabled={application.status !== 'Proposal Rejected By Board'}
                   style={styles.proposalButton}
                 >
@@ -734,7 +739,7 @@ const ExtensionApplication = () => {
                 />
               ) : application.status == 'Proposal Rejected By OSG' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal2ProposalRejectedByOSG(application.id)}
+                  onPress={() => submitProposal2ProposalRejectedByOSG(application.id)}
                   disabled={application.status !== 'Proposal Rejected By OSG'}
                   style={styles.proposalButton}
                 >
@@ -742,7 +747,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Proposal Approved By Board and OSG' ? (
                 <TouchableOpacity
-                onPress={() => ProposalApprovedByBoardandOSG(application.id)}
+                  onPress={() => ProposalApprovedByBoardandOSG(application.id)}
                   disabled={application.status !== 'Proposal Approved By Board and OSG'}
                   style={styles.proposalButton}
                 >
@@ -758,8 +763,8 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Implementation Proper Appointment Cancelled' ? (
                 <TouchableOpacity
-                onPress={() => ImplementationProperAppointmentCancelled(application.id)}
-                disabled={application.status !== 'Implementation Proper Appointment Cancelled'}
+                  onPress={() => ImplementationProperAppointmentCancelled(application.id)}
+                  disabled={application.status !== 'Implementation Proper Appointment Cancelled'}
                   style={styles.proposalButton}
                 >
                   <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
@@ -792,15 +797,15 @@ const ExtensionApplication = () => {
                 />
               ) : application.status == 'Appointment Done for Implementation Proper' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal5(application.id)}
-                disabled={application.status !== 'Appointment Done for Implementation Proper'}
+                  onPress={() => submitProposal5(application.id)}
+                  disabled={application.status !== 'Appointment Done for Implementation Proper'}
                   style={styles.proposalButton}
                 >
                   <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
                 </TouchableOpacity>
               ) : application.status == 'Topics and Sub Topics Inputted' ? (
                 <TouchableOpacity
-                onPress={() => submitProposalPRE(application.id)}
+                  onPress={() => submitProposalPRE(application.id)}
                   disabled={application.status !== 'Topics and Sub Topics Inputted'}
                   style={styles.proposalButton}
                 >
@@ -808,7 +813,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Pending Approval for Pre-Survey Consultation Appointment' ? (
                 <TouchableOpacity
-                onPress={() => PendingApprovalforPreSurveyConsultationAppointment()}
+                  onPress={() => PendingApprovalforPreSurveyConsultationAppointment()}
                   disabled={application.status !== 'Pending Approval for Pre-Survey Consultation Appointment'}
                   style={styles.proposalButton}
                 >
@@ -816,7 +821,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Appointment Cancelled for Pre-Survey Consultation' ? (
                 <TouchableOpacity
-                onPress={() => AppointmentCancelledforPreSurveyConsultation(application.id)}
+                  onPress={() => AppointmentCancelledforPreSurveyConsultation(application.id)}
                   disabled={application.status !== 'Appointment Cancelled for Pre-Survey Consultation'}
                   style={styles.proposalButton}
                 >
@@ -824,7 +829,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Appointment Set for Pre-Survey Consultation' ? (
                 <TouchableOpacity
-                onPress={() => AppointmentSetforPreSurveyConsultation()}
+                  onPress={() => AppointmentSetforPreSurveyConsultation()}
                   disabled={application.status !== 'Appointment Set for Pre-Survey Consultation'}
                   style={styles.proposalButton}
                 >
@@ -832,7 +837,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Appointment Done for Pre-Survey Consultation' ? (
                 <TouchableOpacity
-                onPress={() => submitProposalMID(application.id)}
+                  onPress={() => submitProposalMID(application.id)}
                   disabled={application.status !== 'Appointment Done for Pre-Survey Consultation'}
                   style={styles.proposalButton}
                 >
@@ -840,7 +845,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Pending Approval for Mid-Survey Consultation Appointment' ? (
                 <TouchableOpacity
-                onPress={() => PendingApprovalforMidSurveyConsultationAppointment()}
+                  onPress={() => PendingApprovalforMidSurveyConsultationAppointment()}
                   disabled={application.status !== 'Pending Approval for Mid-Survey Consultation Appointment'}
                   style={styles.proposalButton}
                 >
@@ -848,7 +853,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Appointment Cancelled for Mid-Survey Consultation' ? (
                 <TouchableOpacity
-                onPress={() => AppointmentCancelledforMidSurveyConsultation(application.id)}
+                  onPress={() => AppointmentCancelledforMidSurveyConsultation(application.id)}
                   disabled={application.status !== 'Appointment Cancelled for Mid-Survey Consultation'}
                   style={styles.proposalButton}
                 >
@@ -856,7 +861,7 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Appointment Set for Mid-Survey Consultation' ? (
                 <TouchableOpacity
-                onPress={() => AppointmentSetforMidSurveyConsultation()}
+                  onPress={() => AppointmentSetforMidSurveyConsultation()}
                   disabled={application.status !== 'Appointment Set for Mid-Survey Consultation'}
                   style={styles.proposalButton}
                 >
@@ -864,60 +869,84 @@ const ExtensionApplication = () => {
                 </TouchableOpacity>
               ) : application.status == 'Appointment Done for Mid-Survey Consultation' ? (
                 <TouchableOpacity
-                onPress={() => submitProposal6(application.id)}
+                  onPress={() => submitProposal6(application.id)}
                   disabled={application.status !== 'Appointment Done for Mid-Survey Consultation'}
                   style={styles.proposalButton}
                 >
                   <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
                 </TouchableOpacity>
               ) : application.status == 'Inserted: Certificate, Documentation, Attendance, and Capsule Details' ? (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal7(application.id)}
                   disabled={application.status !== 'Inserted: Certificate, Documentation, Attendance, and Capsule Details'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               ) : application.status == 'Have Prototype: Letter, NDA, COA Inserted' ? (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal8(application.id)}
                   disabled={application.status !== 'Have Prototype: Letter, NDA, COA Inserted'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               ) : application.status == 'Prototype Pre-Evaluation Survey Not Done' ? (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal8(application.id)}
                   disabled={application.status !== 'Prototype Pre-Evaluation Survey Not Done'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               ) : application.status == 'Prototype Pre-Evaluation Survey Done' ? (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal9(application.id)}
                   disabled={application.status !== 'Prototype Pre-Evaluation Survey Done'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               ) : application.status == 'Prototype Mid-Evaluation Survey Not Done' ? (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal9(application.id)}
                   disabled={application.status !== 'Prototype Mid-Evaluation Survey Not Done'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               ) : application.status == 'Prototype Mid-Evaluation Survey Done' ? (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal10(application.id)}
                   disabled={application.status !== 'Prototype Mid-Evaluation Survey Done'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               ) : application.status == 'Prototype Post-Evaluation Survey Done' ? (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal11(application.id)}
                   disabled={application.status !== 'Prototype Post-Evaluation Survey Done'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
+              ) : application.status == 'Process Done' ? (
+                <TouchableOpacity
+                  onPress={() => ProcessDone()}
+                  disabled={application.status !== 'Process Done'}
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               ) : (
-                <Button
-                  title="Submit Proposal"
+                <TouchableOpacity
                   onPress={() => submitProposal10(application.id)}
                   disabled={application.status !== 'Prototype Post-Evaluation Survey Not Done'}
-                />
+                  style={styles.proposalButton}
+                >
+                  <Text style={styles.buttonTextproposal}>Submit Proposal</Text>
+                </TouchableOpacity>
               )}
             </View>
           ))
@@ -939,6 +968,7 @@ const ExtensionApplication = () => {
       {showProposalNotification.proposal9 && <Notification message="Appointment for Pre-Seurvey Consultation is Ongoing; Please wait to be done to process the next step." />}
       {showProposalNotification.proposal10 && <Notification message="Appointment for Mid-Survey Consultation is Pending; Please wait the approval to proceed in next step." />}
       {showProposalNotification.proposal11 && <Notification message="Appointment for Mid-Survey Consultation is Pending; Please wait the approval to proceed in next step." />}
+      {showProposalNotification.proposal12 && <Notification message="This application is already completed." />}
 
       <View>
         <View style={{ backgroundColor: 'black', padding: 10, borderRadius: 5 }}>
@@ -1121,13 +1151,13 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     overflow: 'hidden',
   },
-  
+
   progressBar: {
     height: '100%',
     backgroundColor: 'green',
     justifyContent: 'center',
   },
-  
+
   progressText: {
     color: '#fff',
     textAlign: 'center',

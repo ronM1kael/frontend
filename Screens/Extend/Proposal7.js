@@ -1,15 +1,16 @@
 import React, { useState, useContext } from 'react';
-import { Modal, View, Text, Button, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native';
+import { View, Text, Button, Modal, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
-
 import axios from 'axios';
-import baseURL from '../../assets/common/baseurl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
+import Icon from "react-native-vector-icons/FontAwesome";
+import baseURL from '../../assets/common/baseurl';
+import Toast from "react-native-toast-message";
 
-const Proposal7Modal = ({visible, closeModal, proposalId}) => {
+const ExtensionProposalModal = ({ visible, closeModal, proposalId }) => {
     const [confirmation, setConfirmation] = useState('Choose.........');
     const [letter, setLetter] = useState(null);
     const [nda, setNda] = useState(null);
@@ -85,9 +86,8 @@ const Proposal7Modal = ({visible, closeModal, proposalId}) => {
 
     const handleSubmit = async () => {
         try {
-
-            if (!letter || !letter.uri || !nda || !nda.uri || !coa || !coa.uri) { // Check if files or file URIs exist
-                setError('Please choose all files'); // Set error state if any file is not selected
+            if (!letter || !letter.uri || !nda || !nda.uri || !coa || !coa.uri) {
+                setError('Please choose all files');
                 return;
             }
 
@@ -123,8 +123,18 @@ const Proposal7Modal = ({visible, closeModal, proposalId}) => {
             });
 
             if (response.data.success) {
-                console.log(response.data.message);
-                showToast('Proposal submitted successfully');
+                if (confirmation === 'None') {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Process Done',
+                    });
+                } else {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Your Proposal has been sent;',
+                        text2: 'kindly wait to be approved.',
+                    });
+                }
                 closeModal();
             } else {
                 setError('Proposal submission failed. Please try again.');
@@ -136,38 +146,84 @@ const Proposal7Modal = ({visible, closeModal, proposalId}) => {
     };
 
     return (
-        <Modal animationType="slide" transparent={true} visible={visible}>
+        <Modal visible={visible} animationType="slide" transparent={true}>
             <View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
+                    <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+                        <Icon name="close" size={20} color="#333" />
+                    </TouchableOpacity>
                     <Text style={styles.modalTitle}>Extension Application</Text>
-                    <Picker
-                        selectedValue={confirmation}
-                        onValueChange={(itemValue) => setConfirmation(itemValue)}
-                    >
-                        <Picker.Item label="Choose........." value="Choose........." />
-                        <Picker.Item label="Yes" value="Yes" />
-                        <Picker.Item label="None" value="None" />
-                    </Picker>
-                    {confirmation === 'Yes' && (
+                    <View style={styles.separator} />
+                    <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <View style={styles.formContainer}>
-                        <View style={styles.fileInput}>
-                        <Button title="Letter" onPress={() => handleChooseFile(setLetter)} />
-                        <Text>{letter ? letter.name : 'No file chosen'}</Text>
-                    </View>
-                    <View style={styles.fileInput}>
-                    <Button title="NDA (Non Diclosure Agreement)" onPress={() => handleChooseFile(setNda)} />
-                    <Text>{nda ? nda.name : 'No file chosen'}</Text>
-                </View>
-                <View style={styles.fileInput}>
-                    <Button title="COA (Certificate of Acceptance)" onPress={() => handleChooseFile(setCoa)} />
-                    <Text>{coa ? coa.name : 'No file chosen'}</Text>
-                </View>
-                </View>
-                    )}
-                    <View style={styles.buttonContainer}>
-                        <Button title="Submit Proposal" onPress={handleSubmit} />
-                        <Button title="Close" onPress={() => { closeModal(); refresh(); }} />
-                    </View>
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.questionText}>Do you have a prototype?</Text>
+                                <View style={styles.pickerContainer}>
+                                    <Picker
+                                        selectedValue={confirmation}
+                                        onValueChange={(itemValue) => setConfirmation(itemValue)}
+                                        style={styles.picker}
+                                    >
+                                        <Picker.Item label="Choose........." value="Choose........." />
+                                        <Picker.Item label="Yes" value="Yes" />
+                                        <Picker.Item label="None" value="None" />
+                                    </Picker>
+                                </View>
+                            </View>
+                            {confirmation === 'Yes' && (
+                                <View style={styles.formContainer}>
+                                    <View style={styles.fileSelectionContainer}>
+                                        <TouchableOpacity style={styles.chooseFileButton} onPress={() => handleChooseFile(setLetter)}>
+                                            <View style={styles.fileButtonContent}>
+                                                <Icon name="file" size={20} color="#fff" style={styles.icon} />
+                                                <Text style={styles.chooseFileText}>Upload Letter</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                        {letter ? (
+                                            <Text style={styles.fileText}>Selected File: {letter.name}</Text>
+                                        ) : (
+                                            <Text style={styles.fileText}>No File Chosen</Text>
+                                        )}
+                                        {error && <Text style={styles.errorText}>{error}</Text>}
+                                    </View>
+                                    <View style={styles.fileSelectionContainer}>
+                                        <TouchableOpacity style={styles.chooseFileButton} onPress={() => handleChooseFile(setNda)}>
+                                            <View style={styles.fileButtonContent}>
+                                                <Icon name="file" size={20} color="#fff" style={styles.icon} />
+                                                <Text style={styles.chooseFileText}>Choose NDA</Text>
+                                                <Text style={styles.memoText}>(Non Diclosure Agreement)</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                        {nda ? (
+                                            <Text style={styles.fileText}>Selected File: {nda.name}</Text>
+                                        ) : (
+                                            <Text style={styles.fileText}>No File Chosen</Text>
+                                        )}
+                                        {error && <Text style={styles.errorText}>{error}</Text>}
+                                    </View>
+                                    <View style={styles.fileSelectionContainer}>
+                                        <TouchableOpacity style={styles.chooseFileButton} onPress={() => handleChooseFile(setCoa)}>
+                                            <View style={styles.fileButtonContent}>
+                                                <Icon name="file" size={20} color="#fff" style={styles.icon} />
+                                                <Text style={styles.chooseFileText}>Choose COA</Text>
+                                                <Text style={styles.memoText}>(Certificate of Acceptance)</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                        {coa ? (
+                                            <Text style={styles.fileText}>Selected File: {coa.name}</Text>
+                                        ) : (
+                                            <Text style={styles.fileText}>No File Chosen</Text>
+                                        )}
+                                        {error && <Text style={styles.errorText}>{error}</Text>}
+                                    </View>
+                                </View>
+                            )}
+                            <View style={styles.separator} />
+                            <View style={styles.buttonContainer}>
+                                <Button title="Submit Proposal" onPress={handleSubmit} color="#000" />
+                            </View>
+                        </View>
+                    </ScrollView>
                 </View>
             </View>
         </Modal>
@@ -177,32 +233,116 @@ const Proposal7Modal = ({visible, closeModal, proposalId}) => {
 const styles = StyleSheet.create({
     modalBackground: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     modalContainer: {
-        backgroundColor: '#fff', // white background for the modal
+        backgroundColor: '#fff',
         borderRadius: 10,
         padding: 20,
         width: '80%',
+        maxHeight: '80%',
     },
     modalTitle: {
         fontSize: 24,
         marginBottom: 20,
-        fontWeight: 'bold', // Added fontWeight for emphasis
+        color: '#000',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
-    fileInput: {
+    separator: {
+        height: 2,
+        backgroundColor: 'maroon',
+        marginBottom: 20,
+    },
+    formContainer: {
+        width: '100%',
+    },
+    inputContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20, // Increased marginBottom for spacing
+        marginBottom: 20,
+    },
+    pickerContainer: {
+        flex: 1,
+        marginLeft: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+    },
+    picker: {
+        height: 50,
+        width: '100%',
+        color: '#000',
+    },
+    dateContainer: {
+        flex: 1,
+        marginLeft: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+    },
+    dateText: {
+        color: '#000',
+        fontSize: 16,
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         marginTop: 20,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+    },
+    chooseFileButton: {
+        backgroundColor: '#000',
+        borderRadius: 5,
+        paddingVertical: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+    chooseFileText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    fileSelectionContainer: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+    },
+    fileText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#333',
+        textAlign: 'center',
+    },
+    fileButtonContent: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    memoText: {
+        fontSize: 12,
+        color: '#fff',
+        textAlign: 'center',
+    },
+    questionText: {
+        marginLeft: 10,
+        fontSize: 16,
+        color: '#000',
+    },
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: 'space-between',
     },
 });
 
-export default Proposal7Modal;
+export default ExtensionProposalModal;

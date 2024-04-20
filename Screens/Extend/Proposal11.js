@@ -1,14 +1,17 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, Modal, Button, TextInput, StyleSheet, ToastAndroid, FlatList, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, Modal, Button, TextInput, StyleSheet, ToastAndroid, FlatList, TouchableOpacity, Alert, Image, ScrollView } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
-import baseURL from '../../assets/common/baseurl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
+import Icon from "react-native-vector-icons/FontAwesome";
+import baseURL from '../../assets/common/baseurl';
+import Toast from "react-native-toast-message";
 import * as ImagePicker from "expo-image-picker";
 
 const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
+
     const [capsule_detail, setCapsule_detail] = useState(null);
     const [certificate, setCertificate] = useState(null);
     const [attendance, setAttendance] = useState(null);
@@ -155,7 +158,10 @@ const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
     
             if (response.data.success) {
                 console.log('Proposal submitted successfully'); // Log success message
-                showToast('Proposal submitted successfully');
+                Toast.show({
+                    type: 'success',
+                    text1: 'Documents and Photos added.',
+                });
                 closeModal(); // Close modal upon successful submission
             } else {
                 console.error('Backend returned an error:', response.data.message); // Log backend error
@@ -207,62 +213,91 @@ const Proposal2Modal = ({ visible, closeModal, proposalId }) => {
 
     return (
         <Modal visible={visible} animationType="slide" transparent={true}>
-            <View style={styles.modalBackground}>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Extension Application</Text>
-                    <View style={styles.formContainer}>
-                        <View style={styles.fileInput}>
-                            <Button title="Capsule Detail/Narrative" onPress={() => handleChooseFile(setCapsule_detail)} />
-                            <Text>{capsule_detail ? capsule_detail.name : 'No file chosen'}</Text>
-                        </View>
-                        <View style={styles.fileInput}>
-                            <Button title="Certificate" onPress={() => handleChooseFile(setCertificate)} />
-                            <Text>{certificate ? certificate.name : 'No file chosen'}</Text>
-                        </View>
-                        <View style={styles.fileInput}>
-                            <Button title="Attendance" onPress={() => handleChooseFile(setAttendance)} />
-                            <Text>{attendance ? attendance.name : 'No file chosen'}</Text>
-                        </View>
-                    </View>
-
-                    <View style={styles.containers}>
-                        <FlatList
-                            key={listKey} // Use key to trigger re-render
-                            data={selectedImages}
-                            renderItem={renderImageItem}
-                            keyExtractor={(item, index) => index.toString()}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                        />
-                        <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-                            <Text style={{ color: 'white' }}>Add Image</Text>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalTitle}>Extension Application</Text>
+                        <View style={styles.separator} />
+                        <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+                            <Icon name="close" size={20} color="#333" />
                         </TouchableOpacity>
-                    </View>
+                        <View style={styles.formContainer}>
 
-                    <View style={styles.buttonContainer}>
-                        <Button title="Close" onPress={() => { closeModal(); refresh(); }} />
-                        <Button title="Submit Proposal" onPress={handleSubmit} />
+                        <View style={styles.fileSelectionContainer}>
+                                <TouchableOpacity style={styles.chooseFileButton} onPress={() => handleChooseFile(setCapsule_detail)}>
+                                    <View style={styles.fileButtonContent}>
+                                        <Icon name="file" size={20} color="#fff" style={styles.icon} />
+                                        <Text style={styles.chooseFileText}>Choose File</Text>
+                                        <Text style={styles.memoText}>(Capsule Detail/Narrative)</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                {capsule_detail ? (
+                                    <Text style={styles.fileText}>Selected File: {capsule_detail.name}</Text>
+                                ) : (
+                                    <Text style={styles.fileText}>No File Chosen</Text>
+                                )}
+                                {error && <Text style={styles.errorText}>{error}</Text>}
+                            </View>
+
+                            <View style={styles.fileSelectionContainer}>
+                                <TouchableOpacity style={styles.chooseFileButton} onPress={() => handleChooseFile(setCertificate)}>
+                                    <View style={styles.fileButtonContent}>
+                                        <Icon name="file" size={20} color="#fff" style={styles.icon} />
+                                        <Text style={styles.chooseFileText}>Choose Certificate</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                {certificate ? (
+                                    <Text style={styles.fileText}>Selected File: {certificate.name}</Text>
+                                ) : (
+                                    <Text style={styles.fileText}>No File Chosen</Text>
+                                )}
+                                {error && <Text style={styles.errorText}>{error}</Text>}
+                            </View>
+
+                            <View style={styles.fileSelectionContainer}>
+                                <TouchableOpacity style={styles.chooseFileButton} onPress={() => handleChooseFile(setAttendance)}>
+                                    <View style={styles.fileButtonContent}>
+                                        <Icon name="file" size={20} color="#fff" style={styles.icon} />
+                                        <Text style={styles.chooseFileText}>Choose Attendance</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                {attendance ? (
+                                    <Text style={styles.fileText}>Selected File: {attendance.name}</Text>
+                                ) : (
+                                    <Text style={styles.fileText}>No File Chosen</Text>
+                                )}
+                                {error && <Text style={styles.errorText}>{error}</Text>}
+                            </View>
+                        
+                            <Text style={styles.imageTitle}>Prototype Documentation Photos</Text>  
+
+                            <View style={styles.containers}>
+                                <FlatList
+                                    key={listKey} // Use key to trigger re-render
+                                    data={selectedImages}
+                                    renderItem={renderImageItem}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    horizontal={true}
+                                    showsHorizontalScrollIndicator={false}
+                                />
+                                <TouchableOpacity onPress={pickImage} style={[styles.imagePicker, { marginTop: 10 }]}>
+                                    <Text style={{ color: 'white' }}>Add Image</Text>
+                                </TouchableOpacity>
+                            </View>  
+
+                            <View style={styles.separator} />
+                            <View style={styles.buttonContainer}>
+                                <Button title="Submit Proposal" onPress={handleSubmit} color="#000" />
+                            </View>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         </Modal>
     );
 };
 
 const styles = StyleSheet.create({
-    containers: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    imagePicker: {
-        width: 100,
-        height: 100,
-        backgroundColor: 'gray',
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 5,
-        borderRadius: 5,
-    },
     modalBackground: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
@@ -278,21 +313,87 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 24,
         marginBottom: 20,
-        fontWeight: 'bold', // Added fontWeight for emphasis
+        color: '#000',
+        fontWeight: 'bold',
+        textAlign: 'center', // Center align the text
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
     },
     formContainer: {
         width: '100%', // Full width
     },
-    fileInput: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20, // Increased marginBottom for spacing
+    chooseFileButton: {
+        backgroundColor: '#000',
+        borderRadius: 5,
+        paddingVertical: 10,
+        alignItems: 'center', // Center align items horizontally
+        justifyContent: 'center', // Center align items vertically
+        marginBottom: 10,
+    },
+    chooseFileText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 10,
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center', // Center align the button
         marginTop: 20,
+    },
+    separator: {
+        height: 2,
+        backgroundColor: 'maroon', // Maroon color for the separator
+        marginBottom: 20, // Adjust spacing as needed
+    },
+    fileSelectionContainer: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+    },
+    icon: {
+        marginRight: 10,
+    },
+    fileText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#333',
+        textAlign: 'center', // Center align the text
+    },
+    fileButtonContent: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center', // Align content in the center
+    },
+    memoText: {
+        fontSize: 12,
+        color: '#fff',
+        textAlign: 'center', // Center align the text
+    },
+    imageTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    containers: {
+        marginBottom: 10,
+    },
+    imagePicker: {
+        backgroundColor: '#000',
+        borderRadius: 5,
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
     },
 });
 

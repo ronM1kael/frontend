@@ -5,6 +5,8 @@ import axios from 'axios';
 import baseURL from '../../assets/common/baseurl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
+import Icon from "react-native-vector-icons/FontAwesome";
+import Toast from "react-native-toast-message";
 
 const Proposal7Modal = ({visible, closeModal, proposalId}) => {
     const [post_evaluation , setPost_evaluation ] = useState('Choose.........');
@@ -39,13 +41,28 @@ const Proposal7Modal = ({visible, closeModal, proposalId}) => {
                 },
             });
 
-            if (response.status >= 200 && response.status < 300) {
-                console.log(response.data.message);
-                showToast('Proposal submitted successfully');
+            if (response.data.success) {
+                if (post_evaluation === 'Prototype Post-Evaluation Survey Done') {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Prototype Post-Evaluation Survey Done',
+                    });
+                } else {
+                    // Handle other cases here if needed
+                }
                 closeModal();
             } else {
+                if (post_evaluation === 'Prototype Post-Evaluation Survey Not Done') {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Prototype Post-Evaluation Survey Not Done',
+                    });
+                } else {
+                    // Handle other cases here if needed
+                }
                 setError('Proposal submission failed. Please try again.');
-            }
+                closeModal();
+            } 
         } catch (error) {
             console.error('Error submitting proposal:', error);
             setError('Error submitting proposal. Please try again.');
@@ -56,18 +73,30 @@ const Proposal7Modal = ({visible, closeModal, proposalId}) => {
         <Modal animationType="slide" transparent={true} visible={visible}>
             <View style={styles.modalBackground}>
                 <View style={styles.modalContainer}>
+                    <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+                        <Icon name="close" size={20} color="#333" />
+                    </TouchableOpacity>
                     <Text style={styles.modalTitle}>Extension Application</Text>
+                    <View style={styles.separator} />
+                    <View style={styles.formContainer}>
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.questionText}>Post-Evaluation Survey</Text>
+                            <View style={styles.pickerContainer}>
                     <Picker
                         selectedValue={post_evaluation}
                         onValueChange={(itemValue) => setPost_evaluation(itemValue)}
+                        style={styles.picker}
                     >
                         <Picker.Item label="Choose........." value="Choose........." />
                         <Picker.Item label="Done" value="Prototype Post-Evaluation Survey Done" />
                         <Picker.Item label="Not Done" value="Prototype Post-Evaluation Survey Not Done" />
                     </Picker>
-                    <View style={styles.buttonContainer}>
-                        <Button title="Submit Proposal" onPress={handleSubmit} />
-                        <Button title="Close" onPress={() => { closeModal(); refresh(); }} />
+                    </View>
+                        </View>
+                        <View style={styles.separator} />
+                        <View style={styles.buttonContainer}>
+                            <Button title="Submit Proposal" onPress={handleSubmit} color="#000" />
+                        </View>
                     </View>
                 </View>
             </View>
@@ -78,31 +107,63 @@ const Proposal7Modal = ({visible, closeModal, proposalId}) => {
 const styles = StyleSheet.create({
     modalBackground: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         justifyContent: 'center',
         alignItems: 'center',
     },
     modalContainer: {
-        backgroundColor: '#fff', // white background for the modal
+        backgroundColor: '#fff',
         borderRadius: 10,
         padding: 20,
         width: '80%',
+        maxHeight: '80%',
     },
     modalTitle: {
         fontSize: 24,
         marginBottom: 20,
-        fontWeight: 'bold', // Added fontWeight for emphasis
+        color: '#000',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
-    fileInput: {
+    separator: {
+        height: 2,
+        backgroundColor: 'maroon',
+        marginBottom: 20,
+    },
+    formContainer: {
+        width: '100%',
+    },
+    inputContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20, // Increased marginBottom for spacing
+        marginBottom: 20,
+    },
+    pickerContainer: {
+        flex: 1,
+        marginLeft: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+    },
+    picker: {
+        height: 50,
+        width: '100%',
+        color: '#000',
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         marginTop: 20,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+    },
+    questionText: {
+        marginLeft: 10,
+        fontSize: 16,
+        color: '#000',
     },
 });
 
