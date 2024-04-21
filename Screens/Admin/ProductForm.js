@@ -321,12 +321,19 @@ const CertificationForm = (props) => {
         {showForm && (
           <View style={styles.card}>
 
+<View style={styles.fileSelectionContainer}>
             <TouchableOpacity
               style={styles.buttons}
               onPress={pickDocument}
             >
               <Text style={styles.buttonTexts}>Choose File</Text>
             </TouchableOpacity>
+            {selectedFile ? (
+                                    <Text style={styles.fileText}>Selected File: {selectedFile.name}</Text>
+                                ) : (
+                                    <Text style={styles.fileText}>No File Chosen</Text>
+                                )}
+            </View>
 
             <Text style={styles.note}>Note: The uploaded PDF file should not exceed 10MB in size.</Text>
 

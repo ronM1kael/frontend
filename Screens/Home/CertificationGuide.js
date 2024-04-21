@@ -1,44 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Calendar, Agenda } from 'react-native-calendars';
 
-const CalendarEventsApp = () => {
-  const [items, setItems] = useState({});
-
-  const loadItems = (day) => {
-    // Simulating data loading, you can replace this with actual data retrieval logic
-    setTimeout(() => {
-      const newItems = {
-        '2024-03-07': [{ name: 'Event 1' }, { name: 'Event 2' }],
-        '2024-03-10': [{ name: 'Event 3' }],
-        '2024-03-15': [{ name: 'Event 4' }, { name: 'Event 5' }],
-      };
-      setItems(newItems);
-    }, 1000);
-  };
-
-  const renderItem = (item) => {
-    return (
-      <View style={styles.item}>
-        <Text>{item.name}</Text>
-      </View>
-    );
-  };
-
+const CertificationSteps = () => {
   return (
     <View style={styles.container}>
-      <Calendar
-        onDayPress={(day) => {
-          console.log('selected day', day);
-          loadItems(day);
-        }}
-      />
-      <Agenda
-        items={items}
-        renderItem={(item) => renderItem(item)}
-        onRefresh={() => loadItems()}
-        refreshing={false}
-      />
+      <Text style={styles.heading}>How can your application be certified?</Text>
+      
+      <Text style={styles.step}>Step 1:</Text>
+      <Text>- Select the <Text style={[styles.maroonText, styles.step]}>{"My Application"}</Text> tab and upload the files that you would like certified. Make sure the files you upload are only 10 MB in size and are only in PDF format.</Text>
+      
+      <Text style={styles.step}>Step 2:</Text>
+      <Text>- Next select the <Text style={[styles.maroonText, styles.step]}>{"Certification"}</Text>, where you will find the file you uploaded. Click on Apply Certification and complete all of the required fields. If your application is marked as "Returned", simply click "Re-Apply" and send in your revised application.</Text>
+      
+      <Text style={styles.step}>Step 3:</Text>
+      <Text>- Right now, your application is being considered. Please wait for a staff member or administrator to process it. Under the "Application Status" tab, you can see its current state. After the procedure is over, it will email you or alert the system itself.</Text>
+
+      <Text style={styles.footer}>Thank you for choosing R&E-Services! We're grateful for your support. We're here to help, so feel free to reach out anytime. We look forward to serving you again soon!</Text>
     </View>
   );
 };
@@ -46,16 +23,25 @@ const CalendarEventsApp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: '#fff',
   },
-  item: {
-    backgroundColor: 'white',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 10,
-    elevation: 2,
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  step: {
+    marginTop: 10,
+  },
+  maroonText: {
+    color: 'maroon',
+    textDecorationLine: 'underline',
+  },
+  footer: {
+    marginTop: 20,
+    fontStyle: 'italic',
   },
 });
 
-export default CalendarEventsApp;
+export default CertificationSteps;

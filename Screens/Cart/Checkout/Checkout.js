@@ -79,11 +79,11 @@ const DropdownForm = (props) => {
                     selectedValue={selectedSubmission_thesis_type}
                     onValueChange={(value) => setSelectedSubmission_thesis_type(value)}
                   >
-                    <Select.Item label="Undergraduate Thesis" value="Undergraduate Thesis" />
-                    <Select.Item label="Capstone" value="Capstone" />
-                    <Select.Item label="Special Project" value="Special Project" />
-                    <Select.Item label="Masters's Thesis" value="Masters's Thesis" />
-                    <Select.Item label="Doctoral Dissertation" value="Doctoral Dissertation" />
+                    <Select.Item label="Thesis" value="Thesis" />
+                    <Select.Item label="Capstone Project" value="Capstone Project" />
+                    <Select.Item label="Project Study" value="Project Study" />
+                    <Select.Item label="Special Research Project" value="Special Research Project" />
+                    <Select.Item label="Feasibility Study" value="Feasibility Study" />
                   </Select>
                 )}
               </Box>
@@ -107,7 +107,6 @@ const DropdownForm = (props) => {
                     selectedValue={selectedSubmission_requestor_type}
                     onValueChange={(value) => setSelectedSubmission_requestor_type(value)}
                   >
-                    <Select.Item label="Graduate Student" value="Graduate Student" />
                     <Select.Item label="Undergraduate Student" value="Undergraduate Student" />
                     <Select.Item label="Faculty" value="Faculty" />
                   </Select>

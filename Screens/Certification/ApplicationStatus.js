@@ -3,16 +3,27 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, ActivityIn
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import baseURL from '../../assets/common/baseurl';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
+import baseURL2 from '../../assets/common/baseurlnew';
 
 const App = () => {
 
+    // const [stats, setStats] = useState([]);
+    // const [studentstats, setStudentStats] = useState([]);
+    // const [facultystats, setFacultyStats] = useState([]);
+    // const [modalVisible, setModalVisible] = useState(false);
+    // const [selectedData, setSelectedData] = useState(null);
+    // const [loading, setLoading] = useState(false);
+    // const [searchQuery, setSearchQuery] = useState('');
+    // const context = useContext(AuthGlobal);
+
     const [stats, setStats] = useState([]);
-    const [studentstats, setStudentStats] = useState([]);
-    const [facultystats, setFacultyStats] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [turnitinProofPhotos, setTurnitinProofPhotos] = useState([]);
+    const [loadingPhotos, setLoadingPhotos] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [turnitinProofModalVisible, setTurnitinProofModalVisible] = useState(false); // New state for Turnitin proof photos modal visibility
     const context = useContext(AuthGlobal);
 
     const userProfilerole = context.stateUser.userProfile;
@@ -81,6 +92,31 @@ const App = () => {
         return item.research_title.toLowerCase().includes(query);
     };
 
+    const fetchTurnitinProofPhotos = async (item) => {
+        try {
+            setLoadingPhotos(true);
+            const jwtToken = await AsyncStorage.getItem('jwt');
+            const response = await fetch(`${baseURL}turnitin-proof-photos/${item.id}`, {
+                headers: { Authorization: `Bearer ${jwtToken}` },
+            });
+            const data = await response.json();
+            setTurnitinProofPhotos(data);
+            setLoadingPhotos(false);
+            setTurnitinProofModalVisible(true); // Show Turnitin proof photos modal after fetching photos
+        } catch (error) {
+            console.error('Error fetching Turnitin proof photos:', error);
+            setLoadingPhotos(false);
+        }
+    };
+ 
+    const viewTurnitinPhotos = () => {
+        if (selectedData && selectedData.id) {
+            fetchTurnitinProofPhotos(selectedData.id);
+        } else {
+            console.error('Selected data is null or does not have an id property');
+        }
+    };    
+
     return (
         <SafeAreaView style={styles.container}>
             <Text style={[styles.pageTitle, { textAlign: 'center', color: 'black' }]}>
@@ -114,6 +150,9 @@ const App = () => {
                             <TouchableOpacity style={styles.button} onPress={() => openModal(item.id)}>
                                 <Text style={styles.buttonText}>View Details</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => fetchTurnitinProofPhotos(item)}>
+    <Text style={styles.buttonText}>View Turnitin Proof Photos</Text>
+</TouchableOpacity>
                         </TouchableOpacity>
                     )}
                     keyExtractor={(item) => item.id.toString()}
@@ -301,6 +340,33 @@ const App = () => {
                     </TouchableOpacity>
                 </View>
             </Modal>
+
+            <Modal visible={turnitinProofModalVisible} animationType="slide">
+    <View style={styles.container}>
+        {loadingPhotos ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+            <ScrollView>
+                {turnitinProofPhotos.length > 0 ? (
+                    turnitinProofPhotos.map((photo, index) => (
+                        <Image
+                            key={index}
+                            source={{ uri: `${baseURL2}/images/turnitinProofs/${photo.img_path}` }}
+                            style={styles.image}
+                        />
+                    ))
+                ) : (
+                    <Text>No Turnitin proof photos available.</Text>
+                )}
+            </ScrollView>
+        )}
+        <TouchableOpacity style={styles.closeButton} onPress={() => setTurnitinProofModalVisible(false)}>
+            <Text style={styles.closeButtonText}>Close</Text>
+        </TouchableOpacity>
+    </View>
+</Modal>
+
+
 
         </SafeAreaView>
     );
