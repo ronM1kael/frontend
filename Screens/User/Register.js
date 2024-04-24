@@ -55,7 +55,7 @@ const Register = (props) => {
     };
 
     const register = async () => {
-        if (!fname || !lname || !mname || !email || !password || !college || !course || !tup_id || !selectedGender || !phone || !address || !date) {
+        if (!fname || !lname || !mname || !email || !password || !course || !tup_id || !selectedGender || !phone || !address || !date) {
             setError("Please fill in the form correctly");
             setIsModalVisible(true);
             return;
@@ -307,48 +307,7 @@ const Register = (props) => {
                         </View>
                     </View>
 
-                    {/* di pa nagana */}
-                    <View style={{ marginBottom: 12 }}>
-                        <Text style={{
-                            fontSize: 18,
-                            fontWeight: 'bold',
-                            marginBottom: 8,
-                            color: 'black' // Changed color to maroon
-                        }}>
-                            <Image
-                                style={[styles.icon, styles.inputIcon, { tintColor: 'black' }]}
-                                source={{ uri: 'https://img.icons8.com/ios/50/book-stack.png' }}
-                            />
-                            {' '} {/* Adding a space here */}
-                            College
-                        </Text>
-                        <View style={{
-                            width: '100%',
-                            height: 48,
-                            borderColor: 'black', // Changed borderColor to maroon
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            paddingLeft: 22
-                        }}>
-                            <TextInput
-                                placeholder='Enter your College'
-                                placeholderTextColor='black' // Changed placeholderTextColor to black for contrast
-                                keyboardType='default'
-                                style={{
-                                    width: '100%',
-                                    fontSize: 16
-                                }}
-                                name='college'
-                                id='college'
-                                onChangeText={(text) => setCollege(text)}
-                            />
-                        </View>
-                    </View>
-
-                    {/* DI PA NAGANA */}
-                    <View style={{ marginBottom: 12 }}>
+                    <View style={[styles.container, { marginBottom: 12 }]}>
                         <Text style={{
                             fontSize: 18,
                             fontWeight: 'bold',
@@ -359,31 +318,33 @@ const Register = (props) => {
                                 style={[styles.icon, styles.inputIcon, { tintColor: 'black' }]}
                                 source={{ uri: 'https://img.icons8.com/ios/50/online-group-studying.png' }}
                             />
-                            {' '} {/* Adding a space here */}
-                            Course
+                            {' '}
+                            Select Course
                         </Text>
-                        <View style={{
-                            width: '100%',
-                            height: 48,
-                            borderColor: 'black', // Changed borderColor to maroon
-                            borderWidth: 1,
-                            borderRadius: 8,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            paddingLeft: 22
-                        }}>
-                            <TextInput
-                                placeholder='Enter your Course'
-                                placeholderTextColor='black' // Changed placeholderTextColor to black for contrast
-                                keyboardType='default'
-                                style={{
-                                    width: '100%',
-                                    fontSize: 16
-                                }}
-                                name='course'
-                                id='course'
-                                onChangeText={(text) => setCourse(text)}
-                            />
+                        <View style={[styles.pickerContainer, { borderColor: 'black', borderWidth: 1, borderRadius: 5, padding: 3 }]}>
+                            <Picker
+                                selectedValue={course}
+                                onValueChange={(itemValue) => setCourse(itemValue)}
+                                style={styles.picker}
+                            >
+                                <Picker.Item label="Select Course" value="" />
+                                <Picker.Item label="BS in Information Technology" value="BSIT" />
+                                <Picker.Item label="BS in Electrical Engineering" value="BSEE" />
+                                <Picker.Item label="BS in Electronics Engineering" value="BSECE" />
+                                <Picker.Item label="BS in Mechanical Engineering" value="BSME" />
+                                <Picker.Item label="BS in Civil Engineering" value="BSCE" />
+                                <Picker.Item label="BS in Environmental Science" value="BSESSDP" />
+                                <Picker.Item label="BET Major In Automotive Technology" value="BETAT" />
+                                <Picker.Item label="BET Major In Chemical Technology" value="BETCHT" />
+                                <Picker.Item label="BET Major In Electrical Technology" value="BETET" />
+                                <Picker.Item label="BET Major In Electromechanical Technology" value="BETEMT" />
+                                <Picker.Item label="BET Major In Electronics Technology" value="BETELXT" />
+                                <Picker.Item label="BET Major In Instrumentation and Control Technology" value="BETICT" />
+                                <Picker.Item label="BET Major In Mechatronics Technology" value="BETMECT" />
+                                <Picker.Item label="BET Major In Dies & Moulds Technology" value="BETDMT" />
+                                <Picker.Item label="BET Major In Heating, Ventilation, and Airconditioning/Refrigeration Technology" value="BETHVAC" />
+                                <Picker.Item label="BET Major In Non-Destructive Testing Technology" value="BETNDTT" />
+                            </Picker>
                         </View>
                     </View>
 
@@ -618,9 +579,9 @@ const Register = (props) => {
                             paddingLeft: 22
                         }}>
                             <TextInput
+                                secureTextEntry={!isPasswordShown}
                                 placeholder='Enter your password'
                                 placeholderTextColor='black' // Changed placeholderTextColor to black for contrast
-                                secureTextEntry={!isPasswordShown}
                                 style={{
                                     width: '100%',
                                     fontSize: 16
@@ -636,7 +597,7 @@ const Register = (props) => {
                                     right: 12
                                 }}
                             >
-                                <Ionicons name={isPasswordShown ? 'eye-off' : 'eye'} size={24} color='black' />
+                                <Ionicons name={isPasswordShown ? "eye-off" : "eye"} size={24} color="#808080" />
                             </TouchableOpacity>
                         </View>
                     </View>

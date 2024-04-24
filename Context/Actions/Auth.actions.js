@@ -53,7 +53,7 @@ export const loginUser = async (email, password, navigation, dispatch) => {
       } else if (user.role === 'Faculty') {
         navigation.navigate('Faculty Profile');
       } else {
-        navigation.navigate('Staff Profile');
+        navigation.navigate('Not Verified');
       }
     } else {
       // Handle login failure

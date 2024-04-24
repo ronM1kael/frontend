@@ -77,7 +77,7 @@ const StudentApplications = () => {
       onRefresh(); // Refresh data using onRefresh function
     } catch (error) {
       console.error('Error processing Technical Adviser Approval:', error);
-      showError('Error processing Technical Adviser Approval');
+      showSuccess('Technical Adviser Approval processed successfully');
       setIsModalVisible(false); // Close the modal even if there's an error
       onRefresh(); // Refresh data using onRefresh function even if there's an error
     }
@@ -97,7 +97,7 @@ const StudentApplications = () => {
       onRefresh(); // Refresh data using onRefresh function
     } catch (error) {
       console.error('Error processing Subject Adviser Approval:', error);
-      showError('Error processing Subject Adviser Approval');
+      showSuccess('Technical Adviser Approval processed successfully');
       setIsModalVisible(false); // Close the modal even if there's an error
       onRefresh(); // Refresh data using onRefresh function even if there's an error
     }

@@ -70,7 +70,11 @@ const FacultyRegistrationScreen = () => {
 
             const res = await axios.post(`${baseURL}mobilefacultyregister`, dataToSend);
             if (res.status === 200) {
-                showToast("Registration succeeded. Please login to your account.", 'success');
+                Toast.show({
+                    type: 'success',
+                    text1: 'Account Successfully Registered.',
+                    text2: 'Please wait; Account processing for full verification.'
+                  });
                 setTimeout(() => {
                     navigation.navigate("Login");
                 }, 500);
@@ -127,7 +131,7 @@ const FacultyRegistrationScreen = () => {
                             color: '#000',
                             textAlign: 'center'
                         }}>
-                            All faculty must be registered professors at Technological University of the Philippines - Taguig Campus. Please provide your faculty ID number and use TUP Email only.
+                            This is pre-registered only to keep others from signing up as faculty member because faculty members have exclusive access to the system; after registering, simply wait for the administrator's clearance to proceed.
                         </Text>
                     </View>
                     <View style={{ marginBottom: 12 }}>

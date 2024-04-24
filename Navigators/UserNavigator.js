@@ -12,6 +12,7 @@ import FacultyUserProfile from "../Screens/User/FacultyUserProfile";
 import StaffUserProfile from "../Screens/User/StaffUserProfile";
 import FacultyEditProfile from "../Screens/User/FacultyEditProfile"
 import StaffEditProfile from "../Screens/User/StaffEditProfile"
+import NotVerified from "../Screens/User/NotVerified";
 
 const Stack = createStackNavigator();
 
@@ -56,6 +57,14 @@ const UserNavigator = ({ isLoggedIn }) => {
             <Stack.Screen
                 name="Faculty Profile"
                 component={FacultyUserProfile}
+                options={{
+                    headerShown: false
+                }}
+            />
+
+            <Stack.Screen
+                name="Not Verified"
+                component={NotVerified}
                 options={{
                     headerShown: false
                 }}

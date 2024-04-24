@@ -292,13 +292,13 @@ const App = () => {
             }
         >
             <View style={styles.container}>
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="Submit Research Proposal"
-                        onPress={toggleResearchProposalForm}
-                        color="#333" // Set text color to black
-                    />
-                </View>
+            <View style={[styles.buttonContainer, {marginBottom: 20}]}>
+    <Button
+        title="Submit Research Proposal"
+        onPress={toggleResearchProposalForm}
+        color="#333" // Set text color to black
+    />
+</View>
                 {proposals.length > 0 ? (
                     proposals.map((proposal) => (
                         <View key={proposal.id} style={styles.proposalContainerVIEW}>

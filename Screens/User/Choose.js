@@ -18,7 +18,8 @@ const ThreeButtonsComponent = () => {
         <View style={styles.separator} />
 
         <Text style={styles.description}>
-          All users must have a user profile to use the services. Please select how you will be using Redigitalize.
+          All users must have a user profile to use the services. Please select how you will be using{' '}
+          <Text style={styles.boldText}>REACH( Research and Extension Access and Collaboration Hub)</Text>
         </Text>
 
         <TouchableOpacity
@@ -33,12 +34,6 @@ const ThreeButtonsComponent = () => {
         >
           <Text style={styles.buttonText}>I am a Faculty Member</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, styles.staffButton]}
-          onPress={() => navigation.navigate('RegisterStaff')}
-        >
-          <Text style={styles.buttonTexts}>I am a Staff Member</Text>
-        </TouchableOpacity>
 
         <Text style={styles.subtitle}>
           Already have an account?
@@ -47,9 +42,9 @@ const ThreeButtonsComponent = () => {
         <View style={styles.separator} />
 
         <Text style={styles.description}>
-          If you've used the service before, there is no requirement to create a new user profile.
-          <Text style={styles.link} onPress={() => navigation.navigate("Login")}> Click here </Text>
-          to login with your existing credentials.
+          If you've used the service before, there is no requirment to create a new user profile. Log in
+          <Text style={styles.link} onPress={() => navigation.navigate("Login")}>  here </Text>
+          with your old credentials.
         </Text>
 
       </View>
@@ -129,6 +124,10 @@ const styles = StyleSheet.create({
   link: {
     color: COLORS.maroon,
     fontWeight: 'bold',
+  },
+  boldText: {
+    fontWeight: 'bold',
+    // any other styles you want to apply to the bold text
   },
 });
 

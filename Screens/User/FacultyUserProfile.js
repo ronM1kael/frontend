@@ -35,6 +35,13 @@ const FacultyUserProfile = () => {
     birthdate: new Date(),
   });
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isChangePasswordModalVisible, setIsChangePasswordModalVisible] = useState(false);
+  const [passwordFormData, setPasswordFormData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+  const [passwordError, setPasswordError] = useState('');
   const [isDateTimePickerVisible, setIsDateTimePickerVisible] = useState(false);
   const context = useContext(AuthGlobal);
   const navigation = useNavigation();
@@ -260,6 +267,107 @@ const FacultyUserProfile = () => {
     return date.toLocaleDateString('en-US', options); // Adjust locale as needed
   };
 
+  const handleChangePasswordModalOpen = () => {
+    setIsChangePasswordModalVisible(true);
+  };
+
+  const handleChangePasswordModalClose = () => {
+    setIsChangePasswordModalVisible(false);
+    setPasswordError('');
+  };
+
+  const handlePasswordInputChange = (key, value) => {
+    setPasswordFormData(prevData => ({
+      ...prevData,
+      [key]: value,
+    }));
+  };
+
+  const validateCurrentPassword = async () => {
+    try {
+      const jwtToken = await AsyncStorage.getItem('jwt');
+      const userProfile = context.stateUser.userProfile;
+
+      if (!jwtToken || !context.stateUser.isAuthenticated) {
+        console.error("User authentication is missing");
+        return false;
+      }
+
+      const email = userProfile.email;
+
+      const response = await axios.post(
+        `${baseURL}facultymobilevalidate-password/${email}`,
+        {
+          password: passwordFormData.currentPassword,
+        },
+        {
+          headers: { Authorization: `Bearer ${jwtToken}` },
+        }
+      );
+
+      return response.data.match;
+
+    } catch (error) {
+      console.error('Error validating current password:', error);
+      return false;
+    }
+  };
+
+  const handleChangePassword = async () => {
+    try {
+      const isCurrentPasswordValid = await validateCurrentPassword();
+
+      if (!isCurrentPasswordValid) {
+        setPasswordError("Current password is incorrect");
+        return;
+      }
+
+      const jwtToken = await AsyncStorage.getItem('jwt');
+      const userProfile = context.stateUser.userProfile;
+
+      if (!jwtToken || !context.stateUser.isAuthenticated) {
+        console.error("User authentication is missing");
+        return;
+      }
+
+      const { newPassword, confirmNewPassword } = passwordFormData;
+
+      if (newPassword !== confirmNewPassword) {
+        setPasswordError("Passwords don't match");
+        return;
+      }
+
+      const email = userProfile.email;
+
+      const response = await axios.post(
+        `${baseURL}facultymobilechange-password/${email}`,
+        {
+          password: passwordFormData.currentPassword,
+          newpassword: newPassword,
+          renewpassword: confirmNewPassword,
+        },
+        {
+          headers: { Authorization: `Bearer ${jwtToken}` },
+        }
+      );
+
+      console.log(response.data.success);
+      setPasswordError('');
+      handleChangePasswordModalClose();
+      // Show success message
+      Toast.show({
+        topOffset: 60,
+        type: "success",
+        text1: "Success",
+        text2: "Password changed successfully!",
+      });
+
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setPasswordError("Failed to change password");
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -344,6 +452,12 @@ const FacultyUserProfile = () => {
             <Icon name="edit" size={24} color="white" />
             <Text style={styles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.editButton} onPress={handleChangePasswordModalOpen}>
+            <Icon name="key" size={24} color="white" />
+            <Text style={styles.editButtonText}>Change Password</Text>
+          </TouchableOpacity>
+
         </ScrollView>
         {/* Modal for editing profile */}
         <Modal
@@ -462,6 +576,50 @@ const FacultyUserProfile = () => {
             </View>
           </View>
         </Modal>
+
+        <Modal
+          visible={isChangePasswordModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={handleChangePasswordModalClose}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity style={styles.closeButton} onPress={handleChangePasswordModalClose}>
+                <Icon name="times" size={24} color={'black'} />
+              </TouchableOpacity>
+              <ScrollView>
+                <Text style={styles.modalTitle}>Change Password</Text>
+                <TextInput
+                  style={styles.inputField}
+                  value={passwordFormData.currentPassword}
+                  onChangeText={(text) => handlePasswordInputChange('currentPassword', text)}
+                  placeholder="Current Password"
+                  secureTextEntry={true}
+                />
+                <TextInput
+                  style={styles.inputField}
+                  value={passwordFormData.newPassword}
+                  onChangeText={(text) => handlePasswordInputChange('newPassword', text)}
+                  placeholder="New Password"
+                  secureTextEntry={true}
+                />
+                <TextInput
+                  style={styles.inputField}
+                  value={passwordFormData.confirmNewPassword}
+                  onChangeText={(text) => handlePasswordInputChange('confirmNewPassword', text)}
+                  placeholder="Confirm New Password"
+                  secureTextEntry={true}
+                />
+                {passwordError ? <Text style={{ color: 'red' }}>{passwordError}</Text> : null}
+                <TouchableOpacity style={styles.saveButton} onPress={handleChangePassword}>
+                  <Text style={styles.saveButtonText}>Change Password</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+
       </View>
     </SafeAreaView>
   );

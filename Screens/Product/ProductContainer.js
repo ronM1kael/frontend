@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Modal,
   Alert,
+  RefreshControl
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -167,6 +168,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    fetchData().then(() => setRefreshing(false));
     setTimeout(() => {
       fetchData();
       setRefreshing(false);
@@ -175,23 +177,51 @@ const PropertyContainer = ({ isLoggedIn }) => {
 
   const pickDocument = async () => {
     try {
-      await requestCameraRollPermission();
-      const jwtToken = await AsyncStorage.getItem('jwt');
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/pdf",
       });
 
-      // Log the result to verify if the selectedFile state is updated
-      console.log('Selected File:', result);
+      if (result.canceled) {
+        console.log("Document picking canceled");
+      } else if (result.assets && result.assets.length > 0) {
+        const pickedAsset = result.assets[0];
 
-      if (result.cancelled) {
-        console.log("Document picking cancelled");
+        if (pickedAsset.uri) {
+          const fileInfo = await FileSystem.getInfoAsync(pickedAsset.uri);
+
+          if (fileInfo) {
+            const newUri = FileSystem.documentDirectory + fileInfo.name;
+
+            try {
+              await FileSystem.copyAsync({
+                from: pickedAsset.uri,
+                to: newUri,
+              });
+
+              setSelectedFile({
+                name: pickedAsset.name,
+                uri: newUri,
+              });
+
+              handleLargeFile(newUri);
+
+              const fileNameWithoutExtension = pickedAsset.name.replace(/\.[^/.]+$/, '');
+
+              console.log("Document picked:", result);
+            } catch (copyError) {
+              console.error("Error copying file:", copyError);
+            }
+          } else {
+            console.log("Error getting file info for the picked document");
+          }
+        } else {
+          console.log("Invalid URI for the picked document");
+        }
       } else {
-        setSelectedFile(result); // Store the selected file
-        setSelectedFileName(result.name); // Set the selected file name
+        console.log("Document picking failed with unexpected result:", result);
       }
-    } catch (error) {
-      console.error("Error picking document", error);
+    } catch (err) {
+      console.error("Error picking document", err);
     }
   };
 
@@ -206,9 +236,9 @@ const PropertyContainer = ({ isLoggedIn }) => {
   
       const formData = new FormData();
       formData.append("research_file", {
-        uri: selectedFile.assets[0].uri,
-        name: selectedFile.assets[0].name,
-        type: selectedFile.assets[0].mimeType,
+        uri: selectedFile.uri,
+        name: selectedFile.name,
+        type: "application/pdf",
       });
       formData.append("research_id", item.id);
   
@@ -320,7 +350,6 @@ const PropertyContainer = ({ isLoggedIn }) => {
     setPendingTechnical(false);
   };
 
-
   const renderItem = ({ item }) => (
     <>
       <TouchableOpacity
@@ -340,7 +369,7 @@ const PropertyContainer = ({ isLoggedIn }) => {
           </View>
           <View style={styles.cardFooter}>
             <View style={styles.footerContent}></View>
-            {item.file_status === "Returned" ? (
+            {item.file_status === "Returned" || item.file_status === "Rejected By Technical Adviser" || item.file_status === "Rejected By Subject Adviser" ? (
               <TouchableOpacity
                 style={[
                   styles.addButton,
@@ -453,6 +482,12 @@ const PropertyContainer = ({ isLoggedIn }) => {
               data={filteredData}
               renderItem={renderItem}
               keyExtractor={(item) => item.id.toString()}
+              refreshControl={ // Attach RefreshControl to FlatList
+                <RefreshControl
+                  refreshing={refreshing} // Set refreshing state
+                  onRefresh={onRefresh} // Handle refresh action
+                />
+              }
             />
           ) : context.stateUser.userProfile.role === 'Faculty' ? (
             <FlatList
@@ -460,6 +495,12 @@ const PropertyContainer = ({ isLoggedIn }) => {
               data={facultydata} // Use facultydata instead of filteredData for faculty
               renderItem={renderItem}
               keyExtractor={(item) => item.id.toString()}
+              refreshControl={ // Attach RefreshControl to FlatList
+                <RefreshControl
+                  refreshing={refreshing} // Set refreshing state
+                  onRefresh={onRefresh} // Handle refresh action
+                />
+              }
             />
           ) : null}
           <Modal
@@ -501,7 +542,13 @@ const PropertyContainer = ({ isLoggedIn }) => {
                     >
                       <Text style={styles.buttonTexts}>Choose File</Text>
                     </TouchableOpacity>
-                    {selectedFileName ? <Text style={styles.note}>{selectedFileName}</Text> : null}
+                  
+                    {selectedFile ? (
+                                    <Text>Selected File: {selectedFile.name}</Text>
+                                ) : (
+                                    <Text>No File Chosen</Text>
+                                )}
+
                     <Text style={styles.note}>(Note: Make sure the uploaded application file is under the pdf format and should not exceed 10MB in size.)</Text>
                   </View>
 
