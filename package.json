@@ -1,5 +1,5 @@
 {
-  "name": "react-native-2023",
+  "name": "reach",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",

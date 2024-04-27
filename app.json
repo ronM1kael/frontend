@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Reach-R&E",
-    "slug": "Reach-R&E",
+    "name": "reach",
+    "slug": "ReachRandE",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/res.jpg",
@@ -19,18 +19,20 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/res2.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.REDigitalize.reactnative2023"
+      "package": "com.REDigitalize.reach"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "MyGoogleApp",
+    "scheme": [
+      "MyGoogleApp"
+    ],
     "extra": {
       "eas": {
-        "projectId": "0a2704d1-ab88-4561-b1ef-d7a996e49c96"
+        "projectId": "4ccc7a8b-a554-4de0-8af8-119b16fca180"
       }
     }
   }
