@@ -7,7 +7,7 @@
     "icon": "./assets/res.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/res.png",
+      "image": "./assets/res2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,12 +19,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/res.png",
+        "foregroundImage": "./assets/res2.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/res.png"
+      "favicon": "./assets/res2.png"
     },
     "scheme": [
       "MyGoogleApp"
