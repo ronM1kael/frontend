@@ -12,6 +12,7 @@ const MOBILEfacultyApplicationStatus = () => {
     const [extensionData, setExtensionData] = useState([]);
     const [selectedExtension, setSelectedExtension] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [appointments, setAppointments] = useState([]);
 
     const fetchExtensionData = useCallback(async () => {
         try {
@@ -48,13 +49,57 @@ const MOBILEfacultyApplicationStatus = () => {
         setSelectedExtension(null);
     };
 
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        fetchExtensionData();
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 2000);
-    }, [fetchExtensionData]);
+    const fetchAppointmentDetails = async (appointmentId) => {
+        try {
+            const response = await axios.get(`${baseURL}MOBILEgetAppointment/${appointmentId}`);
+            const appointment = response.data;
+            return appointment;
+        } catch (error) {
+            console.error('Error fetching appointment data:', error);
+            return null;
+        }
+    };
+
+    const handleAppointmentPress = async (appointmentId) => {
+        const appointment = await fetchAppointmentDetails(appointmentId);
+        if (appointment) {
+            setAppointments((prevAppointments) => [...prevAppointments, appointment]);
+        }
+    };
+
+    const renderAppointmentButtons = (extensions) => {
+        return (
+            <View style={styles.appointmentContainer}>
+                <Text style={styles.appointmentTitle}>Appointments</Text>
+                <View style={styles.appointmentButtons}>
+                    <TouchableOpacity
+                        style={styles.appointmentButton}
+                        onPress={() => handleAppointmentPress(extensions.appointment1_id)}
+                    >
+                        <Text>Proposal Consultation</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.appointmentButton}
+                        onPress={() => handleAppointmentPress(extensions.appointment2_id)}
+                    >
+                        <Text>Implementation Proper</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.appointmentButton}
+                        onPress={() => handleAppointmentPress(extensions.appointment3_id)}
+                    >
+                        <Text>Pre-Evaluation Survey</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.appointmentButton}
+                        onPress={() => handleAppointmentPress(extensions.appointment4_id)}
+                    >
+                        <Text>Mid-Evaluation Survey</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    };
 
     return (
         <View style={styles.container}>
@@ -72,9 +117,7 @@ const MOBILEfacultyApplicationStatus = () => {
                     </TouchableOpacity>
                 )}
                 keyExtractor={(item) => item.id.toString()}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchExtensionData} />}
             />
 
             <Modal
@@ -86,18 +129,46 @@ const MOBILEfacultyApplicationStatus = () => {
                 <View style={styles.modalBackground}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalTitle}>{selectedExtension?.title}</Text>
-                        <View style={styles.separator} />
                         <View style={styles.statusContainer}>
-                            <Text style={styles.statusValue}>{selectedExtension?.status}</Text>
+                            <Text style={styles.statusValue}>({selectedExtension?.status})</Text>
                         </View>
+                        <View style={styles.separator} />
                         <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
                             <Icon name="close" size={20} color="#333" />
                         </TouchableOpacity>
                         <View style={styles.progressBarContainer}>
-                            <View style={[styles.progressBar, { width: `${selectedExtension?.percentage_status}%` }]}>
+                            <View
+                                style={[styles.progressBar, { width: `${selectedExtension?.percentage_status}%` }]}
+                            >
                                 <Text style={styles.progressText}>{selectedExtension?.percentage_status}%</Text>
                             </View>
                         </View>
+                        {renderAppointmentButtons(selectedExtension)}
+                    </View>
+                </View>
+            </Modal>
+
+            {/* Modal for displaying appointment details */}
+            <Modal
+                visible={appointments.length > 0}
+                animationType="slide"
+                onRequestClose={() => setAppointments([])}
+                transparent={true}
+            >
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalContainer}>
+                        {appointments.map((appointment, index) => (
+                            <View key={index}>
+                                <Text style={styles.modalTitle}>{appointment.title}</Text>
+                                <Text>{appointment.purpose}</Text>
+                                <Text>{appointment.status}</Text>
+                                <Text>{appointment.time}</Text>
+                                <Text>{appointment.date}</Text>
+                            </View>
+                        ))}
+                        <TouchableOpacity onPress={() => setAppointments([])} style={styles.closeButton}>
+                            <Icon name="close" size={20} color="#333" />
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
@@ -184,11 +255,11 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },statusContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
+        justifyContent: 'center',
         marginBottom: 10,
     },
     statusValue: {
-        fontSize: 18,
+        fontSize: 15,
         color: '#333333',
     },
 });
