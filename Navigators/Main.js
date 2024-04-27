@@ -48,6 +48,7 @@ import ExtensionTemplatesScreen from "../Screens/User/Faculty/ExtensionTemplates
 import FacultyApplication from "../Screens/Extend/FacultyExtension"
 
 import ResearchProposal from "../Screens/User/Faculty/ResearchProposal";
+import ExtensionApplicationStatus from "../Screens/Extend/ExtensionApplicationStatus";
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -440,6 +441,28 @@ const Main = () => {
         <Drawer.Screen
           name="Extension Application"
           component={FacultyApplication}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="th-list" size={size} color="#333" />
+            ),
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                <Image
+                  source={require("../assets/res.jpg")}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.companyName}>R&E-Services</Text>
+              </View>
+            ),
+          }}
+        />
+        ) : null}
+
+      {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
+        <Drawer.Screen
+          name="Extension Application Status"
+          component={ExtensionApplicationStatus}
           options={{
             drawerIcon: ({ color, size }) => (
               <Icon name="th-list" size={size} color="#333" />

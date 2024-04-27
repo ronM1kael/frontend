@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, Button, TextInput, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Animated } from 'react-native';
 import baseURL from '../../assets/common/baseurl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -97,11 +98,13 @@ const ExtensionApplication = () => {
     }
   };
 
-  useEffect(() => {
-    fetchApplications();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchApplications();
+    }, [fetchApplications])
+  );
 
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     try {
       const jwtToken = await AsyncStorage.getItem('jwt');
       const userProfile = context.stateUser.userProfile;
@@ -121,12 +124,15 @@ const ExtensionApplication = () => {
     } catch (error) {
       setErrorMessage('An error occurred while fetching applications');
     }
-  };
+  }, [context.stateUser.userProfile]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchApplications().then(() => setRefreshing(false));
-  }, []);
+    fetchApplications();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [fetchApplications]);
 
   const submitProposal = async (id) => {
     setSelectedApplicationId(id);
