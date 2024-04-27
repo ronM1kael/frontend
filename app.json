@@ -28,6 +28,11 @@
     },
     "scheme": [
       "MyGoogleApp"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4ccc7a8b-a554-4de0-8af8-119b16fca180"
+      }
+    }
   }
 }
