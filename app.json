@@ -24,7 +24,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/res2.png"
     },
     "scheme": [
       "MyGoogleApp"
