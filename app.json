@@ -4,10 +4,10 @@
     "slug": "reach",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/res2.jpg",
+    "icon": "./assets/res.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/res2.png",
+      "image": "./assets/res.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,12 +19,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/res2.png",
+        "foregroundImage": "./assets/res.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/res2.png"
+      "favicon": "./assets/res.png"
     },
     "scheme": [
       "MyGoogleApp"
