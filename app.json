@@ -4,10 +4,10 @@
     "slug": "reach",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/res.jpg",
+    "icon": "./assets/Appicon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/res2.png",
+      "image": "./assets/res.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
