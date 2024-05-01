@@ -15,10 +15,19 @@ import COLORS from '../../Constants/color';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import * as AuthSession from 'expo-auth-session';
+
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+
 WebBrowser.maybeCompleteAuthSession();
+
+const GOOGLE_CLIENT_ID = '117316620403-92t443m36sp9tt084796jg5brgt4tvub.apps.googleusercontent.com';
+
+GoogleSignin.configure({
+    webClientId: GOOGLE_CLIENT_ID,
+  });
 
 const Register = (props) => {
 
@@ -105,6 +114,49 @@ const Register = (props) => {
         setDate(currentDate);
     };
 
+    const handleGoogleSignIn = async () => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            // userInfo contains user details, handle the sign-in process
+            console.log(userInfo);
+            // You can now use 'userInfo' data for further actions like registering the user
+
+            // Send the user data to your backend for registration
+            try {
+                const res = await axios.post(`${baseURL}mobilegoogle-callback`, {
+                    email: userInfo.user.email,
+                    fname: userInfo.user.givenName,
+                    lname: userInfo.user.familyName,
+                });
+                if (res.status === 200) {
+                    showToast("Registration succeeded. Please login to your account.", 'success');
+                    setTimeout(() => {
+                        navigation.navigate("Login");
+                    }, 500);
+                }
+            } catch (error) {
+                showToast("Something went wrong. Please try again.", 'error');
+                console.log(error);
+            }
+        } catch (error) {
+            console.error('Google sign-in error:', error);
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                // User cancelled the sign-in process
+                console.log('Google sign-in cancelled');
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                // Sign-in process is already in progress
+                console.log('Google sign-in in progress');
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                // Play services are not available
+                console.log('Google Play services not available');
+            } else {
+                // Other errors
+                console.error('Google sign-in error:', error.message);
+            }
+        }
+    };
+    
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
             <View style={{ flex: 1, marginHorizontal: 22 }}>
@@ -675,7 +727,7 @@ const Register = (props) => {
                         justifyContent: 'center'
                     }}>
                         <TouchableOpacity
-                            onPress={() => promptAsync()}
+                            onPress={handleGoogleSignIn}
                             style={{
                                 flex: 1,
                                 alignItems: 'center',

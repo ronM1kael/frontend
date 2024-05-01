@@ -49,6 +49,7 @@ import FacultyApplication from "../Screens/Extend/FacultyExtension"
 
 import ResearchProposal from "../Screens/User/Faculty/ResearchProposal";
 import ExtensionApplicationStatus from "../Screens/Extend/ExtensionApplicationStatus";
+import FirstPage from "../Screens/CSM/FirstPage"
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
