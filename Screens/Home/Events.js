@@ -1,26 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Calendar, Agenda } from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
+import { useFocusEffect } from '@react-navigation/native';
+import axios from 'axios';
+import baseURL from '../../assets/common/baseurl';
 
-const CalendarEventsApp = () => {
-  const [items, setItems] = useState({});
+const EventCalendar = () => {
+  const [events, setEvents] = useState([]);
 
-  const loadItems = (day) => {
-    // Simulating data loading, you can replace this with actual data retrieval logic
-    setTimeout(() => {
-      const newItems = {
-        '2024-03-07': [{ name: 'Event 1' }, { name: 'Event 2' }],
-        '2024-03-10': [{ name: 'Event 3' }],
-        '2024-03-15': [{ name: 'Event 4' }, { name: 'Event 5' }],
-      };
-      setItems(newItems);
-    }, 1000);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchEvents();
+    }, [])
+  );
+
+  const fetchEvents = async () => {
+    try {
+      const response = await axios.get(`${baseURL}eventMobileHomePage`);
+      setEvents(response.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
   };
 
-  const renderItem = (item) => {
+  const renderEvent = (event) => {
     return (
-      <View style={styles.item}>
-        <Text>{item.name}</Text>
+      <View key={event.id} style={styles.eventContainer}>
+        <Text style={styles.eventTitle}>{event.title}</Text>
+        <Text style={styles.eventTime}>{event.start} - {event.end}</Text>
+        {/* Add more event details here */}
       </View>
     );
   };
@@ -28,17 +36,23 @@ const CalendarEventsApp = () => {
   return (
     <View style={styles.container}>
       <Calendar
-        onDayPress={(day) => {
-          console.log('selected day', day);
-          loadItems(day);
-        }}
-      />
-      <Agenda
-        items={items}
-        renderItem={(item) => renderItem(item)}
-        onRefresh={() => loadItems()}
-        refreshing={false}
-      />
+  markedDates={events.reduce((markedDates, event) => {
+    const startDate = event.start;
+    const endDate = event.end;
+    const currentDate = new Date(startDate);
+
+    while (currentDate <= new Date(endDate)) {
+      const dateString = currentDate.toISOString().split('T')[0];
+      markedDates[dateString] = { marked: true };
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return markedDates;
+  }, {})}
+/>
+      <View style={styles.eventsContainer}>
+        {events.map(renderEvent)}
+      </View>
     </View>
   );
 };
@@ -48,14 +62,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  item: {
-    backgroundColor: 'white',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 10,
-    elevation: 2,
+  eventsContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
+  },
+  eventContainer: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  eventTime: {
+    fontSize: 16,
+    color: '#888',
   },
 });
 
-export default CalendarEventsApp;
+export default EventCalendar;

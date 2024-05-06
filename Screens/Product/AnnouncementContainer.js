@@ -14,10 +14,11 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-import baseURL, { baseURL2 } from '../../assets/common/baseurl';
+import baseURL from '../../assets/common/baseurl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
 import Toast from 'react-native-toast-message';
+import baseURL2 from '../../assets/common/baseurlnew';
 
 const AnnouncementList = () => {
   const [announcements, setAnnouncements] = useState([]);
