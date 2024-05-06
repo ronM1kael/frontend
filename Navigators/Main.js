@@ -50,6 +50,7 @@ import FacultyApplication from "../Screens/Extend/FacultyExtension"
 import ResearchProposal from "../Screens/User/Faculty/ResearchProposal";
 import ExtensionApplicationStatus from "../Screens/Extend/ExtensionApplicationStatus";
 import SurveyNavigator from '../Navigators/SurveyNavigator';
+import AssessmentNavigator from '../Navigators/AssessmentNavigator';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -505,6 +506,25 @@ const Main = () => {
         <Drawer.Screen
           name="SurveyNavigator"
           component={SurveyNavigator}
+          options={{
+            drawerIcon: ({ color, size }) => null,
+            drawerLabel: '',
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                <Image
+                  source={require("../assets/res.jpg")}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.companyName}>R&E-Services</Text>
+              </View>
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="AssessmentNavigator"
+          component={AssessmentNavigator}
           options={{
             drawerIcon: ({ color, size }) => null,
             drawerLabel: '',

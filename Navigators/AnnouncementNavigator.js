@@ -32,6 +32,7 @@ function MyAnnouncementTabs() {
         name="Announcement"
         component={AnnouncementList}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Icon name="bullhorn" color={color} size={25} />
           ),
@@ -41,6 +42,7 @@ function MyAnnouncementTabs() {
         name="Events"
         component={Events}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Icon name="calendar" color={color} size={25} />
           ),
@@ -50,6 +52,7 @@ function MyAnnouncementTabs() {
         name="Organization"
         component={Organization}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Icon name="building" color={color} size={25} />
           ),
@@ -59,6 +62,7 @@ function MyAnnouncementTabs() {
         name="Certification Guide"
         component={CertificationGuide}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <Icon name="book" color={color} size={25} />
           ),

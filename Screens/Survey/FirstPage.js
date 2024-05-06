@@ -87,11 +87,11 @@ const CustomerSatisfactionSurveyForm = (props) => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 20 }}>
-                    Research and Extension Services Customer Satisfaction Survey Form
-                </Text>
-                <Text style={{ textAlign: 'center', marginBottom: 20, color: '#555' }}>
-                    As you proceed, kindly indicate your choice by selecting the radio button that corresponds to your answer.
-                </Text>
+                Research and Extension Services Customer Satisfaction Survey Form
+            </Text>
+            <Text style={{ textAlign: 'center', marginBottom: 20, color: '#555' }}>
+                As you proceed, kindly indicate your choice by selecting the radio button that corresponds to your answer.
+            </Text>
 
             <TextInput
                 style={styles.input}
@@ -103,29 +103,29 @@ const CustomerSatisfactionSurveyForm = (props) => {
 
             {/* Department Picker */}
             <View style={styles.pickerContainer}>
-    <Picker
-        style={styles.picker}
-        selectedValue={rated_department}
-        onValueChange={itemValue => setRatedDepartment(itemValue)}>
-        <Picker.Item label="--- Select Department ---" value="" />
-        <Picker.Item label="Research and Development Services" value="Research and Development Services" />
-        <Picker.Item label="Community Extension Services" value="Community Extension Services" />
-        <Picker.Item label="Innovation and Technology Support Office" value="Innovation and Technology Support Office" />
-    </Picker>
-</View>
+                <Picker
+                    style={styles.picker}
+                    selectedValue={rated_department}
+                    onValueChange={itemValue => setRatedDepartment(itemValue)}>
+                    <Picker.Item label="--- Select Department ---" value="" />
+                    <Picker.Item label="Research and Development Services" value="Research and Development Services" />
+                    <Picker.Item label="Community Extension Services" value="Community Extension Services" />
+                    <Picker.Item label="Innovation and Technology Support Office" value="Innovation and Technology Support Office" />
+                </Picker>
+            </View>
 
             {/* Transaction Purpose Picker */}
             <View style={styles.pickerContainer}>
-            <Picker
-                style={styles.picker}
-                selectedValue={transaction_purpose}
-                onValueChange={itemValue => setTransactionPurpose(itemValue)}>
-                <Picker.Item label="--- Select Purpose ---" value="" />
-                <Picker.Item label="Consultation / Assistance" value="Consultation / Assistance" />
-                <Picker.Item label="Technology transfer / Patent / Intellectual Property" value="Technology transfer / Patent / Intellectual Property" />
-                <Picker.Item label="Certificate of Similarity" value="Certificate of Similarity" />
-                <Picker.Item label="Submit document / Terminal report / Certifying document" value="Submit document / Terminal report / Certifying document" />
-            </Picker>
+                <Picker
+                    style={styles.picker}
+                    selectedValue={transaction_purpose}
+                    onValueChange={itemValue => setTransactionPurpose(itemValue)}>
+                    <Picker.Item label="--- Select Purpose ---" value="" />
+                    <Picker.Item label="Consultation / Assistance" value="Consultation / Assistance" />
+                    <Picker.Item label="Technology transfer / Patent / Intellectual Property" value="Technology transfer / Patent / Intellectual Property" />
+                    <Picker.Item label="Certificate of Similarity" value="Certificate of Similarity" />
+                    <Picker.Item label="Submit document / Terminal report / Certifying document" value="Submit document / Terminal report / Certifying document" />
+                </Picker>
             </View>
 
             {/* Date Picker */}
@@ -166,18 +166,18 @@ const CustomerSatisfactionSurveyForm = (props) => {
 
             {/* Facilitator Picker */}
             <View style={styles.pickerContainer}>
-            <Picker
-                style={styles.picker}
-                selectedValue={facilitator}
-                onValueChange={itemValue => setFacilitator(itemValue)}>
-                <Picker.Item label="--- Select Facilitator ---" value="" />
-                <Picker.Item label="Macapagal, Laarnie" value="Macapagal, Laarnie" />
-                <Picker.Item label="Santos, Rico" value="Santos, Rico" />
-                <Picker.Item label="Camento, Ma. Victoria" value="Camento, Ma. Victoria" />
-                <Picker.Item label="Morgado, Jane" value="Morgado, Jane" />
-                <Picker.Item label="Africa, Ramil" value="Africa, Ramil" />
-                <Picker.Item label="Salve, Maureen" value="Salve, Maureen" />
-            </Picker>
+                <Picker
+                    style={styles.picker}
+                    selectedValue={facilitator}
+                    onValueChange={itemValue => setFacilitator(itemValue)}>
+                    <Picker.Item label="--- Select Facilitator ---" value="" />
+                    <Picker.Item label="Macapagal, Laarnie" value="Macapagal, Laarnie" />
+                    <Picker.Item label="Santos, Rico" value="Santos, Rico" />
+                    <Picker.Item label="Camento, Ma. Victoria" value="Camento, Ma. Victoria" />
+                    <Picker.Item label="Morgado, Jane" value="Morgado, Jane" />
+                    <Picker.Item label="Africa, Ramil" value="Africa, Ramil" />
+                    <Picker.Item label="Salve, Maureen" value="Salve, Maureen" />
+                </Picker>
             </View>
 
             <TextInput
@@ -219,15 +219,15 @@ const CustomerSatisfactionSurveyForm = (props) => {
 
             {/* Customer Feedback Picker */}
             <View style={styles.pickerContainer}>
-            <Picker
-                style={styles.picker}
-                selectedValue={customer_feedback}
-                onValueChange={itemValue => setCustomerFeedback(itemValue)}>
-                <Picker.Item label="--- Select Feedback Type ---" value="" />
-                <Picker.Item label="Compliment" value="Compliment" />
-                <Picker.Item label="Complaint" value="Complaint" />
-                <Picker.Item label="Suggestion" value="Suggestion" />
-            </Picker>
+                <Picker
+                    style={styles.picker}
+                    selectedValue={customer_feedback}
+                    onValueChange={itemValue => setCustomerFeedback(itemValue)}>
+                    <Picker.Item label="--- Select Feedback Type ---" value="" />
+                    <Picker.Item label="Compliment" value="Compliment" />
+                    <Picker.Item label="Complaint" value="Complaint" />
+                    <Picker.Item label="Suggestion" value="Suggestion" />
+                </Picker>
             </View>
 
             {/* Customer Remarks Input */}
