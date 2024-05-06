@@ -21,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/res2.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.ronm1kael.reach"
     },
     "web": {
       "favicon": "./assets/res2.png"
@@ -33,6 +34,7 @@
       "eas": {
         "projectId": "0e0442b4-7a4e-4543-be97-75ccdfec45d9"
       }
-    }
+    },
+    "plugins": ["@react-native-google-signin/google-signin"]
   }
 }

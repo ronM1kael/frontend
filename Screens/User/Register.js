@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Pressable, Modal } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import axios from "axios";
@@ -20,14 +20,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AuthSession from 'expo-auth-session';
 
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+import { loginUser } from '../../Context/Actions/Auth.actions';
+import AuthGlobal from "../../Context/Store/AuthGlobal";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_CLIENT_ID = '117316620403-92t443m36sp9tt084796jg5brgt4tvub.apps.googleusercontent.com';
-
 GoogleSignin.configure({
-    webClientId: GOOGLE_CLIENT_ID,
-  });
+    scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+    webClientId: '264200989912-9r77nqpf8fh5bpfejttl8lbm44u4n239.apps.googleusercontent.com',
+});
 
 const Register = (props) => {
 
@@ -50,6 +51,8 @@ const Register = (props) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isTextInputDisable, setIsTextInputDisable] = useState(false); // Added state
     const navigation = useNavigation();
+
+    const context = useContext(AuthGlobal);
 
     const formatDateForDatabase = (date) => {
         const formattedDate = date.toISOString().split('T')[0];
@@ -118,45 +121,33 @@ const Register = (props) => {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
-            // userInfo contains user details, handle the sign-in process
-            console.log(userInfo);
-            // You can now use 'userInfo' data for further actions like registering the user
+            console.log('User Info:', userInfo);
 
-            // Send the user data to your backend for registration
             try {
                 const res = await axios.post(`${baseURL}mobilegoogle-callback`, {
                     email: userInfo.user.email,
                     fname: userInfo.user.givenName,
                     lname: userInfo.user.familyName,
+                    password: '$2y$10$.Sp6R4fV1dyfVHfNrffAQeyPStee1UYa6Wmc8fe1MeRgnwcVCu4a.',
                 });
+                console.log('Backend Response:', res.data);
+
                 if (res.status === 200) {
                     showToast("Registration succeeded. Please login to your account.", 'success');
-                    setTimeout(() => {
-                        navigation.navigate("Login");
-                    }, 500);
+
+                    // Call loginUser without password
+                    loginUser(userInfo.user.email, '', navigation, context.dispatch);
                 }
             } catch (error) {
                 showToast("Something went wrong. Please try again.", 'error');
-                console.log(error);
+                console.error('Backend Request Error:', error);
             }
         } catch (error) {
             console.error('Google sign-in error:', error);
-            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                // User cancelled the sign-in process
-                console.log('Google sign-in cancelled');
-            } else if (error.code === statusCodes.IN_PROGRESS) {
-                // Sign-in process is already in progress
-                console.log('Google sign-in in progress');
-            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                // Play services are not available
-                console.log('Google Play services not available');
-            } else {
-                // Other errors
-                console.error('Google sign-in error:', error.message);
-            }
+            // Handle Google sign-in errors
         }
     };
-    
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
             <View style={{ flex: 1, marginHorizontal: 22 }}>

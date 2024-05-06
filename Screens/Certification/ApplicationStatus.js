@@ -1,20 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, ActivityIndicator, TextInput, FlatList, Image, TouchableWithoutFeedback, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
 import baseURL from '../../assets/common/baseurl';
 import AuthGlobal from '../../Context/Store/AuthGlobal';
 import baseURL2 from '../../assets/common/baseurlnew';
 
 const App = () => {
-
-    // const [stats, setStats] = useState([]);
-    // const [studentstats, setStudentStats] = useState([]);
-    // const [facultystats, setFacultyStats] = useState([]);
-    // const [modalVisible, setModalVisible] = useState(false);
-    // const [selectedData, setSelectedData] = useState(null);
-    // const [loading, setLoading] = useState(false);
-    // const [searchQuery, setSearchQuery] = useState('');
-    // const context = useContext(AuthGlobal);
 
     const [stats, setStats] = useState([]);
     const [selectedData, setSelectedData] = useState(null);
@@ -28,9 +20,9 @@ const App = () => {
 
     const userProfilerole = context.stateUser.userProfile;
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    useFocusEffect(React.useCallback(() => {
+        fetchData(); // Call fetchData when screen gains focus
+    }, [context.stateUser.userProfile.id]));
 
     const fetchData = async () => {
         try {
@@ -108,14 +100,14 @@ const App = () => {
             setLoadingPhotos(false);
         }
     };
- 
+
     const viewTurnitinPhotos = () => {
         if (selectedData && selectedData.id) {
             fetchTurnitinProofPhotos(selectedData.id);
         } else {
             console.error('Selected data is null or does not have an id property');
         }
-    };    
+    };   
 
     return (
         <SafeAreaView style={styles.container}>

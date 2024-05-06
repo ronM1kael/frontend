@@ -103,8 +103,8 @@ const ConfirmationForm = (props) => {
       });
       setTimeout(() => {
         dispatch(actions.clearCart());
-        navigation.navigate("Home");
       }, 500);
+      navigation.navigate("SurveyNavigator");
   
     } catch (error) {
       console.error('Error sending request:', error);

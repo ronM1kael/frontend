@@ -1,4 +1,4 @@
-package com.melfx.reactnative2023;
+package com.ronm1kael.reach;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -9,9 +9,6 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 import expo.modules.ReactActivityDelegateWrapper;
-
-import com.melfx.reactnative2023.BuildConfig;
-import com.melfx.reactnative2023.R;
 
 public class MainActivity extends ReactActivity {
   @Override

@@ -49,6 +49,7 @@ import FacultyApplication from "../Screens/Extend/FacultyExtension"
 
 import ResearchProposal from "../Screens/User/Faculty/ResearchProposal";
 import ExtensionApplicationStatus from "../Screens/Extend/ExtensionApplicationStatus";
+import SurveyNavigator from '../Navigators/SurveyNavigator';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -112,7 +113,7 @@ const Main = () => {
         </View>
       </SafeAreaView>
     );
-  };  
+  };
 
   if (!fontsLoaded) {
     // You can return a loading indicator or null while fonts are loading
@@ -438,47 +439,47 @@ const Main = () => {
         ) : null}
 
         {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
-        <Drawer.Screen
-          name="Extension Application"
-          component={FacultyApplication}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="th-list" size={size} color="#333" />
-            ),
-            headerTitle: () => (
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                <Image
-                  source={require("../assets/res.jpg")}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-                <Text style={styles.companyName}>R&E-Services</Text>
-              </View>
-            ),
-          }}
-        />
+          <Drawer.Screen
+            name="Extension Application"
+            component={FacultyApplication}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="th-list" size={size} color="#333" />
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+                </View>
+              ),
+            }}
+          />
         ) : null}
 
-      {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
-        <Drawer.Screen
-          name="Extension Application Status"
-          component={ExtensionApplicationStatus}
-          options={{
-            drawerIcon: ({ color, size }) => (
-              <Icon name="th-list" size={size} color="#333" />
-            ),
-            headerTitle: () => (
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                <Image
-                  source={require("../assets/res.jpg")}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
-                <Text style={styles.companyName}>R&E-Services</Text>
-              </View>
-            ),
-          }}
-        />
+        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
+          <Drawer.Screen
+            name="Extension Application Status"
+            component={ExtensionApplicationStatus}
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <Icon name="th-list" size={size} color="#333" />
+              ),
+              headerTitle: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                  <Image
+                    source={require("../assets/res.jpg")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.companyName}>R&E-Services</Text>
+                </View>
+              ),
+            }}
+          />
         ) : null}
 
         <Drawer.Screen
@@ -497,6 +498,25 @@ const Main = () => {
           options={{
             drawerIcon: ({ color, size }) => (
               <Icon name="envelope" size={size} color="#333" />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="SurveyNavigator"
+          component={SurveyNavigator}
+          options={{
+            drawerIcon: ({ color, size }) => null,
+            drawerLabel: '',
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                <Image
+                  source={require("../assets/res.jpg")}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+                <Text style={styles.companyName}>R&E-Services</Text>
+              </View>
             ),
           }}
         />
@@ -619,7 +639,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     borderWidth: 0.2,
-    borderColor:'#eee',
+    borderColor: '#eee',
     borderBottomWidth: 8,
     marginVertical: 10,
     shadowOffset: { width: 0, height: 3 },
@@ -629,13 +649,13 @@ const styles = StyleSheet.create({
   },
   infoButtons: {
     backgroundColor: '#2196f3',
-    borderColor:'#0e3860',
-    shadowColor:'#1c5da6',
+    borderColor: '#0e3860',
+    shadowColor: '#1c5da6',
   },
   dangerButtons: {
     backgroundColor: '#f44336',
-    borderColor:'#c4211d',
-    shadowColor:'#1c5da6',
+    borderColor: '#c4211d',
+    shadowColor: '#1c5da6',
   },
   buttonTexts: {
     fontSize: 16,
