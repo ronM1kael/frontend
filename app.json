@@ -4,7 +4,7 @@
     "slug": "reach",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/finaliconsmall.png",
+    "icon": "./assets/finaliconagain.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/finalsplash.png",
