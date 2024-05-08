@@ -4,10 +4,10 @@
     "slug": "reach",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Appicon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/res.jpg",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,19 +19,20 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/res2.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.ronm1kael.reach"
     },
     "web": {
-      "favicon": "./assets/res2.png"
+      "favicon": "./assets/favicon.png"
     },
     "scheme": [
       "MyGoogleApp"
     ],
     "extra": {
       "eas": {
+        "projectId": "e34ea819-e267-49c5-bcf8-09fdf3728053"
       }
     },
     "plugins": [
