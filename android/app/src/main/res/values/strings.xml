@@ -1,6 +1,0 @@
-<resources>
-  <string name="app_name">reach</string>
-  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
-  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
-  <string name="server_client_id">264200989912-86euuomhdgi3tt3lukdaa8hfc7fmpdq3.apps.googleusercontent.com</string>
-</resources>
