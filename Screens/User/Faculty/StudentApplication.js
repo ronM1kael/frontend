@@ -105,7 +105,7 @@ const StudentApplications = () => {
 
   const Viewpdf = async () => {
     try {
-      const uri = `${baseURL2}/uploads/pdf/${selectedApplication.research_file}`;
+      const uri = `${baseURL2}/storage/applications/${selectedApplication.research_file}`;
       setPdfFileName(uri);
       setShowPDF(true);
       console.log(uri);

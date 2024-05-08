@@ -272,7 +272,7 @@ const App = () => {
             const response = await fetch(`${baseURL}RPmobileshowpdf/${fileName}`);
             const data = await response.json();
             const base64Content = data.base64Content;
-            const uri = `${baseURL2}/uploads/researchProposal/${fileName}`;
+            const uri = `${baseURL2}/storage/researchProposal/${fileName}`;
             setPdfFileName(uri);
             setShowPDF(true);
             console.log(uri);
