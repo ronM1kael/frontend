@@ -32,9 +32,11 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "0e0442b4-7a4e-4543-be97-75ccdfec45d9"
+        "projectId": "ebce5765-2e58-4a1c-9cee-27b63ba0fee3"
       }
     },
-    "plugins": ["@react-native-google-signin/google-signin"]
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ]
   }
 }

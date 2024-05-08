@@ -360,7 +360,7 @@ const ProfileScreen = () => {
           <View style={{ marginVertical: 10 }}>
             <Image
               source={{
-                uri: student && student.avatar ? `${baseURL2}/storage/${student.avatar}` : 'https://www.bootdey.com/img/Content/avatar/avatar1.png'
+                uri: student && student.avatar ? `${baseURL2}/storage/avatars/${student.avatar}` : 'https://www.bootdey.com/img/Content/avatar/avatar1.png'
               }}
               onError={(e) => console.log("Error loading image:", e.nativeEvent.error)}
               style={styles.avatar}
