@@ -691,7 +691,7 @@ const Register = (props) => {
                         }}
                     />
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
+                    {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
                         <View
                             style={{
                                 flex: 1,
@@ -711,9 +711,9 @@ const Register = (props) => {
                                 marginHorizontal: 10
                             }}
                         />
-                    </View>
+                    </View> */}
 
-                    <View style={{
+                    {/* <View style={{
                         flexDirection: 'row',
                         justifyContent: 'center'
                     }}>
@@ -743,7 +743,7 @@ const Register = (props) => {
                             />
                             <Text style={{ fontSize: 16, color: 'black' }}>Sign in with Google</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View> */}
 
                     <View style={{
                         flexDirection: 'row',

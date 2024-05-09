@@ -398,13 +398,13 @@ const MOBILEfacultyApplicationStatus = () => {
 
     const openPDF = (fileUri) => {
         setModalVisiblePDF(true);
-        const pdfUri = `${baseURL2}/uploads/extension/${fileUri}`;
+        const pdfUri = `${baseURL2}/storage/extensionApplications/${fileUri}`;
         setSelectedPDF(pdfUri);
     };
 
     const openPDFprototype = (fileUri) => {
         setModalVisiblePDF(true);
-        const pdfUri = `${baseURL2}/uploads/prototype/${fileUri}`;
+        const pdfUri = `${baseURL2}/storage/documentation/${fileUri}`;
         setSelectedPDF(pdfUri);
     };
 

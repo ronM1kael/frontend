@@ -188,7 +188,7 @@ const YourComponent = () => {
             const response = await fetch(`${baseURL}mobileshowpdf/${fileName}`);
             const data = await response.json();
             const base64Content = data.base64Content;
-            const uri = `${baseURL2}/uploads/researchFile/${fileName}`;
+            const uri = `${baseURL2}/storage/researchFile/${fileName}`;
             setPdfFileName(uri);
             setShowPDF(true);
             console.log(uri);

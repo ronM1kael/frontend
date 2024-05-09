@@ -439,7 +439,7 @@ const Main = () => {
           />
         ) : null}
 
-        {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
+        {/* {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
           <Drawer.Screen
             name="Extension Application"
             component={FacultyApplication}
@@ -459,11 +459,11 @@ const Main = () => {
               ),
             }}
           />
-        ) : null}
+        ) : null} */}
 
         {context.stateUser.isAuthenticated && context.stateUser.userProfile.role === 'Faculty' ? (
           <Drawer.Screen
-            name="Extension Application Status"
+            name="Extension App Status"
             component={ExtensionApplicationStatus}
             options={{
               drawerIcon: ({ color, size }) => (
