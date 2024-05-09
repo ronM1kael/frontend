@@ -4,7 +4,7 @@
     "slug": "reach",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/finaliconagain.png",
+    "icon": "./assets/icon3.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/finalsplash.png",
@@ -32,7 +32,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "d1abf132-4252-4d60-99e8-78e91102517f"
+        "projectId": "5ee8189c-9000-4ab1-bfd9-a3bd7d77faf4"
       }
     },
     "plugins": [
